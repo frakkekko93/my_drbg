@@ -127,51 +127,6 @@ where
         Ok(result)
     }
 
-    /*  Generates len(result) pseudo-random bytes
-
-        Gaps wrt the generate_algorithm:
-            - missing check on reseed_interval, reseed_counter is never actually used
-
-        TESTS:
-            - the function is generating only bytes that are mutiple of v.len(). What if I request something different?
-    */
-    // pub fn generate_to_slice(&mut self, result: &mut [u8], add: Option<&[u8]>) -> GenericArray<u8, T>{
-    //     //Check to see if reseed interval has been reached.
-    //     if self.count >= self.reseed_interval{
-    //         return None;
-    //     }
-
-    //     // If there is additional input, update the internal state of the DRBG
-    //     if let Some(add) = add {
-    //         self.update(Some(&[add]));
-    //     }
-
-    //     // For each byte in result
-    //     let mut i = 0;
-    //     while i < result.len() {
-    //         let mut vmac = self.hmac();         // Retrive an hmac instance
-    //         vmac.update(&self.v);                   // Update hmac internal state using V  
-    //         self.v = vmac.finalize().into_bytes();       // Update the value of V
-
-    //         // Write self.v bytes in the n-th block of result
-    //         for j in 0..self.v.len() {
-    //             result[i + j] = self.v[j];
-    //         }
-    //         i += self.v.len();
-    //     }
-        
-    //     // Update internal status using additional input
-    //     match add {
-    //         Some(add) => {
-    //             self.update(Some(&[add]));
-    //         }
-    //         None => {
-    //             self.update(None);
-    //         }
-    //     }
-    //     self.count += 1;    // Increase reseed counter
-    // }
-
     /* Retrieves and instance of the hmac primitive that uses self.k as a key */
     fn hmac(&self) -> Hmac<D> {
         Hmac::new_varkey(&self.k).expect("Smaller and larger key size are handled by default")

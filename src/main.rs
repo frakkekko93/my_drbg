@@ -16,9 +16,14 @@ fn show(bs: &[u8]) -> String {
 }
 
 fn main(){
-    let bits =  my_drbg::get_entropy_input::<U16>();
-    let sliced_bits = bits.as_slice();
+    let drbg = my_drbg::DRBG::new(512, true, Some("Pers string".as_bytes()), 0);
 
-    println!("\nEntropy source returned: \n{}", show(&sliced_bits));
-    println!("Size: {}\n", sliced_bits.len());
+    match drbg{
+        Ok(drbg) => {
+            println!("\nInstantiated DRBG instance with security strength: {}.\n", drbg.get_sec_str());
+        }
+        Err(err) => {
+            println!("\nInstantiation failed with error code: {}.\n", err);
+        }
+    }
 }
