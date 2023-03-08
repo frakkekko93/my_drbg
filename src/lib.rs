@@ -2,11 +2,13 @@ pub mod drbg_mech;
 use sha2::Sha256;
 use rand::*;
 use drbg_mech::hmac::*;
+use generic_array::{ArrayLength, GenericArray};
 
 /* Configuration of the DRBG */
 const MAX_SEC_STR: usize = 256;
 const MAX_PS_LEN: usize = 256;
 const MAX_AI_LEN: usize = 256;
+const MAX_PRB: usize = 1024;
 
 pub struct DRBG
 {
@@ -107,8 +109,65 @@ impl DRBG
         return 0;
     }
 
-    pub fn generate(){
+    /*  This function serves as an envelope to the generate algorithm of the underlying DRBG mechanism.
+        For the moment, bits can only be generated using the HMAC mechanism with Sha256.
 
+        Parameters:
+            -req_bits: the number of requested bits for generation (max = MAX_PRB)
+            -req_str: the requested security strength for the generated bits
+            -pred_res_req: whether prediction resistance is to be served on this call
+            -add: optional additional input for the generation
+        
+        Error codes:
+            1 - internal state is not valid (uninstantiated or never instantiated)
+            2 - requested too many pseudo-random bits (max = MAX_PRB)
+            3 - security strenght not supported
+            4 - additional input is too long (see MAX_AI_LEN)
+            5 - bit generation failed unexpectedly
+     */
+    pub fn generate<T: ArrayLength<u8>>(&mut self, req_str: usize, pred_res_req: bool, mut add: Option<&[u8]>) -> Result<GenericArray<u8, T>, u8>{
+        if self.internal_state.is_none(){
+                return Err(1)
+        }
+
+        if T::to_usize() * 8 > MAX_PRB {
+            return Err(2)
+        }
+
+        if req_str > self.security_strength {
+            return Err(3)
+        }
+
+        match add{
+            None => {
+
+            }
+            Some(value) => {
+                if value.len() > MAX_AI_LEN {
+                    return Err(4)
+                }
+            }
+        }
+
+        let working_state = self.internal_state.as_mut().unwrap();
+        if pred_res_req || working_state.reseed_needed() {
+            let mut entropy_input = Vec::<u8>::new();
+            DRBG::get_entropy_input(&mut entropy_input, self.security_strength);
+            working_state.reseed(&entropy_input, add);
+            add = None;
+        }
+
+        let gen_res = working_state.generate::<T>(add);
+
+        match gen_res{
+            Err(err) => {
+                println!("DRBG_ERROR: mechanim's generate returned error code {}", err);
+                return Err(5)
+            }
+            Ok(bits) => {
+                return Ok(bits)
+            }
+        }
     }
 
     pub fn uninstantiate(){

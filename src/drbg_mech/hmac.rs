@@ -172,4 +172,9 @@ where
         vmac.update(&self.v);
         self.v = vmac.finalize().into_bytes();
     }
+
+    /*  Indicates whether a forced reseed is needed for this instance */
+    pub fn reseed_needed(&self) -> bool{
+        self.count >= self.reseed_interval
+    }
 }
