@@ -1,15 +1,10 @@
 pub mod drbg_mech;
-use generic_array::{ArrayLength, GenericArray};
-use hmac::Hmac;
 use sha2::Sha256;
 use rand::*;
 use drbg_mech::hmac::*;
 
-use digest::{BlockInput, FixedOutput, Reset, Update};
-
 /* Configuration of the DRBG */
 const MAX_SEC_STR: usize = 256;
-const PR_SUPPORTED: bool = true;
 const MAX_PS_LEN: usize = 256;
 const MAX_AI_LEN: usize = 256;
 
@@ -31,7 +26,7 @@ impl DRBG
             1 - inappropriate security strength
             2 - personalization string is too long
     */
-    pub fn new(req_sec_str: usize, pred_res_flag: bool, ps: Option<&[u8]>) -> Result<Self, u8>{
+    pub fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8>{
         if req_sec_str > MAX_SEC_STR{
             return Err(1);
         }
