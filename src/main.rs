@@ -1,8 +1,6 @@
 use std::ascii::escape_default;
 use std::str;
 
-use typenum::*;
-
 extern crate my_drbg;
 
 
@@ -43,15 +41,13 @@ fn main(){
         }
     }
 
-    let gen_res = drbg.generate::<U128>(256, true, Some(&add_in));
+    let mut bits: Vec<u8> = Vec::<u8>::new();
+    let gen_res = drbg.generate(&mut bits, 128, 256, true, Some(&add_in));
 
-    match gen_res {
-        Err(err) => {
-            println!("MAIN: Generate failed with error code {}.", err);
-        }
-        Ok(bits) => {
-            println!("MAIN: generated bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
-        }
+    if gen_res > 0{
+        println!("MAIN: Generate failed with error code {}.", gen_res);
     }
-    
+    else {
+        println!("MAIN: generated bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
+    }
 }
