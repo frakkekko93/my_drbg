@@ -136,23 +136,28 @@ impl DRBG
         
         Return values:
             0 - SUCCESS, bits have been generated succesfully and can be used for the desired purpose
-            1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
-            2 - ERROR, requested too many pseudo-random bits (max = MAX_PRB)
-            3 - ERROR, security strenght not supported
-            4 - ERROR, additional input is too long (see MAX_AI_LEN)
-            5 - ERROR, bit generation failed unexpectedly
+            1 - ERROR, return vector must be intitally empty
+            2 - ERROR, internal state is not valid (uninstantiated or never instantiated)
+            3 - ERROR, requested too many pseudo-random bits (max = MAX_PRB)
+            4 - ERROR, security strenght not supported
+            5 - ERROR, additional input is too long (see MAX_AI_LEN)
+            6 - ERROR, bit generation failed unexpectedly
      */
     pub fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
+        if !bits.is_empty(){
+            return 1;
+        }
+        
         if self.internal_state.is_none(){
-                return 1;
+                return 2;
         }
 
         if req_bytes > MAX_PRB {
-            return 2;
+            return 3;
         }
 
         if req_str > self.security_strength {
-            return 3;
+            return 4;
         }
 
         match add{
@@ -161,7 +166,7 @@ impl DRBG
             }
             Some(value) => {
                 if value.len() > MAX_AI_LEN {
-                    return 4;
+                    return 5;
                 }
             }
         }
@@ -179,7 +184,7 @@ impl DRBG
             return 0;
         }
         else {
-            return 5;
+            return 6;
         }
     }
 
