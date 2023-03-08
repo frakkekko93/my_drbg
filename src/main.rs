@@ -16,14 +16,17 @@ fn show(bs: &[u8]) -> String {
 }
 
 fn main(){
-    let drbg = my_drbg::DRBG::new(512, true, Some("Pers string".as_bytes()), 0);
-
-    match drbg{
-        Ok(drbg) => {
-            println!("\nInstantiated DRBG instance with security strength: {}.\n", drbg.get_sec_str());
+    let inst_res = my_drbg::DRBG::new(256, true, Some("Pers string".as_bytes()));
+    
+    match inst_res{
+        Ok(inst) => {
+            println!("\nMAIN: Instantiated DRBG instance with security strength: {}.\n", inst.get_sec_str());
+            let mut drbg = inst;
+            drbg.reseed(Some("Additional input".as_bytes()));
+            println!("MAIN: Reseeded DRBG instance.");
         }
         Err(err) => {
-            println!("\nInstantiation failed with error code: {}.\n", err);
+            println!("\nMAIN: Instantiation failed with error code: {}.\n", err);
         }
     }
 }
