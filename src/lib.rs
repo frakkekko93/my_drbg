@@ -183,8 +183,21 @@ impl DRBG
         }
     }
 
-    pub fn uninstantiate(){
+    /*  This function is used to zeroize the internal state and make it unavailable to the calling application.
 
+        Return values:
+            - 0: SUCCESS, the internal state has been succesfully zeroized
+            - 1: ERROR, invalid internal state (maybe already zeroized?)
+     */
+    pub fn uninstantiate(&mut self) -> usize{
+        if self.internal_state.is_none(){
+            return 1;
+        }
+        
+        self.internal_state.as_mut().unwrap().zeroize();
+        self.internal_state = None;
+        
+        return 0;
     }
 
     /*  This function is used to retrieve entropy bits directly from the underlying entropy source that is available. 

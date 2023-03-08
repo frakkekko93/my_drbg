@@ -42,12 +42,22 @@ fn main(){
     }
 
     let mut bits: Vec<u8> = Vec::<u8>::new();
-    let gen_res = drbg.generate(&mut bits, 128, 256, true, Some(&add_in));
+    let mut gen_res = drbg.generate(&mut bits, 128, 256, true, Some(&add_in));
 
     if gen_res > 0{
-        println!("MAIN: Generate failed with error code {}.", gen_res);
+        println!("MAIN: first generate failed with error code {}.", gen_res);
     }
     else {
-        println!("MAIN: generated bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
+        println!("MAIN: first generate produced bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
+    }
+
+    drbg.uninstantiate();
+    gen_res = drbg.generate(&mut bits, 128, 256, true, Some(&add_in));
+
+    if gen_res > 0{
+        println!("MAIN: second generate failed with error code {}.", gen_res);
+    }
+    else {
+        println!("MAIN: second generate produced bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
     }
 }

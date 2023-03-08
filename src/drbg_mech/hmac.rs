@@ -12,6 +12,7 @@ where
     v: GenericArray<u8, D::OutputSize>,
     count: usize,
     reseed_interval: usize,
+    zeroized: bool,
 }
 
 impl<D> HmacDRBG<D>
@@ -42,7 +43,7 @@ where
             v[i] = 0x01;
         }
 
-        let mut this = Self { k, v, count: 0 , reseed_interval: 0};
+        let mut this = Self { k, v, count: 0 , reseed_interval: 0, zeroized: false};
 
         this.update(Some(&[entropy, nonce, pers]));
         this.count = 1;
@@ -175,5 +176,29 @@ where
      */
     pub fn reseed_needed(&self) -> bool{
         self.count >= self.reseed_interval
+    }
+
+    /*  Function needed to zeroize the content of this instance and macke it unusable. */
+    pub fn zeroize(&mut self){
+        for i in 0..self.k.as_slice().len() {
+            self.k[i] = 0x0;
+        }
+
+        for i in 0..self.v.as_slice().len() {
+            self.v[i] = 0x0;
+        }
+
+        self.count = 0;
+        self.reseed_interval = 0;
+        self.zeroized = true;
+    }
+
+    /*  Function needed to check if the current instance is zeroized.
+    
+        Return values:
+            - boolean statement
+    */
+    pub fn _is_zeroized(&mut self) -> bool{
+        self.zeroized
     }
 }
