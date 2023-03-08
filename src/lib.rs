@@ -47,8 +47,16 @@ impl DRBG
         let security_strength = DRBG::set_sec_str(req_sec_str);
         DRBG::get_entropy_input(&mut entropy, security_strength);
         DRBG::get_entropy_input(&mut nonce, security_strength/2);
- 
-        let drbg_mech = HmacDRBG::new(&entropy.as_slice(), &nonce.as_slice(), &ps.unwrap());
+        
+        let drbg_mech;
+        match ps {
+            None => {
+                drbg_mech = HmacDRBG::<Sha256>::new(&entropy.as_slice(), &nonce.as_slice(), "".as_bytes());
+            }
+            Some(pers) => {
+                drbg_mech = HmacDRBG::<Sha256>::new(&entropy.as_slice(), &nonce.as_slice(), &pers);
+            }
+        }
 
         Ok(Self{security_strength, internal_state: Some(drbg_mech)})
     }
@@ -212,7 +220,7 @@ impl DRBG
             - vec: target vector for entropy bytes
             - bytes: number of entropy bytes to be generated
     */
-    pub fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize){
+    fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize){
         const CHUNK_DIM: usize = 16;                        //Bytes are generated at a CHUNK_DIM-wide chunk ratio (CHUNK_DIM*8 bits at a time)
         let mut tmp: [u8; CHUNK_DIM] = [0; CHUNK_DIM];
 
