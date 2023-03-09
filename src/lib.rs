@@ -6,8 +6,6 @@ use drbg_mech::hmac::*;
 
 /* Configuration of the DRBG */
 const MAX_SEC_STR: usize = 256;
-const MAX_PS_LEN: usize = 256;
-const MAX_AI_LEN: usize = 256;
 const MAX_PRB: usize = 1024;
 
 pub struct DRBG
@@ -31,20 +29,22 @@ impl DRBG
         Return values:
             Self - SUCCESS, a pointer to the newly created DRBG instance
             1 - ERROR, inappropriate security strength
-            2 - ERROR, personalization string is too long
+            2 - ERROR, personalization string is too long (max security_strength bits)
     */
     pub fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8>{
         if req_sec_str > MAX_SEC_STR{
             return Err(1);
         }
 
-        if ps.is_some() && ps.unwrap().len() > MAX_PS_LEN{
+        let security_strength = DRBG::set_sec_str(req_sec_str);
+
+        if ps.is_some() && ps.unwrap().len() * 8 > security_strength{
             return Err(2);
         }
 
         let mut entropy= Vec::<u8>::new();
         let mut nonce= Vec::<u8>::new();
-        let security_strength = DRBG::set_sec_str(req_sec_str);
+        
         DRBG::get_entropy_input(&mut entropy, security_strength);
         DRBG::get_entropy_input(&mut nonce, security_strength/2);
         
@@ -101,7 +101,7 @@ impl DRBG
         Return Values:
             0 - SUCCESS, internal state has been succesfully reseeded
             1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
-            2 - ERROR, additional input is too long
+            2 - ERROR, additional input is too long (max security_strength bits)
      */
     pub fn reseed(&mut self, add: Option<&[u8]>) -> usize{
         let working_state;
@@ -120,7 +120,7 @@ impl DRBG
 
             }
             Some(value) => {
-                if value.len() > MAX_AI_LEN {
+                if value.len() > self.security_strength {
                     return 2;
                 }
             }
@@ -148,7 +148,7 @@ impl DRBG
             2 - ERROR, internal state is not valid (uninstantiated or never instantiated)
             3 - ERROR, requested too many pseudo-random bits (max = MAX_PRB)
             4 - ERROR, security strenght not supported
-            5 - ERROR, additional input is too long (see MAX_AI_LEN)
+            5 - ERROR, additional input is too long (max security_strength bits)
             6 - ERROR, bit generation failed unexpectedly
      */
     pub fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
@@ -173,7 +173,7 @@ impl DRBG
 
             }
             Some(value) => {
-                if value.len() > MAX_AI_LEN {
+                if value.len() > self.security_strength {
                     return 5;
                 }
             }

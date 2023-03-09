@@ -67,9 +67,15 @@ where
             - the new entropy to be used for reseeding
             - optional additional inputs to the reseeding process
     */
-    pub fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) {
-        self.update(Some(&[entropy, add.unwrap_or(&[])]));
-        self.count = 1;
+    pub fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
+        if self.zeroized {
+            return 1;
+        }
+        else{
+            self.update(Some(&[entropy, add.unwrap_or(&[])]));
+            self.count = 1;
+            return 0;
+        }
     }
 
     /*  Generates a vector of pseudorandom bytes.
@@ -81,11 +87,16 @@ where
 
         Return values:
             - 0: SUCCESS, result is valid and can be used
-            - 1: ERROR, reseed interval has been reached and reseeding is necessary
+            - 1: ERROR, this instantiation has been previously zeroized, new instantiation needed
+            - 2: ERROR, reseed interval has been reached and reseeding is necessary
     */
     pub fn generate(&mut self,result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
-        if self.count >= self.reseed_interval{
+        if self.zeroized {
             return 1;
+        }
+        
+        if self.count >= self.reseed_interval{
+            return 2;
         }
 
         if let Some(add) = add {
@@ -178,8 +189,17 @@ where
         self.count >= self.reseed_interval
     }
 
-    /*  Function needed to zeroize the content of this instance and macke it unusable. */
-    pub fn zeroize(&mut self){
+    /*  Function needed to zeroize the content of this instance and macke it unusable. 
+
+        Return values:
+            - 0: SUCCESS, instantiation has been successfully zeroized
+            - 1: ERROR, instantiation is already zeroized    
+    */
+    pub fn zeroize(&mut self) -> usize{
+        if self.zeroized {
+            return 1;
+        }
+
         for i in 0..self.k.as_slice().len() {
             self.k[i] = 0x0;
         }
@@ -191,6 +211,8 @@ where
         self.count = 0;
         self.reseed_interval = 0;
         self.zeroized = true;
+
+        return 0;
     }
 
     /*  Function needed to check if the current instance is zeroized.

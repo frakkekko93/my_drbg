@@ -1,3 +1,4 @@
+/*  Testing that non supported security strengths are actually regected by the DRBG. */
 #[test]
 fn test_ss_not_supported(){
     let res = my_drbg::DRBG::new(512, None);
@@ -17,9 +18,10 @@ fn test_ss_not_supported(){
     assert!(drbg.is_none());
 }
 
+/*  Testing that the limit on the length of the personalization string is actually enforced. */
 #[test]
 fn ps_is_too_long(){
-    let ps: [u8; 512] = [0; 512];
+    let ps: [u8; 33] = [0; 33];
     let res = my_drbg::DRBG::new(256, Some(&ps));
     let mut err= 0;
     let mut drbg = None;
@@ -37,6 +39,7 @@ fn ps_is_too_long(){
     assert!(drbg.is_none());
 }
 
+/*  Testing that the appropriate security strength is set when 128 bits are needed. */
 #[test]
 fn set_appropriate_ss_128(){
     let mut res;
@@ -66,6 +69,7 @@ fn set_appropriate_ss_128(){
     }
 }
 
+/*  Testing that the appropriate security strength is set when 192 bits are needed. */
 #[test]
 fn set_appropriate_ss_192(){
     let mut res;
@@ -95,6 +99,7 @@ fn set_appropriate_ss_192(){
     }
 }
 
+/*  Testing that the appropriate security strength is set when 256 bits are needed. */
 #[test]
 fn set_appropriate_ss_256(){
     let mut res;
