@@ -2,7 +2,7 @@ pub mod drbg_mech;
 
 use sha2::Sha256;
 use rand::*;
-use drbg_mech::hmac::*;
+use drbg_mech::{hmac::*, gen_mech::DrbgMech};
 
 /* Configuration of the DRBG */
 const MAX_SEC_STR: usize = 256;
@@ -68,7 +68,7 @@ impl DRBG
 
         Return values:
             - the security strength to be adopted by the DRBG
-     */
+    */
     fn set_sec_str(sec_str: usize)-> usize{
         if sec_str <= 128{
             return 128;
@@ -85,7 +85,7 @@ impl DRBG
     
         Return values:
             - the security strength supported by the DRBG
-     */
+    */
     pub fn get_sec_str(&self) -> usize{
         self.security_strength
     }
@@ -102,7 +102,7 @@ impl DRBG
             0 - SUCCESS, internal state has been succesfully reseeded
             1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
             2 - ERROR, additional input is too long (max security_strength bits)
-     */
+    */
     pub fn reseed(&mut self, add: Option<&[u8]>) -> usize{
         let working_state;
 
@@ -150,7 +150,7 @@ impl DRBG
             4 - ERROR, security strenght not supported
             5 - ERROR, additional input is too long (max security_strength bits)
             6 - ERROR, bit generation failed unexpectedly
-     */
+    */
     pub fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
         if !bits.is_empty(){
             return 1;
@@ -201,7 +201,7 @@ impl DRBG
         Return values:
             - 0: SUCCESS, the internal state has been succesfully zeroized
             - 1: ERROR, invalid internal state (maybe already zeroized?)
-     */
+    */
     pub fn uninstantiate(&mut self) -> usize{
         if self.internal_state.is_none(){
             return 1;

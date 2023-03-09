@@ -1,4 +1,4 @@
-use my_drbg::drbg_mech::hmac::HmacDRBG;
+use my_drbg::drbg_mech::{hmac::HmacDRBG, gen_mech::DrbgMech};
 use sha2::Sha256;
 
 /*  Testing that the internal state of an HMAC-DRBG mechanism

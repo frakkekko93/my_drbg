@@ -1,4 +1,4 @@
-use my_drbg::{drbg_mech::hmac::HmacDRBG};
+use my_drbg::{drbg_mech::{hmac::HmacDRBG, gen_mech::DrbgMech}};
 use sha2::Sha256;
 use serde::Deserialize;
 
@@ -23,12 +23,7 @@ fn nist_vectors(){
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
         let expected = hex::decode(&test.expected).unwrap();
         let mut result = Vec::new();
-        //result.resize(expected.len(), 0);
-
-        //let full_len = result.len();
-
         let full_len = expected.len();
-
         let add0 = test.add[0].as_ref().map(|v| hex::decode(&v).unwrap());
         let add1 = test.add[1].as_ref().map(|v| hex::decode(&v).unwrap());
 
