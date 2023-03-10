@@ -34,17 +34,15 @@ where
             return Err(1);
         }
 
-        let security_strength = DRBG::<HmacDrbgMech::<T>>::set_sec_str(req_sec_str);
-
-        if ps.is_some() && ps.unwrap().len() * 8 > security_strength{
+        if ps.is_some() && ps.unwrap().len() * 8 > MAX_SEC_STR{
             return Err(2);
         }
 
         let mut entropy= Vec::<u8>::new();
         let mut nonce= Vec::<u8>::new();
         
-        DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut entropy, security_strength);
-        DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut nonce, security_strength/2);
+        DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut entropy, MAX_SEC_STR);
+        DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut nonce, MAX_SEC_STR/2);
         
         let drbg_mech;
         match ps {
@@ -61,28 +59,8 @@ where
                 return Err(3);
             }
             Some(_) => {
-                Ok(Self{security_strength, internal_state: drbg_mech})
+                Ok(Self{security_strength: MAX_SEC_STR, internal_state: drbg_mech})
             }
-        }
-    }
-
-    /*  Sets the appropriate security strength with respect to the one requested.
-
-        Parameters:
-            - sec_str: the security strength that is requested
-
-        Return values:
-            - the security strength to be adopted by the DRBG
-    */
-    fn set_sec_str(sec_str: usize)-> usize{
-        if sec_str <= 128{
-            return 128;
-        }
-        else if sec_str <= 192{
-            return 192;
-        }
-        else {
-            return 256;
         }
     }
 
