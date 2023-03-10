@@ -1,4 +1,5 @@
-pub trait DrbgMech: {
+#[allow(non_camel_case_types)]
+pub trait DRBG_Mechanism_Functions: {
     /*  Allocates a new instance of the DRBG using the passed entropy, nonce and personalization string.
 
         Parameters:

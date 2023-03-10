@@ -2,7 +2,7 @@ use std::any::TypeId;
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
-use super::gen_mech::DrbgMech;
+use super::gen_mech::DRBG_Mechanism_Functions;
 
 /*  Properties of the HMAC-DRBG mechanism. This mechanism can be intantiated only using Sha256 or Sha512
     (see FIPS 140-3 IG section D.R). Since the both hashing algorithms support a security strength of 256 bits
@@ -109,7 +109,7 @@ where
 }
 
 /*  Implementing common DRBG mechanism functions taken from the DrbgMech trait. */
-impl<D> DrbgMech for HmacDrbgMech<D>
+impl<D> DRBG_Mechanism_Functions for HmacDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
     D::BlockSize: ArrayLength<u8>,
@@ -141,12 +141,12 @@ where
         // Updating the internal state using the passed parameters.
         this.update(Some(&[entropy, nonce, pers]));
         this.count = 1;
-        this.reseed_interval = 10;
+        this.reseed_interval = 1000;
 
         Some(this)
     }
 
-    fn generate(&mut self,result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
+    fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
         // No generate on a zeroized status (ERROR_FLAG=1)
         if self.zeroized {
             return 1;

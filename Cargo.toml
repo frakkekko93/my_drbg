@@ -12,6 +12,7 @@ hmac = "0.9"
 sha2 = "0.9"
 typenum = "1.12"
 rand = "0.8.5"
+hex = "0.4.3"
 
 [dev-dependencies]
 sha2 = "0.9"

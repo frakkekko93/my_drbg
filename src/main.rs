@@ -2,7 +2,7 @@ use std::ascii::escape_default;
 use std::str;
 
 extern crate my_drbg;
-use my_drbg::drbgs::gen_drbg::DRBG;
+use my_drbg::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use my_drbg::mechs::hmac_mech::HmacDrbgMech;
 use sha2::Sha256;
 
@@ -17,49 +17,44 @@ fn show(bs: &[u8]) -> String {
 }
 
 fn main(){
-    let inst_res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, Some("Pers string".as_bytes()));
-    let add_in: [u8; 256] = [0; 256];
-    let mut drbg;
+    let gen_res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, Some("Pers string".as_bytes()));
 
-    match inst_res{
+    let mut drbg;
+    match gen_res{
+        Err(err) => {
+            panic!("\nMAIN: instantiation failed with error: {}", err);
+        }
         Ok(inst) => {
-            println!("\nMAIN: Instantiated DRBG instance with security strength: {}.\n", inst.get_sec_str());
+            println!("\nMAIN: instantiated a new HMAC-DRBG.");
             drbg = inst;
         }
-        Err(err) => {
-            println!("\nMAIN: Instantiation failed with error code: {}.\n", err);
-            return
-        }
     }
 
-    let res_res = drbg.reseed(Some("Additional input".as_bytes()));
-    match res_res {
-        0 => {
-            println!("MAIN: Reseeded DRBG instance.");
-        }
-        _ => {
-            println!("MAIN: Reseeded failed with error code {}.", res_res);
-            return
-        }
+    let mut bits= Vec::<u8>::new();
+    let mut res = drbg.generate(&mut bits, 128, 256, true, Some("Some additional input".as_bytes()));
+
+    if res > 0 {
+        panic!("MAIN: generation failed with error: {}", res);
+    }
+    else{
+        println!("MAIN: generated {} bits: {}", bits.len()*8, hex::encode(show(&bits)));
     }
 
-    let mut bits: Vec<u8> = Vec::<u8>::new();
-    let mut gen_res = drbg.generate(&mut bits, 128, 256, true, Some(&add_in));
+    res = drbg.reseed(Some("Another very interisting additional input.".as_bytes()));
 
-    if gen_res > 0{
-        println!("MAIN: first generate failed with error code {}.", gen_res);
+    if res > 0 {
+        panic!("MAIN: reseeding failed with error: {}", res);
     }
-    else {
-        println!("MAIN: first generate produced bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
+    else{
+        println!("MAIN: reseeded DRBG.");
     }
 
-    drbg.uninstantiate();
-    gen_res = drbg.generate(&mut bits, 128, 256, true, Some(&add_in));
+    res = drbg.uninstantiate();
 
-    if gen_res > 0{
-        println!("MAIN: second generate failed with error code {}.", gen_res);
+    if res > 0 {
+        panic!("MAIN: uninstantiation failed with error: {}", res);
     }
-    else {
-        println!("MAIN: second generate produced bits {}.\t (Len: {})", show(bits.as_slice()), bits.len() * 8);
+    else{
+        println!("MAIN: uninstantiated DRBG.");
     }
 }

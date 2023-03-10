@@ -1,49 +1,40 @@
-use crate::drbgs::{gen_drbg::DRBG};
-use crate::mechs::{gen_mech::DrbgMech, hmac_mech::HmacDrbgMech};
+use crate::drbgs::gen_drbg::*;
+use crate::mechs::{gen_mech::DRBG_Mechanism_Functions, hmac_mech::HmacDrbgMech};
 use digest::{BlockInput, FixedOutput, Reset, Update};
-use generic_array::{ArrayLength};
+use generic_array::ArrayLength;
 use rand::*;
 
-/* Configuration of the DRBG */
+/*  Configuration of the DRBG.
+    
+    This DRBG relies on the HMAC mechanism which supports a maximum of 256 bits of security strength (MAX_SEC_STR).
+    It is configured to generate a maximum of 1024 per-request (MAX_PRB). This option may actually be changed but be 
+    aware of the limits imposed in table 10.1 of NIST SP 800-90A. */
 const MAX_SEC_STR: usize = 256;
 const MAX_PRB: usize = 1024;
 
-impl<T> DRBG<HmacDrbgMech<T>>
+/*  Implementing common DRBG functions for the HMAC-DRBG. */
+impl<T> DRBG_Functions for DRBG<HmacDrbgMech<T>>
 where
     T: Update + FixedOutput + BlockInput + Reset + Clone + Default,
     T::BlockSize: ArrayLength<u8>,
     T::OutputSize: ArrayLength<u8>,
 {
-    /*  This function serves as an evelope to the instantiate algorithm of the underlying DRBG mechanism.
-        At the moment, it can only instantiate an HMAC-DRBG mechanism that uses Sha256 supporting a security strength up to 256.
-        Note that this function does not have the 'prediction_resistance_flag' parameter as specified in SP 800-90A section 9.1. This is allowed as long as the DRBG
-        always provides or do not support prediction resistance. In this particular implementation, the DRBG is implemented to always support prediction resistance.
-        This means that calling application may request prediction resistance at any time during bit generation.
-
-        Parameters:
-            - req_sec_str: the security strength needed by the calling application
-            - ps: optional personalization string to be used for instantiation of the DRBG mechanism
-
-        Return values:
-            Self - SUCCESS, a pointer to the newly created DRBG instance
-            1 - ERROR, inappropriate security strength
-            2 - ERROR, personalization string is too long (max security_strength bits)
-    */
-    pub fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8>{
+    fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8>{
+        // Checking requirements on the validity of the requested security strength and the personalization string.
         if req_sec_str > MAX_SEC_STR{
             return Err(1);
         }
-
         if ps.is_some() && ps.unwrap().len() * 8 > MAX_SEC_STR{
             return Err(2);
         }
 
+        // Acquiring the entropy input and nonce parameters from the entropy source.
         let mut entropy= Vec::<u8>::new();
-        let mut nonce= Vec::<u8>::new();
-        
+        let mut nonce= Vec::<u8>::new();      
         DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut entropy, MAX_SEC_STR);
         DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut nonce, MAX_SEC_STR/2);
         
+        // Trying to allocate the DRBG's internal state.
         let drbg_mech;
         match ps {
             None => {
@@ -54,6 +45,7 @@ where
             }
         }
 
+        // Checking the validity of the allocated state.
         match drbg_mech{
             None => {
                 return Err(3);
@@ -64,31 +56,9 @@ where
         }
     }
 
-    /*  Utility function that returns the supported security strength of the DRBG.
-    
-        Return values:
-            - the security strength supported by the DRBG
-    */
-    pub fn get_sec_str(&self) -> usize{
-        self.security_strength
-    }
-
-    /*  This function serves as an envelope to the reseed algorithm of the underlying DRBG mechanism.
-        Note that this function does not have the 'prediction_resistance_request' parameter as specified in SP 800-90A section 9.2. This is allowed as long as the DRBG
-        always/never uses fresh entropy for the reseed process. In this particular implementation, the DRBG mechanism is provided with fresh entropy at each reseed
-        request.
-
-        Parameters:
-            - add: optional additional input to be used for reseeding
-
-        Return Values:
-            0 - SUCCESS, internal state has been succesfully reseeded
-            1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
-            2 - ERROR, additional input is too long (max security_strength bits)
-    */
-    pub fn reseed(&mut self, add: Option<&[u8]>) -> usize{
+    fn reseed(&mut self, add: Option<&[u8]>) -> usize{
+        // Retrieving the actual internal state if available and valid.
         let working_state;
-
         match self.internal_state.as_mut(){
             None => {
                 return 1;
@@ -98,10 +68,9 @@ where
             }
         }
 
+        // Checking the validity of the passed additional input.
         match add{
-            None => {
-
-            }
+            None => {}
             Some(value) => {
                 if value.len() > self.security_strength {
                     return 2;
@@ -109,48 +78,34 @@ where
             }
         }
 
+        // Retrieving new entropy and reseeding the internal state.
         let mut entropy_input = Vec::<u8>::new();
         DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut entropy_input, self.security_strength);
-        working_state.reseed(&entropy_input, add);
-        return 0;
-    }
-
-    /*  This function serves as an envelope to the generate algorithm of the underlying DRBG mechanism.
-        For the moment, bits can only be generated using the HMAC mechanism with Sha256.
-
-        Parameters:
-            - bits: a reference to the resulting byte vector
-            - req_bytes: the number of requested bytes for generation (max = MAX_PRB)
-            - req_str: the requested security strength for the generated bits
-            - pred_res_req: whether prediction resistance is to be served on this call
-            - add: optional additional input for the generation
         
-        Return values:
-            0 - SUCCESS, bits have been generated succesfully and can be used for the desired purpose
-            1 - ERROR, return vector must be intitally empty
-            2 - ERROR, internal state is not valid (uninstantiated or never instantiated)
-            3 - ERROR, requested too many pseudo-random bits (max = MAX_PRB)
-            4 - ERROR, security strenght not supported
-            5 - ERROR, additional input is too long (max security_strength bits)
-            6 - ERROR, bit generation failed unexpectedly
-    */
-    pub fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
-        if !bits.is_empty(){
-            return 1;
-        }
-        
-        if self.internal_state.is_none(){
-                return 2;
-        }
+        let res = working_state.reseed(&entropy_input, add);
 
-        if req_bytes > MAX_PRB {
+        // Internal state reseed failure.
+        if res > 0 {
             return 3;
         }
 
+        return 0;
+    }
+
+    fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
+        // Checking the validity of all the obtained parameters.
+        if !bits.is_empty(){
+            return 1;
+        }
+        if self.internal_state.is_none(){
+                return 2;
+        }
+        if req_bytes > MAX_PRB {
+            return 3;
+        }
         if req_str > self.security_strength {
             return 4;
         }
-
         match add{
             None => {
 
@@ -162,6 +117,7 @@ where
             }
         }
 
+        // Eventually reseeding the internal state if needed.
         let working_state = self.internal_state.as_mut().unwrap();
         if pred_res_req || working_state.reseed_needed() {
             let mut entropy_input = Vec::<u8>::new();
@@ -169,8 +125,10 @@ where
             working_state.reseed(&entropy_input, add);
         }
 
+        // Generating the requested bits.
         let gen_res = working_state.generate(bits, req_bytes, None);
 
+        // Checking the result of the generation.
         if gen_res == 0 {
             return 0;
         }
@@ -179,49 +137,57 @@ where
         }
     }
 
-    /*  This function is used to zeroize the internal state and make it unavailable to the calling application.
-
-        Return values:
-            - 0: SUCCESS, the internal state has been succesfully zeroized
-            - 1: ERROR, invalid internal state (maybe already zeroized?)
-    */
-    pub fn uninstantiate(&mut self) -> usize{
+    fn uninstantiate(&mut self) -> usize{
+        // Internal state already gone.
         if self.internal_state.is_none(){
             return 1;
         }
         
+        // Zeroizing the internal state of the DRBG.
         self.internal_state.as_mut().unwrap().zeroize();
         self.internal_state = None;
         
         return 0;
     }
 
-    /*  This function is used to retrieve entropy bits directly from the underlying entropy source that is available. 
-        For the moment we are assuming that the underlying source of entropy returns FULL ENTROPY bits.
+    fn get_entropy_input(result: &mut Vec<u8>, bytes: usize){
+        //Bytes are generated at a CHUNK_DIM-wide chunk ratio (CHUNK_DIM*8 bits at a time).
+        const CHUNK_DIM: usize = 16;
+        let mut chunk: [u8; CHUNK_DIM] = [0; CHUNK_DIM];
 
-        Parameters:
-            - vec: target vector for entropy bytes
-            - bytes: number of entropy bytes to be generated
-    */
-    fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize){
-        const CHUNK_DIM: usize = 16;                        //Bytes are generated at a CHUNK_DIM-wide chunk ratio (CHUNK_DIM*8 bits at a time)
-        let mut tmp: [u8; CHUNK_DIM] = [0; CHUNK_DIM];
-
-        /* Generate CHUNK_DIM bytes at a type and copy into result */
+        // Generate CHUNK_DIM bytes at a time and copy the generated chunk into result.
         let mut count = 0;
         let mut end = false;
-        while vec.len() < bytes && !end {
-            rand::thread_rng().fill(&mut tmp);
-            for j in 0..tmp.len() {
+        while result.len() < bytes && !end {
+            rand::thread_rng().fill(&mut chunk);
+            for j in 0..chunk.len() {
 
-                /* The requested number of bytes has been reached, stop generation */
+                // The requested number of bytes has been reached, stop generation
                 if count+j >= bytes{
                     end = true;
                     break;
                 }
-                vec.push(tmp[j]);
+                result.push(chunk[j]);
             }
+            // Next chunk.
             count += CHUNK_DIM;
         }
+    }
+}
+
+/*  Implementing additional specific functions for this DRBG. */
+impl<T> DRBG<HmacDrbgMech<T>>
+where
+    T: Update + FixedOutput + BlockInput + Reset + Clone + Default,
+    T::BlockSize: ArrayLength<u8>,
+    T::OutputSize: ArrayLength<u8>,
+{
+    /*  Utility function that returns the supported security strength of the DRBG.
+    
+        Return values:
+            - the security strength supported by the DRBG
+    */
+    pub fn get_sec_str(&self) -> usize{
+        self.security_strength
     }
 }
