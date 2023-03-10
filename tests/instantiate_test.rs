@@ -1,7 +1,11 @@
+use my_drbg::drbgs::gen_drbg::DRBG;
+use my_drbg::mechs::hmac::HmacDrbgMech;
+use sha2::*;
+
 /*  Testing that non supported security strengths are actually regected by the DRBG. */
 #[test]
 fn test_ss_not_supported(){
-    let res = my_drbg::DRBG::new(512, None);
+    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(512, None);
     let mut err= 0;
     let mut drbg = None;
 
@@ -22,7 +26,7 @@ fn test_ss_not_supported(){
 #[test]
 fn ps_is_too_long(){
     let ps: [u8; 33] = [0; 33];
-    let res = my_drbg::DRBG::new(256, Some(&ps));
+    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, Some(&ps));
     let mut err= 0;
     let mut drbg = None;
 
@@ -48,7 +52,7 @@ fn set_appropriate_ss_128(){
 
     let mut req_str: usize = 0;
     while req_str <= 128 {
-        res = my_drbg::DRBG::new(req_str, None);
+        res = DRBG::<HmacDrbgMech::<Sha256>>::new(req_str, None);
 
         match res{
             Err(error) => {
@@ -78,7 +82,7 @@ fn set_appropriate_ss_192(){
 
     let mut req_str: usize = 160;
     while req_str <= 192 {
-        res = my_drbg::DRBG::new(req_str, None);
+        res = DRBG::<HmacDrbgMech::<Sha256>>::new(req_str, None);
 
         match res{
             Err(error) => {
@@ -108,7 +112,7 @@ fn set_appropriate_ss_256(){
 
     let mut req_str: usize = 224;
     while req_str <= 256 {
-        res = my_drbg::DRBG::new(req_str, None);
+        res = DRBG::<HmacDrbgMech::<Sha256>>::new(req_str, None);
 
         match res{
             Err(error) => {
