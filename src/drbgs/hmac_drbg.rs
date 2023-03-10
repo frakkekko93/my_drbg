@@ -1,5 +1,5 @@
 use crate::drbgs::{gen_drbg::DRBG};
-use crate::mechs::hmac::HmacDrbgMech;
+use crate::mechs::hmac_mech::HmacDrbgMech;
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength};
 use rand::*;
@@ -56,7 +56,14 @@ where
             }
         }
 
-        Ok(Self{security_strength, internal_state: Some(drbg_mech)})
+        match drbg_mech{
+            None => {
+                return Err(3);
+            }
+            Some(_) => {
+                Ok(Self{security_strength, internal_state: drbg_mech})
+            }
+        }
     }
 
     /*  Sets the appropriate security strength with respect to the one requested.

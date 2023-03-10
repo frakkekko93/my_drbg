@@ -1,4 +1,4 @@
-use my_drbg::mechs::hmac::HmacDrbgMech;
+use my_drbg::mechs::hmac_mech::HmacDrbgMech;
 use sha2::Sha256;
 use serde::Deserialize;
 
@@ -17,10 +17,21 @@ fn nist_vectors(){
     let tests: Vec<Fixture> = serde_json::from_str(include_str!("./fixtures/hmac_nist_vectors.json")).unwrap();
 
     for test in tests {
-        let mut drbg = HmacDrbgMech::<Sha256>::new(
+        let res = HmacDrbgMech::<Sha256>::new(
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
+        
+        let mut drbg;
+        match res{
+            None => {
+                panic!("NIST VECTORS: drbg instantiation failed.")
+            }
+            Some(inst) => {
+                drbg = inst;
+            }
+        }
+
         let expected = hex::decode(&test.expected).unwrap();
         let mut result = Vec::new();
         let full_len = expected.len();

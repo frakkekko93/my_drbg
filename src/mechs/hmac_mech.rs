@@ -1,3 +1,5 @@
+use std::any::TypeId;
+
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
@@ -8,7 +10,7 @@ use hmac::{Hmac, Mac, NewMac};
     - count: the reseed counter
     - reseed_interval: the maximum number of generate requests that can be served between reseedings
     - zeroized: boolean flag indicating whether the particular instance has been zeroized */
-pub struct HmacDrbgMech<D>
+pub struct HmacDrbgMech<D: 'static>
 where
     D: Update + BlockInput + FixedOutput + Default,
     D::BlockSize: ArrayLength<u8>,
@@ -79,7 +81,15 @@ where
         Hmac::new_varkey(&self.k).expect("Smaller and larger key size are handled by default")
     }
 
-    pub fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Self {
+    pub fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> {
+        // Runtiome check on the use of any anallowed hash function.
+        let this_id = TypeId::of::<D>();
+        let sha256_id = TypeId::of::<sha2::Sha256>();
+        let sha512_id = TypeId::of::<sha2::Sha512>();
+        if this_id != sha256_id && this_id != sha512_id{
+            return None;
+        }
+
         // Setting initial values for the internal state.
         let mut k = GenericArray::<u8, D::OutputSize>::default();
         let mut v = GenericArray::<u8, D::OutputSize>::default();
@@ -99,7 +109,7 @@ where
         this.count = 1;
         this.reseed_interval = 10;
 
-        this
+        Some(this)
     }
 
     pub fn count(&self) -> usize {

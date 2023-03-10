@@ -3,7 +3,7 @@ use std::str;
 
 extern crate my_drbg;
 use my_drbg::drbgs::gen_drbg::DRBG;
-use my_drbg::mechs::hmac::HmacDrbgMech;
+use my_drbg::mechs::hmac_mech::HmacDrbgMech;
 use sha2::Sha256;
 
 //  Function that converts a byte array into a string in order to be printed

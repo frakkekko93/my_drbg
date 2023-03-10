@@ -1,2 +1,2 @@
 pub mod gen_drbg;
-pub mod hmac;
+pub mod hmac_drbg;
