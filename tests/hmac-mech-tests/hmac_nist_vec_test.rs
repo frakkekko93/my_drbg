@@ -14,7 +14,7 @@ fn nist_vectors(){
         expected: String,
     }
 
-    let tests: Vec<Fixture> = serde_json::from_str(include_str!("./fixtures/hmac_nist_vectors.json")).unwrap();
+    let tests: Vec<Fixture> = serde_json::from_str(include_str!("../fixtures/hmac_nist_vectors.json")).unwrap();
 
     for test in tests {
         let res = HmacDrbgMech::<Sha256>::new(
