@@ -1,8 +1,8 @@
 use std::any::TypeId;
-
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
+use super::gen_mech::DrbgMech;
 
 /*  Properties of the HMAC-DRBG mechanism.
 
@@ -81,7 +81,39 @@ where
         Hmac::new_varkey(&self.k).expect("Smaller and larger key size are handled by default")
     }
 
-    pub fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> {
+    /*  Returns the reseed counter of this instance.
+
+        Return value:
+            - the reseed counter */
+    pub fn count(&self) -> usize {
+        self.count
+    }
+
+    /*  Indicates whether a forced reseed is needed for this instance.
+    
+        Return values:
+            - boolean statement */
+    pub fn reseed_needed(&self) -> bool{
+        self.count >= self.reseed_interval
+    }
+
+    /*  Function needed to check if the current instance is zeroized.
+    
+        Return values:
+            - boolean statement */
+    pub fn _is_zeroized(&self) -> bool{
+        self.zeroized
+    }
+}
+
+/*  Implementing common DRBG mechanism functions taken from the DrbgMech trait. */
+impl<D> DrbgMech for HmacDrbgMech<D>
+where
+    D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
+    D::BlockSize: ArrayLength<u8>,
+    D::OutputSize: ArrayLength<u8>,
+{
+    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> {
         // Runtiome check on the use of any anallowed hash function.
         let this_id = TypeId::of::<D>();
         let sha256_id = TypeId::of::<sha2::Sha256>();
@@ -112,24 +144,7 @@ where
         Some(this)
     }
 
-    pub fn count(&self) -> usize {
-        self.count
-    }
-
-    pub fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
-        // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
-        if self.zeroized {
-            return 1;
-        }
-        else{
-            // Updating the internal state using the passed parameters.
-            self.update(Some(&[entropy, add.unwrap_or(&[])]));
-            self.count = 1;
-            return 0;
-        }
-    }
-
-    pub fn generate(&mut self,result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
+    fn generate(&mut self,result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
         // No generate on a zeroized status (ERROR_FLAG=1)
         if self.zeroized {
             return 1;
@@ -175,11 +190,20 @@ where
         return 0;
     }
 
-    pub fn reseed_needed(&self) -> bool{
-        self.count >= self.reseed_interval
+    fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
+        // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
+        if self.zeroized {
+            return 1;
+        }
+        else{
+            // Updating the internal state using the passed parameters.
+            self.update(Some(&[entropy, add.unwrap_or(&[])]));
+            self.count = 1;
+            return 0;
+        }
     }
 
-    pub fn zeroize(&mut self) -> usize{
+    fn zeroize(&mut self) -> usize{
         // Instance is already zeroized (ERROR_FLAG=1)
         if self.zeroized {
             return 1;
@@ -199,9 +223,5 @@ where
         self.zeroized = true;
 
         return 0;
-    }
-
-    pub fn _is_zeroized(&self) -> bool{
-        self.zeroized
     }
 }

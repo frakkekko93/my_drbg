@@ -1,4 +1,4 @@
-use my_drbg::mechs::hmac_mech::HmacDrbgMech;
+use my_drbg::mechs::{hmac_mech::HmacDrbgMech, gen_mech::DrbgMech};
 use sha2::Sha256;
 use serde::Deserialize;
 

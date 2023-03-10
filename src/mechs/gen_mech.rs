@@ -9,7 +9,7 @@ pub trait DrbgMech: {
         Return value:
             - pointer to the newly created instance
     */
-    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Self;
+    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> where Self: Sized;
     
     /*  Generates a vector of pseudorandom bytes.
 
@@ -40,25 +40,4 @@ pub trait DrbgMech: {
             - 1: ERROR, instantiation is already zeroized    
     */
     fn zeroize(&mut self) -> usize;
-
-    /*  Indicates whether a forced reseed is needed for this instance.
-    
-        Return values:
-            - boolean statement
-    */
-    fn reseed_needed(&self) -> bool;
-
-    /*  Function needed to check if the current instance is zeroized.
-    
-        Return values:
-            - boolean statement
-    */
-    fn _is_zeroized(&self) -> bool;
-
-    /*  Returns the reseed counter of this instance.
-
-        Return value:
-            - the reseed counter
-    */
-    fn count(&self) -> usize;
 }

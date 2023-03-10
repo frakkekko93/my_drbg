@@ -1,5 +1,5 @@
 use crate::drbgs::{gen_drbg::DRBG};
-use crate::mechs::hmac_mech::HmacDrbgMech;
+use crate::mechs::{gen_mech::DrbgMech, hmac_mech::HmacDrbgMech};
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength};
 use rand::*;
