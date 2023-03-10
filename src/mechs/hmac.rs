@@ -2,15 +2,13 @@ use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
 
-use super::gen_mech;
-
 /*  Properties of the HMAC-DRBG mechanism.
 
     - k,v: internal state secret value that are used for he generation of pseudorandombits
     - count: the reseed counter
     - reseed_interval: the maximum number of generate requests that can be served between reseedings
     - zeroized: boolean flag indicating whether the particular instance has been zeroized */
-pub struct HmacDRBG<D>
+pub struct HmacDrbgMech<D>
 where
     D: Update + BlockInput + FixedOutput + Default,
     D::BlockSize: ArrayLength<u8>,
@@ -24,7 +22,7 @@ where
 }
 
 /*  Implementing funtion that are specific of the HMAC-DRBG mechanism. */
-impl<D> HmacDRBG<D>
+impl<D> HmacDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
     D::BlockSize: ArrayLength<u8>,
@@ -80,16 +78,8 @@ where
     fn hmac(&self) -> Hmac<D> {
         Hmac::new_varkey(&self.k).expect("Smaller and larger key size are handled by default")
     }
-}
 
-/*  Implementing commom DRBG mechanism algorithms and functions that are listed in the DrbgMech trait definition. */
-impl<D> gen_mech::DrbgMech for HmacDRBG<D>
-where
-    D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
-    D::BlockSize: ArrayLength<u8>,
-    D::OutputSize: ArrayLength<u8>,
-{
-    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Self {
+    pub fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Self {
         // Setting initial values for the internal state.
         let mut k = GenericArray::<u8, D::OutputSize>::default();
         let mut v = GenericArray::<u8, D::OutputSize>::default();
@@ -112,11 +102,11 @@ where
         this
     }
 
-    fn count(&self) -> usize {
+    pub fn count(&self) -> usize {
         self.count
     }
 
-    fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
+    pub fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
             return 1;
@@ -129,7 +119,7 @@ where
         }
     }
 
-    fn generate(&mut self,result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
+    pub fn generate(&mut self,result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
         // No generate on a zeroized status (ERROR_FLAG=1)
         if self.zeroized {
             return 1;
@@ -175,11 +165,11 @@ where
         return 0;
     }
 
-    fn reseed_needed(&self) -> bool{
+    pub fn reseed_needed(&self) -> bool{
         self.count >= self.reseed_interval
     }
 
-    fn zeroize(&mut self) -> usize{
+    pub fn zeroize(&mut self) -> usize{
         // Instance is already zeroized (ERROR_FLAG=1)
         if self.zeroized {
             return 1;
@@ -201,7 +191,7 @@ where
         return 0;
     }
 
-    fn _is_zeroized(&self) -> bool{
+    pub fn _is_zeroized(&self) -> bool{
         self.zeroized
     }
 }

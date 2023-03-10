@@ -2,7 +2,9 @@ use std::ascii::escape_default;
 use std::str;
 
 extern crate my_drbg;
-
+use my_drbg::drbgs::gen_drbg::DRBG;
+use my_drbg::mechs::hmac::HmacDrbgMech;
+use sha2::Sha256;
 
 //  Function that converts a byte array into a string in order to be printed
 fn show(bs: &[u8]) -> String {
@@ -15,7 +17,7 @@ fn show(bs: &[u8]) -> String {
 }
 
 fn main(){
-    let inst_res = my_drbg::DRBG::new(256, Some("Pers string".as_bytes()));
+    let inst_res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, Some("Pers string".as_bytes()));
     let add_in: [u8; 256] = [0; 256];
     let mut drbg;
 
