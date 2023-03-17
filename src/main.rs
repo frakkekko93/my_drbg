@@ -1,10 +1,10 @@
-use std::ascii::escape_default;
-use std::str;
-
 extern crate my_drbg;
 use my_drbg::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use my_drbg::mechs::hmac_mech::HmacDrbgMech;
-use sha2::Sha256;
+
+use std::ascii::escape_default;
+use std::str;
+use sha2::*;
 
 //  Function that converts a byte array into a string in order to be printed
 #[allow(dead_code)]

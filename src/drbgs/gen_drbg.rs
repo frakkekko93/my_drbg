@@ -22,6 +22,7 @@ pub trait DRBG_Functions{
             Self - SUCCESS, a pointer to the newly created DRBG instance
             1 - ERROR, inappropriate security strength
             2 - ERROR, personalization string is too long (max security_strength bits)
+            3 - ERROR, the instantiation of the underlying mechanism failed
     */
     fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8> where Self: Sized;
 
@@ -79,5 +80,7 @@ pub trait DRBG_Functions{
     */
     fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize);
 
+    /*  This function is an API that can be used by external entities (even an eventual FIPS provider) to run
+        the self tests associated with this DRBG. */
     fn run_self_tests(&self) -> usize;
 }

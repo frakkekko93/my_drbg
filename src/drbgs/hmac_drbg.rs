@@ -175,8 +175,6 @@ where
         }
     }
 
-    /*  This function is an API that can be used by external entities (even an eventual FIPS provider) to run
-        the self tests associated with this DRBG. */
     fn run_self_tests(&self) -> usize {
         if hmac_tests::instantiation::run_tests() != 0 {
             return 1;
