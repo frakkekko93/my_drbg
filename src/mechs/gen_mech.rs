@@ -8,7 +8,8 @@ pub trait DRBG_Mechanism_Functions: {
             - pers: the optional personalization string to be used for the instantiation
         
         Return value:
-            - pointer to the newly created instance
+            - Some(inst): where 'inst' pointer to the newly created instance
+            - None: instantiation failed
     */
     fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> where Self: Sized;
     
@@ -31,6 +32,10 @@ pub trait DRBG_Mechanism_Functions: {
         Parameters:
             - the new entropy to be used for reseeding
             - optional additional inputs to the reseeding process
+
+        Return values:
+            - 0: SUCCESS, instantiation succesfully reseeded
+            - 1: ERROR, instantiation cannot be reseeded
     */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize;
 

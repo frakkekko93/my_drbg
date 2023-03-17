@@ -5,7 +5,7 @@ use hmac::{Hmac, Mac, NewMac};
 use super::gen_mech::DRBG_Mechanism_Functions;
 
 /*  Properties of the HMAC-DRBG mechanism. This mechanism can be intantiated only using Sha256 or Sha512
-    (see FIPS 140-3 IG section D.R). Since the both hashing algorithms support a security strength of 256 bits
+    (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
     (see NIST SP 800-57pt1r5), this mechanism offers a security strength of max 256 bits.
 
     - k,v: internal state secret value that are used for he generation of pseudorandombits
