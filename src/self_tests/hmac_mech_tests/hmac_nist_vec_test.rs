@@ -1,9 +1,10 @@
-use my_drbg::mechs::{hmac_mech::HmacDrbgMech, gen_mech::DRBG_Mechanism_Functions};
+use crate::mechs::{hmac_mech::HmacDrbgMech, gen_mech::DRBG_Mechanism_Functions};
 use sha2::Sha256;
 use serde::Deserialize;
+use crate::self_tests::formats::format_message;
 
-#[test]
-fn nist_vectors(){
+/*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */
+pub fn nist_vectors() -> usize{
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -14,7 +15,7 @@ fn nist_vectors(){
         expected: String,
     }
 
-    let tests: Vec<Fixture> = serde_json::from_str(include_str!("../fixtures/hmac_nist_vectors.json")).unwrap();
+    let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
 
     for test in tests {
         let res = HmacDrbgMech::<Sha256>::new(
@@ -25,7 +26,12 @@ fn nist_vectors(){
         let mut drbg;
         match res{
             None => {
-                panic!("NIST VECTORS: drbg instantiation failed.")
+                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                                    "nist_vectors".to_string(), 
+                                    "failed to instantiate DRBG.".to_string()
+                                )
+                );
+                return 1;
             }
             Some(inst) => {
                 drbg = inst;
@@ -50,8 +56,26 @@ fn nist_vectors(){
                                    Some(ref add1) => Some(add1.as_ref()),
                                    None => None,
                                });
+        
+        if result != expected {
+            let mut failed_test = "nist_vectors:".to_string();
+            failed_test.push_str(&test.name);
 
-        println!("TEST {}\n", test.name);
-        assert_eq!(result, expected);
+            println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                                    failed_test, 
+                                    "succeeded to instantiate DRBG using Sha 224, which is not approved.".to_string()
+                                )
+            );
+
+            return 1;
+        }
     }
+
+    println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
+                                    "nist_vectors".to_string(), 
+                                    "all nist vectors have passed.".to_string()
+                                )
+    );
+
+    return 0;
 }

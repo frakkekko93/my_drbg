@@ -7,6 +7,7 @@ use my_drbg::mechs::hmac_mech::HmacDrbgMech;
 use sha2::Sha256;
 
 //  Function that converts a byte array into a string in order to be printed
+#[allow(dead_code)]
 fn show(bs: &[u8]) -> String {
     let mut visible = String::new();
     for &b in bs {
@@ -17,44 +18,28 @@ fn show(bs: &[u8]) -> String {
 }
 
 fn main(){
-    let gen_res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, Some("Pers string".as_bytes()));
+    println!("*** Simulating the start-up of FIPS provider / on-call test of HMAC-DRBG. ***\n");
 
-    let mut drbg;
-    match gen_res{
+    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+
+    let drbg;
+    match res {
         Err(err) => {
-            panic!("\nMAIN: instantiation failed with error: {}", err);
+            panic!("MAIN: HMAC-DRBG instantiation failed with error: {}.", err);
         }
         Ok(inst) => {
-            println!("\nMAIN: instantiated a new HMAC-DRBG.");
+            println!("MAIN: HMAC-DRBG instantiation succeeded.");
             drbg = inst;
         }
     }
 
-    let mut bits= Vec::<u8>::new();
-    let mut res = drbg.generate(&mut bits, 128, 256, true, Some("Some additional input".as_bytes()));
+    println!("MAIN: running HMAC-DRBG self-tests...\n");
+    let test_res = drbg.run_self_tests();
 
-    if res > 0 {
-        panic!("MAIN: generation failed with error: {}", res);
+    if test_res != 0 {
+        panic!("\nMAIN: self-tests failed on HMAC-DRBG testing!");
     }
-    else{
-        println!("MAIN: generated {} bits: {}", bits.len()*8, hex::encode(show(&bits)));
-    }
-
-    res = drbg.reseed(Some("Another very interisting additional input.".as_bytes()));
-
-    if res > 0 {
-        panic!("MAIN: reseeding failed with error: {}", res);
-    }
-    else{
-        println!("MAIN: reseeded DRBG.");
-    }
-
-    res = drbg.uninstantiate();
-
-    if res > 0 {
-        panic!("MAIN: uninstantiation failed with error: {}", res);
-    }
-    else{
-        println!("MAIN: uninstantiated DRBG.");
+    else {
+        println!("\nMAIN: all HMAC-DRBG self-tests passed.");
     }
 }
