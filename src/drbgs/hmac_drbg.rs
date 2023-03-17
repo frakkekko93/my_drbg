@@ -3,6 +3,7 @@ use crate::mechs::{gen_mech::DRBG_Mechanism_Functions, hmac_mech::HmacDrbgMech};
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::ArrayLength;
 use rand::*;
+use crate::self_tests::{hmac_tests, hmac_mech_tests};
 
 /*  Configuration of the DRBG.
     
@@ -173,6 +174,22 @@ where
             count += CHUNK_DIM;
         }
     }
+
+    /*  This function is an API that can be used by external entities (even an eventual FIPS provider) to run
+        the self tests associated with this DRBG. */
+    fn run_self_tests(&self) -> usize {
+        if hmac_tests::instantiation::run_tests() != 0 {
+            return 1;
+        }
+        else if hmac_mech_tests::hmac_nist_vec_test::nist_vectors() != 0{
+            return 1;
+        }
+        else if hmac_mech_tests::hmac_zeroization_test::test_zeroization() != 0{
+            return 1;
+        }
+
+        return 0;
+    }
 }
 
 /*  Implementing additional specific functions for this DRBG. */
@@ -185,8 +202,7 @@ where
     /*  Utility function that returns the supported security strength of the DRBG.
     
         Return values:
-            - the security strength supported by the DRBG
-    */
+            - the security strength supported by the DRBG. */
     pub fn get_sec_str(&self) -> usize{
         self.security_strength
     }

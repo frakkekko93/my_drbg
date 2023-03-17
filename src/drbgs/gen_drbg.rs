@@ -78,4 +78,6 @@ pub trait DRBG_Functions{
             - bytes: number of entropy bytes to be generated
     */
     fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize);
+
+    fn run_self_tests(&self) -> usize;
 }
