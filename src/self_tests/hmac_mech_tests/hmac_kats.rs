@@ -1,33 +1,13 @@
 use serde::Deserialize;
 use sha2::Sha256;
-use crate::{self_tests::formats::format_message, mechs::{hmac_mech::HmacDrbgMech, gen_mech::DRBG_Mechanism_Functions}};
+use crate::{self_tests::formats::*, mechs::{hmac_mech::HmacDrbgMech, gen_mech::DRBG_Mechanism_Functions}};
 
-fn check_res(result: Vec<u8>, expected: Vec<u8>, test_name: String) -> usize {
-    let mut test_id = "hmac_kats::".to_string();
-    test_id.push_str(test_name.as_str());
-    if result != expected {
-        println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
-                                test_id, 
-                                "failed to test the use of pred_res_req flag.".to_string()
-                            )
-        );
-
-        return 1;
-    }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
-                                test_id, 
-                                "succeeded to test the use of pred_res_req flag.".to_string()
-                            )
-        );
-
-        return 0;
-    }
+// Runs all kats.
+pub fn run_all() -> usize {
+    return test_HMAC_kats() + nist_vectors();
 }
 
-
 // Test KATs for HMAC-DRBG mech.
-#[allow(dead_code)]
 #[allow(non_snake_case)]
 pub fn test_HMAC_kats() -> usize{
     #[derive(Deserialize, Debug)]
@@ -52,6 +32,7 @@ pub fn test_HMAC_kats() -> usize{
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
 
         let mut drbg;
+
         match res{
             None => {
                 println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
@@ -89,7 +70,9 @@ pub fn test_HMAC_kats() -> usize{
             
             drbg.generate(&mut result, full_len, None);
             
-            if check_res(result, expected, test.name) != 0 {
+            if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                            "failed generation using prr.".to_string(),
+                            "completed generation using prr.".to_string()) != 0 {
                 return 1;
             }
         }
@@ -109,7 +92,9 @@ pub fn test_HMAC_kats() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name) != 0 {
+                if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                    "failed double generation without prr.".to_string(),
+                    "completed double generation without prr.".to_string()) != 0 {
                     return 1;
                 }
             }
@@ -121,7 +106,9 @@ pub fn test_HMAC_kats() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name) != 0 {
+                if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                    "failed generation without prr.".to_string(),
+                    "completed generation without prr.".to_string()) != 0 {
                     return 1;
                 }
             }
@@ -129,4 +116,74 @@ pub fn test_HMAC_kats() -> usize{
     }
 
     0
+}
+
+/*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */
+pub fn nist_vectors() -> usize{
+    #[derive(Deserialize, Debug)]
+    struct Fixture {
+        name: String,
+        entropy: String,
+        nonce: String,
+        pers: Option<String>,
+        add: [Option<String>; 2],
+        expected: String,
+    }
+
+    let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
+
+    for test in tests {
+        let res = HmacDrbgMech::<Sha256>::new(
+            &hex::decode(&test.entropy).unwrap(),
+            &hex::decode(&test.nonce).unwrap(),
+            &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
+        
+        let mut drbg;
+        match res{
+            None => {
+                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                                    "nist_vectors".to_string(), 
+                                    "failed to instantiate DRBG.".to_string()
+                                )
+                );
+                return 1;
+            }
+            Some(inst) => {
+                drbg = inst;
+            }
+        }
+
+        let expected = hex::decode(&test.expected).unwrap();
+        let mut result = Vec::new();
+        let full_len = expected.len();
+        let add0 = test.add[0].as_ref().map(|v| hex::decode(&v).unwrap());
+        let add1 = test.add[1].as_ref().map(|v| hex::decode(&v).unwrap());
+
+        drbg.generate(&mut result, full_len,
+                               match add0 {
+                                   Some(ref add0) => Some(add0.as_ref()),
+                                   None => None,
+                               });
+
+        result.clear();
+        drbg.generate(&mut result, full_len,
+                               match add1 {
+                                   Some(ref add1) => Some(add1.as_ref()),
+                                   None => None,
+                               });
+        
+        if check_res(result, expected, test.name, "nist_vectors".to_string(), 
+            "failed nist vector generation.".to_string(),
+            "completed nist vector generation.".to_string()) != 0 {
+            return 1;
+        }
+    }
+
+    println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
+                                    "nist_vectors".to_string(), 
+                                    "all nist vectors have passed.".to_string()
+                                )
+    );
+
+    return 0;
 }
