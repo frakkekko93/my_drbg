@@ -1,6 +1,6 @@
 use crate::mechs::{hmac_mech::HmacDrbgMech, gen_mech::DRBG_Mechanism_Functions};
 use sha2::Sha256;
-use crate::self_tests::formats::format_message;
+use crate::self_tests::formats::*;
 
 /*  Testing that the internal state of an HMAC-DRBG mechanism
     is actually zeroized after a call to the zeroize function. */
@@ -65,10 +65,15 @@ pub fn test_zeroization() -> usize {
         return 1;
     }
 
-    println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
-                                    "test_zeroization".to_string(), 
-                                    "DRBG has been succesfully zeroized.".to_string()
-                                )
+    // println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
+    //                                 "test_zeroization".to_string(), 
+    //                                 "DRBG has been succesfully zeroized.".to_string()
+    //                             )
+    // );
+
+    write_to_log("src/self_tests/logs/hmac_test_log.log".to_string(), format_message(false, "HMAC-DRBG-Mech".to_string(),
+                                                            "test_zeroization".to_string(), 
+                                                            "DRBG has been succesfully zeroized.".to_string())
     );
 
     return 0;

@@ -179,11 +179,16 @@ pub fn nist_vectors() -> usize{
         }
     }
 
-    println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
-                                    "nist_vectors".to_string(), 
-                                    "all nist vectors have passed.".to_string()
-                                )
+    write_to_log("src/self_tests/logs/hmac_test_log.log".to_string(), format_message(false, "HMAC-DRBG-Mech".to_string(),
+                                                            "nist_vectors".to_string(), 
+                                                            "all nist vectors have passed.".to_string())
     );
+
+    // println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
+    //                                 "nist_vectors".to_string(), 
+    //                                 "all nist vectors have passed.".to_string()
+    //                             )
+    // );
 
     return 0;
 }

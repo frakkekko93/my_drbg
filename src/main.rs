@@ -4,7 +4,6 @@ use my_drbg::mechs::hmac_mech::HmacDrbgMech;
 use std::ascii::escape_default;
 use std::str;
 use sha2::*;
-use my_drbg::self_tests::formats::*;
 
 //  Function that converts a byte array into a string in order to be printed
 #[allow(dead_code)]
@@ -35,15 +34,15 @@ fn fips_sim(){
         }
     }
 
-    println!("MAIN: running HMAC-DRBG self-tests...\n");
+    println!("MAIN: running HMAC-DRBG self-tests...");
     let test_res = drbg.run_self_tests();
 
-    check_res(test_res, 0, 
-        "MAIN".to_string(), 
-        "fips_sim".to_string(),
-        "DRBG health tests failed, entering ERROR STATE.".to_string(),
-        "DRBG health tests passed.".to_string()
-    );
+    if test_res != 0 {
+        println!("MAIN: some self test has failed, see log file for more info.");
+    }
+    else {
+        println!("MAIN: all HMAC-DRBG health tests have passed.")
+    }
 }
 
 fn main(){  
