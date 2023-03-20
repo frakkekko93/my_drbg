@@ -25,7 +25,7 @@ fn fips_sim(){
 
     let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
 
-    let drbg;
+    let mut drbg;
     match res {
         Err(err) => {
             panic!("MAIN: HMAC-DRBG instantiation failed with error: {}.", err);
