@@ -6,7 +6,7 @@ use my_drbg::self_tests::formats::format_message;
 #[test]
 fn hmac_drbg_tests () {
     let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
-    let drbg;
+    let mut drbg;
 
     match res{
         Err(_) => {

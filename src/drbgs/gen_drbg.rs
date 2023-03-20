@@ -81,6 +81,12 @@ pub trait DRBG_Functions{
     fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize);
 
     /*  This function is an API that can be used by external entities (even an eventual FIPS provider) to run
-        the self tests associated with this DRBG. */
-    fn run_self_tests(&self) -> usize;
+        the self tests associated with this DRBG. If some self test fails, this function uninstantiated the working
+        state of the DRBG and outputs an ERROR indicator. 
+        
+        Return values:
+            - 0: SUCCESS, all self tests passed
+            - 1: ERROR, some self test failed
+    */
+    fn run_self_tests(&mut self) -> usize;
 }

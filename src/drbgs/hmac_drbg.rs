@@ -123,6 +123,7 @@ where
         if pred_res_req || working_state.reseed_needed() {
             let mut entropy_input = Vec::<u8>::new();
             DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut entropy_input, self.security_strength);
+
             working_state.reseed(&entropy_input, add);
         }
 
@@ -174,15 +175,15 @@ where
             count += CHUNK_DIM;
         }
     }
+    
+    fn run_self_tests(&mut self) -> usize {
+        let res1 = hmac_tests::instantiation::run_tests();
+        let res2 = hmac_mech_tests::hmac_nist_vec_test::nist_vectors();
+        let res3 = hmac_mech_tests::hmac_zeroization_test::test_zeroization();
+        let res4 = hmac_mech_tests::hmac_kats::test_HMAC_kats();
 
-    fn run_self_tests(&self) -> usize {
-        if hmac_tests::instantiation::run_tests() != 0 {
-            return 1;
-        }
-        else if hmac_mech_tests::hmac_nist_vec_test::nist_vectors() != 0{
-            return 1;
-        }
-        else if hmac_mech_tests::hmac_zeroization_test::test_zeroization() != 0{
+        if res1!=0 || res2!=0 || res3!=0 || res4!=0 {
+            self.uninstantiate();
             return 1;
         }
 
