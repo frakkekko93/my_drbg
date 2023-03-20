@@ -123,6 +123,7 @@ where
         if pred_res_req || working_state.reseed_needed() {
             let mut entropy_input = Vec::<u8>::new();
             DRBG::<HmacDrbgMech::<T>>::get_entropy_input(&mut entropy_input, self.security_strength);
+
             working_state.reseed(&entropy_input, add);
         }
 
@@ -183,6 +184,9 @@ where
             return 1;
         }
         else if hmac_mech_tests::hmac_zeroization_test::test_zeroization() != 0{
+            return 1;
+        }
+        else if hmac_mech_tests::hmac_kats::test_HMAC_kats() != 0 {
             return 1;
         }
 
