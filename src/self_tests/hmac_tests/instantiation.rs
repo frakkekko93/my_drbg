@@ -1,30 +1,16 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use sha2::*;
-use crate::self_tests::formats::format_message;
+use crate::self_tests::formats::*;
 
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests() -> usize {
-    if test_fun_not_approved_sha224() != 0 {
-        return 1;
-    }
-    else if test_fun_not_approved_sha384() != 0 {
-        return 1;
-    }
-    else if test_fun_not_approved_sha512trunc224() != 0 {
-        return 1;
-    }
-    else if test_fun_not_approved_sha384trunc256() != 0 {
-        return 1;
-    }
-    else if test_ss_not_supported() != 0 {
-        return 1;
-    }
-    else if ps_is_too_long() != 0 {
-        return 1;
-    }
-
-    0
+    return test_fun_not_approved_sha224() + 
+            test_fun_not_approved_sha384() + 
+            test_fun_not_approved_sha512trunc224() +
+            test_fun_not_approved_sha384trunc256() +
+            test_ss_not_supported() +
+            ps_is_too_long();
 }
 
 /*  Testing use of unapproved functions. */
@@ -42,22 +28,14 @@ fn test_fun_not_approved_sha224() -> usize{
         }
     }
 
-    if err != 3 || !drbg.is_none() {
-        println!("{}", format_message(true, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha224".to_string(), 
-                                    "succeeded to instantiate DRBG using Sha 224, which is not approved.".to_string()
-                                )
-        );
+    if check_res((err, true), (3, drbg.is_none()), 
+            "test_fun_not_approved_sha224".to_string(), 
+            "HMAC-DRBG".to_string(), 
+            "succeeded to instantiate DRBG using Sha 224, which is not approved.".to_string(), 
+            "failed to instantiate DRBG using Sha 224 as expected.".to_string()) != 0{
         return 1;
     }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha224".to_string(), 
-                                    "failed to instantiate DRBG using Sha 224 as expected.".to_string()
-                                )
-        );
-        return 0;
-    }
+    0
 }
 
 fn test_fun_not_approved_sha384() -> usize{
@@ -74,22 +52,14 @@ fn test_fun_not_approved_sha384() -> usize{
         }
     }
 
-    if err != 3 || !drbg.is_none() {
-        println!("{}", format_message(true, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha384".to_string(), 
-                                    "succeeded to instantiate DRBG using Sha 384, which is not approved.".to_string()
-                                )
-        );
+    if check_res((err, true), (3, drbg.is_none()), 
+            "test_fun_not_approved_sha384".to_string(), 
+            "HMAC-DRBG".to_string(), 
+            "succeeded to instantiate DRBG using Sha 384, which is not approved.".to_string(), 
+            "failed to instantiate DRBG using Sha 384 as expected.".to_string()) != 0{
         return 1;
     }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha384".to_string(), 
-                                    "failed to instantiate DRBG using Sha 384 as expected.".to_string()
-                                )
-        );
-        return 0;
-    }
+    0
 }
 
 fn test_fun_not_approved_sha512trunc224() -> usize{
@@ -106,22 +76,14 @@ fn test_fun_not_approved_sha512trunc224() -> usize{
         }
     }
 
-    if err != 3 || !drbg.is_none() {
-        println!("{}", format_message(true, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha512trunc224".to_string(), 
-                                    "succeeded to instantiate DRBG using Sha 512/224, which is not approved.".to_string()
-                                )
-        );
+    if check_res((err, true), (3, drbg.is_none()), 
+            "test_fun_not_approved_sha512trunc224".to_string(), 
+            "HMAC-DRBG".to_string(), 
+            "succeeded to instantiate DRBG using Sha 512/224, which is not approved.".to_string(), 
+            "failed to instantiate DRBG using Sha 512/224 as expected.".to_string()) != 0{
         return 1;
     }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha512trunc224".to_string(), 
-                                    "failed to instantiate DRBG using Sha 512/224 as expected.".to_string()
-                                )
-        );
-        return 0;
-    }
+    0
 }
 
 fn test_fun_not_approved_sha384trunc256() -> usize{
@@ -138,22 +100,14 @@ fn test_fun_not_approved_sha384trunc256() -> usize{
         }
     }
 
-    if err != 3 || !drbg.is_none() {
-        println!("{}", format_message(true, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha384trunc256".to_string(), 
-                                    "succeeded to instantiate DRBG using Sha 384/256, which is not approved.".to_string()
-                                )
-        );
-        return 1;
+    if check_res((err, true), (3, drbg.is_none()), 
+    "test_fun_not_approved_sha384trunc256".to_string(), 
+    "HMAC-DRBG".to_string(), 
+    "succeeded to instantiate DRBG using Sha 384/256, which is not approved.".to_string(), 
+    "failed to instantiate DRBG using Sha 384/256 as expected.".to_string()) != 0{
+    return 1;
     }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG".to_string(),
-                                    "test_fun_not_approved_sha384trunc256".to_string(), 
-                                    "failed to instantiate DRBG using Sha 384/256 as expected.".to_string()
-                                )
-        );
-        return 0;
-    }
+    0
 }
 
 /*  Testing that not supported security strengths are actually rejected by the DRBG. */
@@ -171,22 +125,14 @@ fn test_ss_not_supported() -> usize{
         }
     }
 
-    if err != 1 || !drbg.is_none() {
-        println!("{}", format_message(true, "HMAC-DRBG".to_string(),
-                                    "test_ss_not_supported".to_string(), 
-                                    "succeeded to instantiate DRBG using not supported security strength.".to_string()
-                                )
-        );
+    if check_res((err, true), (1, drbg.is_none()), 
+    "test_ss_not_supported".to_string(), 
+    "HMAC-DRBG".to_string(), 
+    "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
+    "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
         return 1;
     }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG".to_string(),
-                                    "test_ss_not_supported".to_string(), 
-                                    "failed to instantiate DRBG using not supported security strength as expected.".to_string()
-                                )
-        );
-        return 0;
-    }
+    0
 }
 
 /*  Testing that the limit on the length of the personalization string is actually enforced. */
@@ -205,20 +151,12 @@ fn ps_is_too_long() -> usize{
         }
     }
 
-    if err != 2 || !drbg.is_none() {
-        println!("{}", format_message(true, "HMAC-DRBG".to_string(),
-                                    "ps_is_too_long".to_string(), 
-                                    "succeeded to instantiate DRBG using not supported personalization string.".to_string()
-                                )
-        );
+    if check_res((err, true), (2, drbg.is_none()), 
+    "ps_is_too_long".to_string(), 
+    "HMAC-DRBG".to_string(), 
+    "succeeded to instantiate DRBG using not supported personalization string.".to_string(), 
+    "failed to instantiate DRBG using not supported personalization string as expected.".to_string()) != 0{
         return 1;
     }
-    else {
-        println!("{}", format_message(false, "HMAC-DRBG".to_string(),
-                                    "ps_is_too_long".to_string(), 
-                                    "failed to instantiate DRBG using not supported personalization string as expected.".to_string()
-                                )
-        );
-        return 0;
-    }
+    0
 }

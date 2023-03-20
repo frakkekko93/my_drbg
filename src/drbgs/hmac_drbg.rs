@@ -178,11 +178,10 @@ where
     
     fn run_self_tests(&mut self) -> usize {
         let res1 = hmac_tests::instantiation::run_tests();
-        let res2 = hmac_mech_tests::hmac_nist_vec_test::nist_vectors();
+        let res2 = hmac_mech_tests::hmac_kats::run_all();
         let res3 = hmac_mech_tests::hmac_zeroization_test::test_zeroization();
-        let res4 = hmac_mech_tests::hmac_kats::test_HMAC_kats();
 
-        if res1!=0 || res2!=0 || res3!=0 || res4!=0 {
+        if res1!=0 || res2!=0 || res3!=0 {
             self.uninstantiate();
             return 1;
         }
