@@ -133,6 +133,9 @@ pub fn nist_vectors() -> usize{
     let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
 
     for test in tests {
+        let mut name = "nist_vectors::".to_string();
+        name.push_str(&test.name);
+
         let res = HmacDrbgMech::<Sha256>::new(
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
@@ -172,7 +175,7 @@ pub fn nist_vectors() -> usize{
                                    None => None,
                                });
         
-        if check_res(result, expected, test.name, "nist_vectors".to_string(), 
+        if check_res(result, expected, name, "hmac_kats".to_string(), 
             "failed nist vector generation.".to_string(),
             "completed nist vector generation.".to_string()) != 0 {
             return 1;
