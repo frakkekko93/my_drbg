@@ -15,6 +15,10 @@ TEST PASSED (generate_test) - int_state_not_valid: generate on invalid empty sta
 TEST PASSED (generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
 TEST PASSED (generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
 TEST PASSED (generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
+TEST PASSED (uninstantiate_test) - norm_op: success on uninstantiate normal operation.
+TEST PASSED (uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
+TEST PASSED (uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
+TEST PASSED (uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
 *** STARTING HMAC-DRBG-MECH TESTS ***
 TEST PASSED (hmac_kats) - no_ps_noadd_noprr_ss256: completed generation without prr.

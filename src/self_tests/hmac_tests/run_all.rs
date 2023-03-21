@@ -6,5 +6,6 @@ pub fn run_tests() -> usize {
 
     return instantiation::run_tests() +
             reseed::run_tests() +
-            generate::run_tests();
+            generate::run_tests() +
+            uninstantiate::run_tests();
 }
