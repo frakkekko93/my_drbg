@@ -3,12 +3,12 @@ use crate::mechs::{gen_mech::DRBG_Mechanism_Functions, hmac_mech::HmacDrbgMech};
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::ArrayLength;
 use rand::*;
-use crate::self_tests::{hmac_tests, hmac_mech_tests};
+use crate::self_tests::*;
 
 /*  Configuration of the DRBG.
     
     This DRBG relies on the HMAC mechanism which supports a maximum of 256 bits of security strength (MAX_SEC_STR).
-    It is configured to generate a maximum of 1024 per-request (MAX_PRB). This option may actually be changed but be 
+    It is configured to generate a maximum of 1024 bits per-request (MAX_PRB). This option may actually be changed but be 
     aware of the limits imposed in table 10.1 of NIST SP 800-90A. */
 const MAX_SEC_STR: usize = 256;
 const MAX_PRB: usize = 1024;
@@ -73,7 +73,7 @@ where
         match add{
             None => {}
             Some(value) => {
-                if value.len() > self.security_strength {
+                if value.len() * 8 > self.security_strength {
                     return 2;
                 }
             }
@@ -101,7 +101,7 @@ where
         if self.internal_state.is_none(){
                 return 2;
         }
-        if req_bytes > MAX_PRB {
+        if req_bytes * 8 > MAX_PRB {
             return 3;
         }
         if req_str > self.security_strength {
@@ -112,7 +112,7 @@ where
 
             }
             Some(value) => {
-                if value.len() > self.security_strength {
+                if value.len() * 8 > self.security_strength {
                     return 5;
                 }
             }
@@ -177,16 +177,8 @@ where
     }
     
     fn run_self_tests(&mut self) -> usize {
-        let res1 = hmac_tests::instantiation::run_tests();
-        let res2 = hmac_mech_tests::hmac_kats::run_all();
-        let res3 = hmac_mech_tests::hmac_zeroization_test::test_zeroization();
-
-        if res1!=0 || res2!=0 || res3!=0 {
-            self.uninstantiate();
-            return 1;
-        }
-
-        return 0;
+        return hmac_tests::run_all::run_tests() +
+                hmac_mech_tests::run_all::run_tests();
     }
 }
 

@@ -68,11 +68,11 @@ pub fn check_res<T: std::cmp::PartialEq>(result: T, expected: T, test_name: Stri
 }
 
 // Writes a into the desired log.
-pub fn write_to_log(log_path: String, message: String) {
+pub fn write_to_log(message: String) {
     let mut file;
     match OpenOptions::new().append(true).create(true).open("src/self_tests/logs/hmac_test_log.log") {
         Err(err) => {
-            panic!("Couldn't open {log_path} log! (err: {})", err);
+            panic!("Couldn't open log! (err: {})", err);
         }
         Ok(handle) => {
             file = handle;
@@ -81,7 +81,7 @@ pub fn write_to_log(log_path: String, message: String) {
 
     match file.write_all(message.as_bytes()) {
         Err(err) => {
-            panic!("Couldn't write to {} log file! (err: {})", log_path, err);
+            panic!("Couldn't write to log file! (err: {})", err);
         }
         Ok(_) => {}
     };

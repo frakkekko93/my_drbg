@@ -35,7 +35,7 @@ pub fn test_HMAC_kats() -> usize{
 
         match res{
             None => {
-                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                write_to_log(format_message(true, "HMAC-DRBG-Mech".to_string(),
                                     "hmac_kats".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -133,6 +133,9 @@ pub fn nist_vectors() -> usize{
     let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
 
     for test in tests {
+        let mut name = "nist_vectors::".to_string();
+        name.push_str(&test.name);
+
         let res = HmacDrbgMech::<Sha256>::new(
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
@@ -141,7 +144,7 @@ pub fn nist_vectors() -> usize{
         let mut drbg;
         match res{
             None => {
-                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                write_to_log(format_message(true, "hmac_kats".to_string(),
                                     "nist_vectors".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -172,23 +175,17 @@ pub fn nist_vectors() -> usize{
                                    None => None,
                                });
         
-        if check_res(result, expected, test.name, "nist_vectors".to_string(), 
+        if check_res(result, expected, name, "hmac_kats".to_string(), 
             "failed nist vector generation.".to_string(),
             "completed nist vector generation.".to_string()) != 0 {
             return 1;
         }
     }
 
-    write_to_log("src/self_tests/logs/hmac_test_log.log".to_string(), format_message(false, "HMAC-DRBG-Mech".to_string(),
+    write_to_log(format_message(false, "hmac_kats".to_string(),
                                                             "nist_vectors".to_string(), 
                                                             "all nist vectors have passed.".to_string())
     );
-
-    // println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
-    //                                 "nist_vectors".to_string(), 
-    //                                 "all nist vectors have passed.".to_string()
-    //                             )
-    // );
 
     return 0;
 }

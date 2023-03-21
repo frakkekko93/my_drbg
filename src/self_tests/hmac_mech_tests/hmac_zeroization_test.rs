@@ -14,7 +14,7 @@ pub fn test_zeroization() -> usize {
     let mut drbg;
         match res{
             None => {
-                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                write_to_log(format_message(true, "hmac_zeroization_test".to_string(),
                                     "test_zeroization".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -30,7 +30,7 @@ pub fn test_zeroization() -> usize {
     let mut res = drbg.zeroize();
 
     if res != 0 || !drbg._is_zeroized() {
-        println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+        write_to_log(format_message(true, "hmac_zeroization_test".to_string(),
                                     "test_zeroization".to_string(), 
                                     "zeroization failed, DRBG not zeroized.".to_string()
                                 )
@@ -44,7 +44,7 @@ pub fn test_zeroization() -> usize {
     res = drbg.generate(&mut result, 32, None);
 
     if res != 1 && drbg._is_zeroized() {
-        println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+        write_to_log(format_message(true, "hmac_zeroization_test".to_string(),
                                     "test_zeroization".to_string(), 
                                     "succeeded to generate with zeroized DRBG.".to_string()
                                 )
@@ -56,7 +56,7 @@ pub fn test_zeroization() -> usize {
     res = drbg.reseed("Trial entropy 2".as_bytes(), None);
 
     if res != 1 && drbg._is_zeroized() {
-        println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+        write_to_log(format_message(true, "hmac_zeroization_test".to_string(),
                                     "test_zeroization".to_string(), 
                                     "succeeded to reseed with zeroized DRBG.".to_string()
                                 )
@@ -65,13 +65,7 @@ pub fn test_zeroization() -> usize {
         return 1;
     }
 
-    // println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
-    //                                 "test_zeroization".to_string(), 
-    //                                 "DRBG has been succesfully zeroized.".to_string()
-    //                             )
-    // );
-
-    write_to_log("src/self_tests/logs/hmac_test_log.log".to_string(), format_message(false, "HMAC-DRBG-Mech".to_string(),
+    write_to_log(format_message(false, "hmac_zeroization_test".to_string(),
                                                             "test_zeroization".to_string(), 
                                                             "DRBG has been succesfully zeroized.".to_string())
     );
