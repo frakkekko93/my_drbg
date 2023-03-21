@@ -6,7 +6,37 @@ use crate::self_tests::formats::*;
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests() -> usize {
     return internal_state_not_valid() +
-            add_in_too_long();
+            add_in_too_long() +
+            norm_op();
+}
+
+/*  Verifying normal reseed operation. */
+fn norm_op() -> usize {
+    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+    let mut drbg;
+    let add_in: [u8; 32] = [0; 32];
+
+    match res{
+        Err(_) => {
+            write_to_log(format_message(true, "HMAC-DRBG".to_string(),
+                                    "reseed_test".to_string(), 
+                                    "failed to instantiate DRBG.".to_string()
+                                )
+            );
+            return 1;
+        }
+        Ok(inst) => {
+            drbg = inst;
+        }
+    }
+
+    let res = drbg.reseed(Some(add_in.as_slice()));
+
+    return check_res(res, 0, 
+        "add_in_too_long".to_string(), 
+        "reseed_test".to_string(), 
+        "reseed normal operation failed.".to_string(), 
+        "success on reseed normal operation.".to_string());
 }
 
 /*  Verifying that the reseed of an invalid internal state is not allowed. */

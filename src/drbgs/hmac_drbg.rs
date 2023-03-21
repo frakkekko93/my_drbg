@@ -101,7 +101,7 @@ where
         if self.internal_state.is_none(){
                 return 2;
         }
-        if req_bytes > MAX_PRB {
+        if req_bytes * 8 > MAX_PRB {
             return 3;
         }
         if req_str > self.security_strength {
@@ -112,7 +112,7 @@ where
 
             }
             Some(value) => {
-                if value.len() > self.security_strength {
+                if value.len() * 8 > self.security_strength {
                     return 5;
                 }
             }
