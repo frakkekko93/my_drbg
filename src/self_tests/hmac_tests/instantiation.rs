@@ -30,7 +30,7 @@ fn test_fun_not_approved_sha224() -> usize{
 
     if check_res((err, true), (3, drbg.is_none()), 
             "test_fun_not_approved_sha224".to_string(), 
-            "HMAC-DRBG".to_string(), 
+            "instantiation_test".to_string(), 
             "succeeded to instantiate DRBG using Sha 224, which is not approved.".to_string(), 
             "failed to instantiate DRBG using Sha 224 as expected.".to_string()) != 0{
         return 1;
@@ -54,7 +54,7 @@ fn test_fun_not_approved_sha384() -> usize{
 
     if check_res((err, true), (3, drbg.is_none()), 
             "test_fun_not_approved_sha384".to_string(), 
-            "HMAC-DRBG".to_string(), 
+            "instantiation_test".to_string(), 
             "succeeded to instantiate DRBG using Sha 384, which is not approved.".to_string(), 
             "failed to instantiate DRBG using Sha 384 as expected.".to_string()) != 0{
         return 1;
@@ -78,7 +78,7 @@ fn test_fun_not_approved_sha512trunc224() -> usize{
 
     if check_res((err, true), (3, drbg.is_none()), 
             "test_fun_not_approved_sha512trunc224".to_string(), 
-            "HMAC-DRBG".to_string(), 
+            "instantiation_test".to_string(), 
             "succeeded to instantiate DRBG using Sha 512/224, which is not approved.".to_string(), 
             "failed to instantiate DRBG using Sha 512/224 as expected.".to_string()) != 0{
         return 1;
@@ -102,7 +102,7 @@ fn test_fun_not_approved_sha384trunc256() -> usize{
 
     if check_res((err, true), (3, drbg.is_none()), 
     "test_fun_not_approved_sha384trunc256".to_string(), 
-    "HMAC-DRBG".to_string(), 
+    "instantiation_test".to_string(), 
     "succeeded to instantiate DRBG using Sha 384/256, which is not approved.".to_string(), 
     "failed to instantiate DRBG using Sha 384/256 as expected.".to_string()) != 0{
     return 1;
@@ -127,7 +127,7 @@ fn test_ss_not_supported() -> usize{
 
     if check_res((err, true), (1, drbg.is_none()), 
     "test_ss_not_supported".to_string(), 
-    "HMAC-DRBG".to_string(), 
+    "instantiation_test".to_string(), 
     "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
     "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
         return 1;
@@ -153,7 +153,7 @@ fn ps_is_too_long() -> usize{
 
     if check_res((err, true), (2, drbg.is_none()), 
     "ps_is_too_long".to_string(), 
-    "HMAC-DRBG".to_string(), 
+    "instantiation_test".to_string(), 
     "succeeded to instantiate DRBG using not supported personalization string.".to_string(), 
     "failed to instantiate DRBG using not supported personalization string as expected.".to_string()) != 0{
         return 1;

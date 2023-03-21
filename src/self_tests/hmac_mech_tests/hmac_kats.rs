@@ -35,7 +35,7 @@ pub fn test_HMAC_kats() -> usize{
 
         match res{
             None => {
-                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                write_to_log(format_message(true, "HMAC-DRBG-Mech".to_string(),
                                     "hmac_kats".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -141,7 +141,7 @@ pub fn nist_vectors() -> usize{
         let mut drbg;
         match res{
             None => {
-                println!("{}", format_message(true, "HMAC-DRBG-Mech".to_string(),
+                write_to_log(format_message(true, "hmac_kats".to_string(),
                                     "nist_vectors".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -179,16 +179,10 @@ pub fn nist_vectors() -> usize{
         }
     }
 
-    write_to_log("src/self_tests/logs/hmac_test_log.log".to_string(), format_message(false, "HMAC-DRBG-Mech".to_string(),
+    write_to_log(format_message(false, "hmac_kats".to_string(),
                                                             "nist_vectors".to_string(), 
                                                             "all nist vectors have passed.".to_string())
     );
-
-    // println!("{}", format_message(false, "HMAC-DRBG-Mech".to_string(),
-    //                                 "nist_vectors".to_string(), 
-    //                                 "all nist vectors have passed.".to_string()
-    //                             )
-    // );
 
     return 0;
 }

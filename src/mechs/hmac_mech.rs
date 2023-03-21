@@ -108,7 +108,7 @@ where
     }
 }
 
-/*  Implementing common DRBG mechanism functions taken from the DrbgMech trait. */
+/*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait. */
 impl<D> DRBG_Mechanism_Functions for HmacDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
@@ -116,7 +116,7 @@ where
     D::OutputSize: ArrayLength<u8>,
 {
     fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> {
-        // Runtiome check on the use of any anallowed hash function.
+        // Runtime check on the use of any unallowed hash function.
         let this_id = TypeId::of::<D>();
         let sha256_id = TypeId::of::<sha2::Sha256>();
         let sha512_id = TypeId::of::<sha2::Sha512>();

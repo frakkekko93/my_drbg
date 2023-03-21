@@ -3,8 +3,8 @@ pub trait DRBG_Mechanism_Functions: {
     /*  Allocates a new instance of the DRBG using the passed entropy, nonce and personalization string.
 
         Parameters:
-            - entropy: the desired entropy to be used for the instantiation
-            - nonce: the desired nonce to be used for the instantiation
+            - entropy: the entropy to be used for the instantiation
+            - nonce: the nonce to be used for the instantiation
             - pers: the optional personalization string to be used for the instantiation
         
         Return value:
@@ -34,12 +34,12 @@ pub trait DRBG_Mechanism_Functions: {
             - optional additional inputs to the reseeding process
 
         Return values:
-            - 0: SUCCESS, instantiation succesfully reseeded
+            - 0: SUCCESS, instantiation successfully reseeded
             - 1: ERROR, instantiation cannot be reseeded
     */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize;
 
-    /*  Function needed to zeroize the content of this instance and macke it unusable. 
+    /*  Function needed to zeroize the content of this instance and make it unusable. 
 
         Return values:
             - 0: SUCCESS, instantiation has been successfully zeroized
