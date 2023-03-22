@@ -1,5 +1,5 @@
 use rand::Rng;
-use crate::{mechs::gen_mech::DRBG_Mechanism_Functions, self_tests::*};
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 
 /*  Configuration of the DRBG.
     
@@ -89,16 +89,6 @@ pub trait DRBG_Functions{
             - bytes: number of entropy bytes to be generated
     */
     fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize);
-
-    /*  This function is an API that can be used by external entities (even an eventual FIPS provider) to run
-        the self tests associated with this DRBG. If some self test fails, this function uninstantiated the working
-        state of the DRBG and outputs an ERROR indicator. 
-        
-        Return values:
-            - 0: SUCCESS, all self tests passed
-            - 1: ERROR, some self test failed
-    */
-    fn run_self_tests(&mut self) -> usize;
 
     /*  Utility function that returns the supported security strength of the DRBG.
     
@@ -288,21 +278,6 @@ where
             }
             // Next chunk.
             count += CHUNK_DIM;
-        }
-    }
-
-    fn run_self_tests(&mut self) -> usize {
-        if T::drbg_name() == "HMAC-DRBG".to_string() {
-            return drbg_tests::run_all::run_tests::<T>() +
-                hmac_mech_tests::run_all::run_tests();
-        }
-        else if T::drbg_name() == "Hash-DRBG".to_string() {
-            return drbg_tests::run_all::run_tests::<T>() +
-                hash_mech_tests::run_all::run_tests();
-        }
-        else {
-            return drbg_tests::run_all::run_tests::<T>() +
-                hmac_mech_tests::run_all::run_tests();
         }
     }
 

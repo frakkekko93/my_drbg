@@ -4,6 +4,7 @@ use my_drbg::mechs::gen_mech::DRBG_Mechanism_Functions;
 use my_drbg::mechs::hash_mech::HashDrbgMech;
 #[allow(unused_imports)]
 use my_drbg::mechs::hmac_mech::HmacDrbgMech;
+use my_drbg::self_tests;
 use rand::Rng;
 use sha2::*;
 use std::io::stdin as stdin;
@@ -13,50 +14,13 @@ use std::io::stdin as stdin;
 fn fips_sim(){
     println!("\n\n*** Simulating the start-up of FIPS provider / on-call test of DRBG. ***\n");
 
-    let res = DRBG::<HashDrbgMech::<Sha256>>::new(256, None);
+    let res = self_tests::run_tests::run_all();
 
-    let mut drbg;
-    match res {
-        Err(err) => {
-            panic!("MAIN: Hash-DRBG instantiation failed with error: {}.", err);
-        }
-        Ok(inst) => {
-            println!("MAIN: Hash-DRBG instantiation succeeded.");
-            drbg = inst;
-        }
-    }
-
-    println!("MAIN: running Hash-DRBG self-tests...");
-    let test_res = drbg.run_self_tests();
-
-    if test_res != 0 {
-        println!("MAIN: some self test has failed, see log file for more info.");
+    if res != 0 {
+        println!("MAIN: {res} tests have failed, see the log for more details.");
     }
     else {
-        println!("MAIN: all Hash-DRBG health tests have passed.\n\n")
-    }
-
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
-
-    let mut drbg;
-    match res {
-        Err(err) => {
-            panic!("MAIN: HMAC-DRBG instantiation failed with error: {}.", err);
-        }
-        Ok(inst) => {
-            println!("MAIN: HMAC-DRBG instantiation succeeded.");
-            drbg = inst;
-        }
-    }
-
-    println!("MAIN: running HMAC-DRBG self-tests...");
-    let test_res = drbg.run_self_tests();
-
-    if test_res != 0 {
-        println!("MAIN: some self test has failed, see log file for more info.");
-    }
-    else {
-        println!("MAIN: all HMAC-DRBG health tests have passed.\n\n")
+        println!("MAIN: all tests have passed.");
     }
 }
 
@@ -324,8 +288,8 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
 }
 
 fn main(){  
-    //fips_sim();
+    fips_sim();
     //test_hash();
     //test_hash_drbg();
-    extract_kats::<HmacDrbgMech<Sha256>>();
+    //extract_kats::<HmacDrbgMech<Sha256>>();
 }
