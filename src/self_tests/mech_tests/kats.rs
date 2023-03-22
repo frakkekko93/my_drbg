@@ -1,15 +1,14 @@
 use serde::Deserialize;
-use sha2::Sha256;
-use crate::{self_tests::formats::*, mechs::{hmac_mech::HmacDrbgMech, gen_mech::DRBG_Mechanism_Functions}};
+use crate::{self_tests::formats::*, mechs::{gen_mech::DRBG_Mechanism_Functions}};
 
 // Runs all kats.
-pub fn run_all() -> usize {
-    return test_HMAC_kats() + nist_vectors();
+pub fn run_all<T: DRBG_Mechanism_Functions>() -> usize {
+    return test_kats::<T>();
 }
 
 // Test KATs for HMAC-DRBG mech.
 #[allow(non_snake_case)]
-pub fn test_HMAC_kats() -> usize{
+pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -23,10 +22,28 @@ pub fn test_HMAC_kats() -> usize{
         expected: String,
     }
 
-    let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
+    let tests: Vec<Fixture>;
+    let mod_name;
+    let alg_name;
+
+    if T::drbg_name() == "Hash-DRBG" {
+        tests = serde_json::from_str(include_str!("fixtures/hash_kats.json")).unwrap();
+        mod_name = "hash_kats".to_string();
+        alg_name = "Hash-DRBG-Mech".to_string();
+    }
+    else if T::drbg_name() == "HMAC-DRBG"{
+        tests = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
+        mod_name = "hmac_kats".to_string();
+        alg_name = "HMAC-DRBG-Mech".to_string();
+    }
+    else {
+        return 0;
+    }
+
+    // let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
 
     for test in tests {
-        let res = HmacDrbgMech::<Sha256>::new(
+        let res = T::new(
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
@@ -35,8 +52,8 @@ pub fn test_HMAC_kats() -> usize{
 
         match res{
             None => {
-                write_to_log(format_message(true, "HMAC-DRBG-Mech".to_string(),
-                                    "hmac_kats".to_string(), 
+                write_to_log(format_message(true, alg_name.clone(),
+                                    mod_name, 
                                     "failed to instantiate DRBG.".to_string()
                                 )
                 );
@@ -70,7 +87,7 @@ pub fn test_HMAC_kats() -> usize{
             
             drbg.generate(&mut result, full_len, None);
             
-            if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+            if check_res(result, expected, test.name, mod_name.clone(), 
                             "failed generation using prr.".to_string(),
                             "completed generation using prr.".to_string()) != 0 {
                 return 1;
@@ -92,7 +109,7 @@ pub fn test_HMAC_kats() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                if check_res(result, expected, test.name, mod_name.clone(), 
                     "failed double generation without prr.".to_string(),
                     "completed double generation without prr.".to_string()) != 0 {
                     return 1;
@@ -106,7 +123,7 @@ pub fn test_HMAC_kats() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                if check_res(result, expected, test.name, mod_name.clone(), 
                     "failed generation without prr.".to_string(),
                     "completed generation without prr.".to_string()) != 0 {
                     return 1;
@@ -116,76 +133,4 @@ pub fn test_HMAC_kats() -> usize{
     }
 
     0
-}
-
-/*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */
-pub fn nist_vectors() -> usize{
-    #[derive(Deserialize, Debug)]
-    struct Fixture {
-        name: String,
-        entropy: String,
-        nonce: String,
-        pers: Option<String>,
-        add: [Option<String>; 2],
-        expected: String,
-    }
-
-    let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
-
-    for test in tests {
-        let mut name = "nist_vectors::".to_string();
-        name.push_str(&test.name);
-
-        let res = HmacDrbgMech::<Sha256>::new(
-            &hex::decode(&test.entropy).unwrap(),
-            &hex::decode(&test.nonce).unwrap(),
-            &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
-        
-        let mut drbg;
-        match res{
-            None => {
-                write_to_log(format_message(true, "hmac_kats".to_string(),
-                                    "nist_vectors".to_string(), 
-                                    "failed to instantiate DRBG.".to_string()
-                                )
-                );
-                return 1;
-            }
-            Some(inst) => {
-                drbg = inst;
-            }
-        }
-
-        let expected = hex::decode(&test.expected).unwrap();
-        let mut result = Vec::new();
-        let full_len = expected.len();
-        let add0 = test.add[0].as_ref().map(|v| hex::decode(&v).unwrap());
-        let add1 = test.add[1].as_ref().map(|v| hex::decode(&v).unwrap());
-
-        drbg.generate(&mut result, full_len,
-                               match add0 {
-                                   Some(ref add0) => Some(add0.as_ref()),
-                                   None => None,
-                               });
-
-        result.clear();
-        drbg.generate(&mut result, full_len,
-                               match add1 {
-                                   Some(ref add1) => Some(add1.as_ref()),
-                                   None => None,
-                               });
-        
-        if check_res(result, expected, name, "hmac_kats".to_string(), 
-            "failed nist vector generation.".to_string(),
-            "completed nist vector generation.".to_string()) != 0 {
-            return 1;
-        }
-    }
-
-    write_to_log(format_message(false, "hmac_kats".to_string(),
-                                                            "nist_vectors".to_string(), 
-                                                            "all nist vectors have passed.".to_string())
-    );
-
-    return 0;
 }

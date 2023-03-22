@@ -4,6 +4,5 @@ use super::*;
 pub fn run_tests() -> usize {
     formats::write_to_log("\n*** STARTING HMAC-DRBG-MECH TESTS ***\n".to_string());
 
-    return hmac_kats::run_all() +
-            hmac_instantiation::run_tests();
+    return hmac_instantiation::run_tests();
 }

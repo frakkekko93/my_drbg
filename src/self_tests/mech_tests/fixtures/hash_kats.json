@@ -1,0 +1,59 @@
+[
+    {
+      "name": "no_ps_noadd_noprr_ss256",
+      "entropy": "957baf7a3531cd67a8924b68c5acea6332f4041a7588f0a83b69ce30c8611958",
+      "nonce": "7df3eadb30e06456a8da6a4ea7c9a7a3",
+      "pers": null,
+      "prr": false,
+      "reseed_entropy": null,
+      "add": [
+        null,
+        null
+      ],
+      "double_gen": false,
+      "expected": "f90429aa6f5ddb86fd44252a32c1d6b70e50b5f8531ea8f8daea4eed48aa00215cf490582404e14ae0aeec8ef8ef7a82e6f5d3da0d3d005d4c7a6e1311d96b0b9f98a8ebfb12d2493b987ee09e4d557284ee352fe06deb62a12712f6ae3b6e2e09dd6595371251e831b15d643f30d225c4d82b3259866fcaa4af2ec2a90b0fbc"
+    },
+    {
+        "name":"no_ps_noadd_prr_ss256",
+        "entropy":"3973d75e8904ebbcdd980372547b6cf040bb6775ab1cc9d9f99dbe76c0bd884a",
+        "nonce":"598f104a153d943ef2f7616eba48f062",
+        "pers": null,
+        "prr": true,
+        "reseed_entropy":"43b20602b9627f8e702a5747131788da1279da5df711f3c825d73ab24ca8ffb9",
+        "add":[
+            null,
+            null
+        ],
+        "double_gen": false,
+        "expected":"e8fbf4bfbe288bb6fc8283afd6707542bb7170b3009ddaef0a345d4750dc5043e214287a64bff03a04fc4007ce2ddebbc57013a0ebbb03e330ebb9b22aa0a42fe645c3ae7fac5013f4c183ee72a5f9deb60a3fd1d98d8df92e477297689c177bb80892dcd2c0dd65aee21cf416d5519449d322e3be73589f5f6c666358de83e3"
+    },
+    {
+        "name":"ps_noadd_noprr_ss256",
+        "entropy":"c2ede6cf01ee88da84368c45d76b325eb6f233f69cb28d0d2ca9411b703bd3fd",
+        "nonce":"aeb76d261e97cb5c6e1e7dc629342d93",
+        "pers":"a89cf120d251efbf7f65e88c94b481ae241a302f3770d84c7d5ac53bdace8a6a",
+        "prr": false,
+        "reseed_entropy": null,
+        "add":[
+            null,
+            null
+        ],
+        "double_gen": false,
+        "expected":"8223552399fd19764c9e4d599e0c61f4c357a2734332694344a03b30584f12cd35e368a831f30599739c3eb87d6ce60069f2eaa0c179ca234441d8038781270e5f5f11f91bd296646c1d0aea5c7002637de858b4b746f839db107c7c77a1245970405a15518a60bc9185808be75749d1c1afe22c2fc2c0c8b85c7af7a5da2f61"
+    },
+    {
+        "name":"ps_add_noprr_ss256",
+        "entropy":"ee536bdd2cddf81a1bbeb6e9710b2887cd114581fb133e27588a1ebe37cc5bf7",
+        "nonce":"09e9d180bb291569ffa1f022abe9cf74",
+        "pers":"328cad24e54411bf3faec704b57e3c63bdb858356b9b6c880e906d1df37937da",
+        "prr": false,
+        "reseed_entropy": null,
+        "add":[
+            null,
+            "e49071cf3fed5023ba526441839abd9b8cf90d02b34576c280e0eacc1840d5c1"
+        ],
+        "double_gen": true,
+        "expected":"254c03aaa3a46956c21975395ade108f54e8246aa1fed74860408b3c6dce01bee099193190b37fadc0a632470234b7016a4cad57bdaf0eea2c3b2f86c698c809513d1349feee9629767c6acb6be932723792b40c60a80e342d2db857353d3f546b06c678914cb94913c0cb02e6a372dc0562d2a358d59872d82598bd875aaf38"
+    }
+]
+  
