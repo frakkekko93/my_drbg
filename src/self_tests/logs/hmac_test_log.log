@@ -18,7 +18,6 @@ TEST PASSED (uninstantiate_test) - double_uninst: uninstantiate on invalid inter
 
 *** STARTING HMAC-DRBG-MECH TESTS ***
 TEST FAILED (hmac_kats) - no_ps_noadd_noprr_ss256: failed generation without prr.
-TEST FAILED (hmac_kats) - nist_vectors::0: failed nist vector generation.
 TEST PASSED (instantiation_test) - test_fun_not_approved_sha224: failed to instantiate DRBG using Sha 224 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved_sha384: failed to instantiate DRBG using Sha 384 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved_sha512trunc224: failed to instantiate DRBG using Sha 512/224 as expected.

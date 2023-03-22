@@ -248,21 +248,24 @@ fn test_hash_drbg() {
 
 #[allow(dead_code)]
 fn extract_kats<T: DRBG_Mechanism_Functions>() {
-    let mut scelta = "".to_string();
+    let mut scelta;
+    let mut scelta_buf = String::default();
     
-    println!("Do you want to use a ps? (y or n)");
-    let mut input_res = stdin().read_line(&mut scelta);
+    println!("\nDo you want to use a ps? (1=y or 2=n)");
+    let mut input_res = stdin().read_line(&mut scelta_buf);
 
     match input_res {
         Err(err) => {
             panic!("MAIN: input failed with error: {}", err);
         }
-        Ok(_) => {}
+        Ok(_) => {
+            scelta = scelta_buf.trim().parse::<u32>().unwrap();
+        }
     }
 
     let pers: [u8; 32];
     let inst_res;
-    if scelta == "y" {
+    if scelta == 1 {
         pers= rand::thread_rng().gen();
         inst_res = DRBG::<T>::new(256, Some(pers.as_slice()));
     }
@@ -287,50 +290,59 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
         let mut prr = false;
         let add: [u8; 32];
 
-        println!("What do you want to do?");
+        println!("\nWhat do you want to do?");
         println!("\t1- Generate 1024 bits");
         println!("\t2- Reseed DRBG");
-        println!("\tAnything else - Uninstantiate DRBG and exit");
-        input_res = stdin().read_line(&mut scelta);
+        println!("\t0 - Uninstantiate DRBG and exit");
+        scelta_buf.clear();
+        input_res = stdin().read_line(&mut scelta_buf);
 
         match input_res {
             Err(err) => {
                 panic!("MAIN: input failed with error: {}", err);
             }
-            Ok(_) => {}
+            Ok(_) => {
+                scelta = scelta_buf.trim().parse::<u32>().unwrap();
+            }
         }
 
-        if scelta == "1" {
-            println!("Do you want to use a prr? (y or n)");
-            input_res = stdin().read_line(&mut scelta);
+        if scelta == 1 {
+            println!("\nDo you want to use a prr? (1=y or 2=n)");
+            scelta_buf.clear();
+            input_res = stdin().read_line(&mut scelta_buf);
 
             match input_res {
                 Err(err) => {
                     panic!("MAIN: input failed with error: {}", err);
                 }
-                Ok(_) => {}
+                Ok(_) => {
+                    scelta = scelta_buf.trim().parse::<u32>().unwrap();
+                }
             }
 
-            if scelta == "y" {
+            if scelta == 1 {
                 prr = true;
             }
 
-            println!("Do you want to use a add-in? (y or n)");
-            input_res = stdin().read_line(&mut scelta);
+            println!("\nDo you want to use a add-in? (1=y or 2=n)");
+            scelta_buf.clear();
+            input_res = stdin().read_line(&mut scelta_buf);
 
             match input_res {
                 Err(err) => {
                     panic!("MAIN: input failed with error: {}", err);
                 }
-                Ok(_) => {}
+                Ok(_) => {
+                    scelta = scelta_buf.trim().parse::<u32>().unwrap();
+                }
             }
 
-            if scelta == "y" {
+            if scelta == 1 {
                 add = rand::thread_rng().gen();
-                op_res = drbg.generate(& mut bits, 1024, 256, prr, Some(add.as_slice()));
+                op_res = drbg.generate(& mut bits, 128, 256, prr, Some(add.as_slice()));
             }
             else {
-                op_res = drbg.generate(& mut bits, 1024, 256, prr, None);
+                op_res = drbg.generate(& mut bits, 128, 256, prr, None);
             }
 
             if op_res != 0 {
@@ -339,18 +351,21 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
 
             println!("Generated bits: {}", hex::encode(bits));
         }
-        else if scelta == "2" {
-            println!("Do you want to use a add-in? (y or n)");
-            input_res = stdin().read_line(&mut scelta);
+        else if scelta == 2 {
+            println!("\nDo you want to use a add-in? (1=y or 2=n)");
+            scelta_buf.clear();
+            input_res = stdin().read_line(&mut scelta_buf);
 
             match input_res {
                 Err(err) => {
                     panic!("MAIN: input failed with error: {}", err);
                 }
-                Ok(_) => {}
+                Ok(_) => {
+                    scelta = scelta_buf.trim().parse::<u32>().unwrap();
+                }
             }
 
-            if scelta == "y" {
+            if scelta == 1 {
                 add = rand::thread_rng().gen();
                 op_res = drbg.reseed(Some(add.as_slice()));
             }
@@ -372,8 +387,8 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
 }
 
 fn main(){  
-    //fips_sim();
+    fips_sim();
     //test_hash();
     //test_hash_drbg();
-    extract_kats::<HashDrbgMech<Sha256>>();
+    //extract_kats::<HashDrbgMech<Sha256>>();
 }

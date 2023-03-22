@@ -231,15 +231,11 @@ where
         this.hash_df(&mut res, seed_material, seedlen/8);
         this.v.append(&mut res);
 
-        println!("Hash-DRBG-Mech: generated V: {}\nLen: {}", hex::encode(&this.v), this.v.len());
-
         // Derive C (step 4).
         let mut seed_material = this.v.clone();
         seed_material.insert(0, 0x00);
         this.hash_df(&mut res, seed_material, seedlen/8);
         this.c.append(&mut res);
-
-        println!("Hash-DRBG-Mech: generated C: {}\nLen: {}", hex::encode(&this.c), this.c.len());
 
         // Return instance (step 5-6)
         Some(this)
@@ -329,8 +325,6 @@ where
 
         // Re-init reseed counter (step 5).
         self.count = 1;
-        println!("Hash-DRBG-Mech: reseeded V: {}\nLen: {}", hex::encode(&self.v), self.v.len());
-        println!("Hash-DRBG-Mech: reseeded C: {}\nLen: {}", hex::encode(&self.c), self.c.len());
 
         0
     }
