@@ -187,30 +187,6 @@ where
             i += hash_len;
         }
     }
-
-    /*  Returns the reseed counter of this instance.
-
-        Return value:
-            - the reseed counter */
-    pub fn count(&self) -> usize {
-        self.count
-    }
-
-    /*  Indicates whether a forced reseed is needed for this instance.
-    
-        Return values:
-            - boolean statement */
-    pub fn reseed_needed(&self) -> bool{
-        self.count >= self.reseed_interval
-    }
-
-    /*  Function needed to check if the current instance is zeroized.
-    
-        Return values:
-            - boolean statement */
-    pub fn _is_zeroized(&self) -> bool{
-        self.zeroized
-    }
 }
 
 /*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait. */
@@ -381,5 +357,29 @@ where
         self.hash_fun.reset();
 
         0
+    }
+
+    /*  Returns the reseed counter of this instance.
+
+        Return value:
+            - the reseed counter */
+    fn count(&self) -> usize {
+        self.count
+    }
+
+    /*  Indicates whether a forced reseed is needed for this instance.
+    
+        Return values:
+            - boolean statement */
+    fn reseed_needed(&self) -> bool{
+        self.count >= self.reseed_interval
+    }
+
+    /*  Function needed to check if the current instance is zeroized.
+    
+        Return values:
+            - boolean statement */
+    fn _is_zeroized(&self) -> bool{
+        self.zeroized
     }
 }

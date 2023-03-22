@@ -23,7 +23,7 @@ fn show(bs: &[u8]) -> String {
 fn fips_sim(){
     println!("*** Simulating the start-up of FIPS provider / on-call test of HMAC-DRBG. ***\n");
 
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+    let res = DRBG::<HashDrbgMech::<Sha256>>::new(256, None);
 
     let mut drbg;
     match res {
@@ -96,7 +96,50 @@ fn test_hash() {
     }
 }
 
+fn test_hash_drbg() {
+    println!("*** Trying the Hash-DRBG Functionalities ***");
+
+    let res = DRBG::<HashDrbgMech<Sha256>>::new(256, Some("Trial pers".as_bytes()));
+
+    let mut drbg;
+    match res {
+        Err(err) => {
+            panic!("MAIN: instantiation failed with error: {}", err);
+        }
+        Ok(inst) => {
+            println!("MAIN: instantiated DRBG.");
+            drbg = inst;
+        }
+    }
+
+    let mut bits =  Vec::<u8>::new();
+    let mut res = drbg.generate(&mut bits, 128, 256, true, Some("Some add-in".as_bytes()));
+
+    if res != 0 {
+        panic!("MAIN: generation failed with error: {}", res);
+    }
+
+    println!("MAIN: generated {} bits: {}", bits.len()*8, hex::encode(bits));
+
+    res = drbg.reseed(Some("Another add-in".as_bytes()));
+
+    if res != 0 {
+        panic!("MAIN: reseeding failed with error: {}", res);
+    }
+
+    println!("MAIN: reseeding succeeded.");
+
+    res = drbg.uninstantiate();
+
+    if res != 0 {
+        panic!("MAIN: uninstantiation failed with error: {}", res);
+    }
+
+    println!("MAIN: uninstantiation succeeded.");
+}
+
 fn main(){  
-    //fips_sim();
-    test_hash(); 
+    fips_sim();
+    //test_hash();
+    //test_hash_drbg(); 
 }

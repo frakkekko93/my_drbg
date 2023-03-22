@@ -46,4 +46,24 @@ pub trait DRBG_Mechanism_Functions: {
             - 1: ERROR, instantiation is already zeroized    
     */
     fn zeroize(&mut self) -> usize;
+
+
+    /*  Returns the reseed counter of this instance.
+
+        Return value:
+            - the reseed counter */
+    fn count(&self) -> usize;
+
+    /*  Indicates whether a forced reseed is needed for this instance.
+    
+        Return values:
+            - boolean statement */
+    fn reseed_needed(&self) -> bool;
+
+    /*  Function needed to check if the current instance is zeroized.
+    
+        Return values:
+            - boolean statement */
+    fn _is_zeroized(&self) -> bool;
+        
 }
