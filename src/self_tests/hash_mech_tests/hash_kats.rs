@@ -4,12 +4,12 @@ use crate::{self_tests::formats::*, mechs::{gen_mech::DRBG_Mechanism_Functions, 
 
 // Runs all kats.
 pub fn run_all() -> usize {
-    return test_HMAC_kats();
+    return test_Hash_kats();
 }
 
 // Test KATs for HMAC-DRBG mech.
 #[allow(non_snake_case)]
-pub fn test_HMAC_kats() -> usize{
+pub fn test_Hash_kats() -> usize{
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -32,11 +32,13 @@ pub fn test_HMAC_kats() -> usize{
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
 
         let mut drbg;
+        
+        println!("TEST: \n\tentropy: {}\n\tnonce: {}", &test.entropy, &test.nonce);
 
         match res{
             None => {
-                write_to_log(format_message(true, "HMAC-DRBG-Mech".to_string(),
-                                    "hmac_kats".to_string(), 
+                write_to_log(format_message(true, "Hash-DRBG-Mech".to_string(),
+                                    "hash_kats".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
                 );
@@ -70,7 +72,7 @@ pub fn test_HMAC_kats() -> usize{
             
             drbg.generate(&mut result, full_len, None);
             
-            if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+            if check_res(result, expected, test.name, "hash_kats".to_string(), 
                             "failed generation using prr.".to_string(),
                             "completed generation using prr.".to_string()) != 0 {
                 return 1;
@@ -91,8 +93,10 @@ pub fn test_HMAC_kats() -> usize{
                         Some(ref add_in) => Some(&add_in.as_slice()),
                         None => None
                     });
-                
-                if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                    
+                println!("CHECK-RES: \n\texpected: {}\n\tgot: {}", hex::encode(&expected), hex::encode(&result));
+
+                if check_res(result, expected, test.name, "hash_kats".to_string(), 
                     "failed double generation without prr.".to_string(),
                     "completed double generation without prr.".to_string()) != 0 {
                     return 1;
@@ -106,7 +110,7 @@ pub fn test_HMAC_kats() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name, "hmac_kats".to_string(), 
+                if check_res(result, expected, test.name, "hash_kats".to_string(), 
                     "failed generation without prr.".to_string(),
                     "completed generation without prr.".to_string()) != 0 {
                     return 1;

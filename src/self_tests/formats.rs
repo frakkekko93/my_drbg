@@ -30,7 +30,7 @@ pub fn format_message(failed: bool, alg_name: String, test_name: String, message
 /*  Checks if the result passed is equal to the expected value and shows the appropriate desired message. */
 pub fn check_res<T: std::cmp::PartialEq>(result: T, expected: T, test_name: String, module_name: String, fail_msg: String, succ_msg: String) -> usize {
     let mut file;
-    match OpenOptions::new().append(true).create(true).open("src/self_tests/logs/hmac_test_log.log") {
+    match OpenOptions::new().append(true).create(true).open("src/self_tests/logs/test_log.log") {
         Err(err) => {
             panic!("Couldn't open {module_name} test log! (err: {})", err);
         }
@@ -70,7 +70,7 @@ pub fn check_res<T: std::cmp::PartialEq>(result: T, expected: T, test_name: Stri
 // Writes a into the desired log.
 pub fn write_to_log(message: String) {
     let mut file;
-    match OpenOptions::new().append(true).create(true).open("src/self_tests/logs/hmac_test_log.log") {
+    match OpenOptions::new().append(true).create(true).open("src/self_tests/logs/test_log.log") {
         Err(err) => {
             panic!("Couldn't open log! (err: {})", err);
         }

@@ -225,6 +225,7 @@ where
 
         // Eventually reseeding the internal state if needed.
         let working_state = self.internal_state.as_mut().unwrap();
+        let gen_res;
         if pred_res_req || working_state.reseed_needed() {
 
             println!("Hash-DRBG - (generate): received prr.");
@@ -235,10 +236,14 @@ where
             println!("Hash-DRBG - (generate): used entropy for reseed: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
 
             working_state.reseed(&entropy_input, add);
-        }
 
-        // Generating the requested bits.
-        let gen_res = working_state.generate(bits, req_bytes, None);
+            // Generating the requested bits.
+            gen_res = working_state.generate(bits, req_bytes, None);
+        }
+        else {
+            // Generating the requested bits.
+            gen_res = working_state.generate(bits, req_bytes, add);
+        }
 
         // Checking the result of the generation.
         if gen_res == 0 {

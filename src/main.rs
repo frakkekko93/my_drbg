@@ -11,29 +11,29 @@ use std::io::stdin as stdin;
 // Simulates the start-up of a potential fips provider by calling the self test functions.
 #[allow(dead_code)]
 fn fips_sim(){
-    println!("*** Simulating the start-up of FIPS provider / on-call test of HMAC-DRBG. ***\n");
+    println!("*** Simulating the start-up of FIPS provider / on-call test of DRBG. ***\n");
 
     let res = DRBG::<HashDrbgMech::<Sha256>>::new(256, None);
 
     let mut drbg;
     match res {
         Err(err) => {
-            panic!("MAIN: HMAC-DRBG instantiation failed with error: {}.", err);
+            panic!("MAIN: Hash-DRBG instantiation failed with error: {}.", err);
         }
         Ok(inst) => {
-            println!("MAIN: HMAC-DRBG instantiation succeeded.");
+            println!("MAIN: Hash-DRBG instantiation succeeded.");
             drbg = inst;
         }
     }
 
-    println!("MAIN: running HMAC-DRBG self-tests...");
+    println!("MAIN: running Hash-DRBG self-tests...");
     let test_res = drbg.run_self_tests();
 
     if test_res != 0 {
         println!("MAIN: some self test has failed, see log file for more info.");
     }
     else {
-        println!("MAIN: all HMAC-DRBG health tests have passed.")
+        println!("MAIN: all Hash-DRBG health tests have passed.\n\n")
     }
 
     let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
@@ -56,16 +56,27 @@ fn fips_sim(){
         println!("MAIN: some self test has failed, see log file for more info.");
     }
     else {
-        println!("MAIN: all HMAC-DRBG health tests have passed.")
+        println!("MAIN: all HMAC-DRBG health tests have passed.\n\n")
     }
 }
 
 #[allow(dead_code)]
 fn test_hash() {
+    let res;
     let entropy = "Trial entropy".as_bytes();
     let nonce = "Trial nonce".as_bytes();
     let ps = "Trial pers string".as_bytes();
-    let res = HashDrbgMech::<Sha256>::new(&entropy, &nonce, &ps);
+
+    // let binding = hex::decode("ee536bdd2cddf81a1bbeb6e9710b2887cd114581fb133e27588a1ebe37cc5bf7").unwrap();
+    // let entropy = binding.as_slice();
+
+    // let binding = hex::decode("09e9d180bb291569ffa1f022abe9cf74").unwrap();
+    // let nonce = binding.as_slice();
+
+    // let binding = hex::decode("328cad24e54411bf3faec704b57e3c63bdb858356b9b6c880e906d1df37937da").unwrap();
+    // let ps = binding.as_slice();
+    
+    res = HashDrbgMech::<Sha256>::new(&entropy, &nonce, &ps);
 
     let mut drbg;
     match res {
@@ -80,7 +91,7 @@ fn test_hash() {
 
     let reseed_entr = "Trial reseed entropy".as_bytes();
     let reseed_add = "Trial reseed add in".as_bytes();
-    let mut res = drbg.reseed(&reseed_entr, Some(&reseed_add));
+    let res = drbg.reseed(&reseed_entr, Some(&reseed_add));
 
     if res != 0 {
         panic!("MAIN: reseed failed (Err: {}).", res);   
@@ -91,7 +102,19 @@ fn test_hash() {
 
     let mut bits = Vec::<u8>::new();
 
-    res = drbg.generate(&mut bits, 128, Some("Add-in".as_bytes()));
+    let res = drbg.generate(&mut bits, 128, None);
+
+    if res != 0 {
+        panic!("MAIN: generate failed (Err: {}).", res);   
+    }
+    else {
+        println!("MAIN: generated bits {}.", hex::encode(&bits));
+    }
+
+    bits.clear();
+
+    let binding = hex::decode("e49071cf3fed5023ba526441839abd9b8cf90d02b34576c280e0eacc1840d5c1").unwrap();
+    let res = drbg.generate(&mut bits, 128, Some(binding.as_slice()));
 
     if res != 0 {
         panic!("MAIN: generate failed (Err: {}).", res);   
@@ -100,7 +123,7 @@ fn test_hash() {
         println!("MAIN: generated bits {}.", hex::encode(bits));
     }
 
-    res = drbg.zeroize();
+    let res = drbg.zeroize();
 
     if res != 0 {
         panic!("MAIN: zeroization failed (Err: {}).", res);   
@@ -158,92 +181,6 @@ fn test_hmac() {
     else {
         println!("MAIN: zeroization succeeded.");
     }
-}
-
-#[allow(dead_code)]
-fn test_hmac_drbg() {
-    println!("*** Trying the Hash-DRBG Functionalities ***");
-
-    let res = DRBG::<HmacDrbgMech<Sha256>>::new(256, Some("Trial pers".as_bytes()));
-
-    let mut drbg;
-    match res {
-        Err(err) => {
-            panic!("MAIN: instantiation failed with error: {}", err);
-        }
-        Ok(inst) => {
-            println!("MAIN: instantiated DRBG.");
-            drbg = inst;
-        }
-    }
-
-    let mut bits =  Vec::<u8>::new();
-    let mut res = drbg.generate(&mut bits, 128, 256, true, Some("Some add-in".as_bytes()));
-
-    if res != 0 {
-        panic!("MAIN: generation failed with error: {}", res);
-    }
-
-    println!("MAIN: generated {} bits: {}", bits.len()*8, hex::encode(bits));
-
-    res = drbg.reseed(Some("Another add-in".as_bytes()));
-
-    if res != 0 {
-        panic!("MAIN: reseeding failed with error: {}", res);
-    }
-
-    println!("MAIN: reseeding succeeded.");
-
-    res = drbg.uninstantiate();
-
-    if res != 0 {
-        panic!("MAIN: uninstantiation failed with error: {}", res);
-    }
-
-    println!("MAIN: uninstantiation succeeded.");
-}
-
-#[allow(dead_code)]
-fn test_hash_drbg() {
-    println!("*** Trying the Hash-DRBG Functionalities ***");
-
-    let res = DRBG::<HashDrbgMech<Sha256>>::new(256, Some("Trial pers".as_bytes()));
-
-    let mut drbg;
-    match res {
-        Err(err) => {
-            panic!("MAIN: instantiation failed with error: {}", err);
-        }
-        Ok(inst) => {
-            println!("MAIN: instantiated DRBG.");
-            drbg = inst;
-        }
-    }
-
-    let mut bits =  Vec::<u8>::new();
-    let mut res = drbg.generate(&mut bits, 128, 256, true, Some("Some add-in".as_bytes()));
-
-    if res != 0 {
-        panic!("MAIN: generation failed with error: {}", res);
-    }
-
-    println!("MAIN: generated {} bits: {}", bits.len()*8, hex::encode(bits));
-
-    res = drbg.reseed(Some("Another add-in".as_bytes()));
-
-    if res != 0 {
-        panic!("MAIN: reseeding failed with error: {}", res);
-    }
-
-    println!("MAIN: reseeding succeeded.");
-
-    res = drbg.uninstantiate();
-
-    if res != 0 {
-        panic!("MAIN: uninstantiation failed with error: {}", res);
-    }
-
-    println!("MAIN: uninstantiation succeeded.");
 }
 
 #[allow(dead_code)]
@@ -349,7 +286,7 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
                 panic!("MAIN: generation failed with error: {}", op_res);
             }
 
-            println!("Generated bits: {}", hex::encode(bits));
+            println!("Generated bits: {} - len: {}.", hex::encode(&bits), bits.len());
         }
         else if scelta == 2 {
             println!("\nDo you want to use a add-in? (1=y or 2=n)");
