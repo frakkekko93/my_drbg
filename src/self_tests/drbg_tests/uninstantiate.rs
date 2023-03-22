@@ -1,17 +1,16 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
-use crate::mechs::hmac_mech::HmacDrbgMech;
-use sha2::*;
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
 
 /*  Aggregator that runs all the tests in this file. */
-pub fn run_tests() -> usize {
-    return norm_op() + 
-            double_uninst();
+pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
+    return norm_op::<T>() + 
+            double_uninst::<T>();
 }
 
 /*  Verifying that the reseed of an invalid internal state is not allowed. */
-fn norm_op() -> usize{
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
+    let res = DRBG::<T>::new(256, None);
     let mut drbg;
 
     match res{
@@ -44,8 +43,8 @@ fn norm_op() -> usize{
 }
 
 /*  Verifying that a double uninstantiate is not allowed. */
-fn double_uninst() -> usize {
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+fn double_uninst<T: DRBG_Mechanism_Functions>() -> usize {
+    let res = DRBG::<T>::new(256, None);
     let mut drbg;
 
     match res{

@@ -1,18 +1,17 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
-use crate::mechs::hmac_mech::HmacDrbgMech;
-use sha2::*;
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
 
 /*  Aggregator that runs all the tests in this file. */
-pub fn run_tests() -> usize {
-    return internal_state_not_valid() +
-            add_in_too_long() +
-            norm_op();
+pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
+    return internal_state_not_valid::<T>() +
+            add_in_too_long::<T>() +
+            norm_op::<T>();
 }
 
 /*  Verifying normal reseed operation. */
-fn norm_op() -> usize {
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+fn norm_op<T: DRBG_Mechanism_Functions>() -> usize {
+    let res = DRBG::<T>::new(256, None);
     let mut drbg;
     let add_in: [u8; 32] = [0; 32];
 
@@ -40,8 +39,8 @@ fn norm_op() -> usize {
 }
 
 /*  Verifying that the reseed of an invalid internal state is not allowed. */
-fn internal_state_not_valid() -> usize{
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+fn internal_state_not_valid<T: DRBG_Mechanism_Functions>() -> usize{
+    let res = DRBG::<T>::new(256, None);
     let mut drbg;
 
     match res{
@@ -70,8 +69,8 @@ fn internal_state_not_valid() -> usize{
 }
 
 /*  Verifying that additional inputs that are too long are rejected. */
-fn add_in_too_long() -> usize {
-    let res = DRBG::<HmacDrbgMech::<Sha256>>::new(256, None);
+fn add_in_too_long<T: DRBG_Mechanism_Functions>() -> usize {
+    let res = DRBG::<T>::new(256, None);
     let mut drbg;
     let add_in: [u8; 33] = [0; 33];
 
