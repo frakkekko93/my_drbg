@@ -382,4 +382,8 @@ where
     fn _is_zeroized(&self) -> bool{
         self.zeroized
     }
+
+    fn drbg_name() -> String {
+        return "Hash-DRBG".to_string();
+    }
 }

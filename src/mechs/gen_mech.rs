@@ -65,5 +65,7 @@ pub trait DRBG_Mechanism_Functions: {
         Return values:
             - boolean statement */
     fn _is_zeroized(&self) -> bool;
-        
+
+    /*  Function that retrieves the name of the DRBG implementation. */
+    fn drbg_name() -> String;
 }

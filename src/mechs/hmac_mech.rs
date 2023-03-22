@@ -226,4 +226,8 @@ where
     fn _is_zeroized(&self) -> bool{
         self.zeroized
     }
+
+    fn drbg_name() -> String {
+        return "HMAC-DRBG".to_string();
+    }
 }

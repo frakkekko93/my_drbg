@@ -1,6 +1,5 @@
 use rand::Rng;
-
-use crate::{mechs::gen_mech::DRBG_Mechanism_Functions, self_tests::{hmac_tests, hmac_mech_tests}};
+use crate::{mechs::gen_mech::DRBG_Mechanism_Functions, self_tests::*};
 
 /*  Configuration of the DRBG.
     
@@ -269,8 +268,18 @@ where
     }
 
     fn run_self_tests(&mut self) -> usize {
-        return hmac_tests::run_all::run_tests() +
+        if T::drbg_name() == "HMAC-DRBG".to_string() {
+            return drbg_tests::run_all::run_tests::<T>() +
                 hmac_mech_tests::run_all::run_tests();
+        }
+        else if T::drbg_name() == "Hash-DRBG".to_string() {
+            return drbg_tests::run_all::run_tests::<T>() +
+                hash_mech_tests::run_all::run_tests();
+        }
+        else {
+            return drbg_tests::run_all::run_tests::<T>() +
+                hmac_mech_tests::run_all::run_tests();
+        }
     }
 
     /*  Utility function that returns the supported security strength of the DRBG.
