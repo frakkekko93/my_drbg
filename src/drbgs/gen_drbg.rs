@@ -126,8 +126,8 @@ where
         DRBG::<T>::get_entropy_input(&mut entropy, MAX_SEC_STR/8);
         DRBG::<T>::get_entropy_input(&mut nonce, MAX_SEC_STR/16);
 
-        println!("Hash-DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
-        println!("Hash-DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
+        // println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
+        // println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
         
         // Trying to allocate the DRBG's internal state.
         let drbg_mech;
@@ -137,7 +137,7 @@ where
             }
             Some(pers) => {
 
-                println!("Hash-DRBG - (instantiate): received pers: {} - len: {}.", hex::encode(pers), pers.len());
+                // println!("DRBG - (instantiate): received pers: {} - len: {}.", hex::encode(pers), pers.len());
 
                 drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &pers);
             }
@@ -171,7 +171,7 @@ where
             None => {}
             Some(value) => {
 
-                println!("Hash-DRBG - (reseed): received add-in: {} - len: {}.", hex::encode(value), value.len());
+                // println!("DRBG - (reseed): received add-in: {} - len: {}.", hex::encode(value), value.len());
 
                 if value.len() * 8 > self.security_strength {
                     return 2;
@@ -183,7 +183,7 @@ where
         let mut entropy_input = Vec::<u8>::new();
         DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
 
-        println!("Hash-DRBG - (reseed): used entropy: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
+        // println!("DRBG - (reseed): used entropy: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
         
         let res = working_state.reseed(&entropy_input, add);
 
@@ -215,7 +215,7 @@ where
             }
             Some(value) => {
 
-                println!("Hash-DRBG - (generate): received add-in: {} - len: {}.", hex::encode(value), value.len());
+                // println!("DRBG - (generate): received add-in: {} - len: {}.", hex::encode(value), value.len());
 
                 if value.len() * 8 > self.security_strength {
                     return 5;
@@ -228,12 +228,12 @@ where
         let gen_res;
         if pred_res_req || working_state.reseed_needed() {
 
-            println!("Hash-DRBG - (generate): received prr.");
+            // println!("DRBG - (generate): received prr.");
 
             let mut entropy_input = Vec::<u8>::new();
             DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
 
-            println!("Hash-DRBG - (generate): used entropy for reseed: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
+            // println!("DRBG - (generate): used entropy for reseed: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
 
             working_state.reseed(&entropy_input, add);
 

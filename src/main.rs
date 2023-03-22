@@ -11,7 +11,7 @@ use std::io::stdin as stdin;
 // Simulates the start-up of a potential fips provider by calling the self test functions.
 #[allow(dead_code)]
 fn fips_sim(){
-    println!("*** Simulating the start-up of FIPS provider / on-call test of DRBG. ***\n");
+    println!("\n\n*** Simulating the start-up of FIPS provider / on-call test of DRBG. ***\n");
 
     let res = DRBG::<HashDrbgMech::<Sha256>>::new(256, None);
 
@@ -324,8 +324,8 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
 }
 
 fn main(){  
-    fips_sim();
+    //fips_sim();
     //test_hash();
     //test_hash_drbg();
-    //extract_kats::<HashDrbgMech<Sha256>>();
+    extract_kats::<HmacDrbgMech<Sha256>>();
 }

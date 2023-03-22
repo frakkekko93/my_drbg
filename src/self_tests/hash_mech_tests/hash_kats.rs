@@ -32,8 +32,6 @@ pub fn test_Hash_kats() -> usize{
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
 
         let mut drbg;
-        
-        println!("TEST: \n\tentropy: {}\n\tnonce: {}", &test.entropy, &test.nonce);
 
         match res{
             None => {
@@ -93,8 +91,6 @@ pub fn test_Hash_kats() -> usize{
                         Some(ref add_in) => Some(&add_in.as_slice()),
                         None => None
                     });
-                    
-                println!("CHECK-RES: \n\texpected: {}\n\tgot: {}", hex::encode(&expected), hex::encode(&result));
 
                 if check_res(result, expected, test.name, "hash_kats".to_string(), 
                     "failed double generation without prr.".to_string(),
