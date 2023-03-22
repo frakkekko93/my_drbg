@@ -1,2 +1,2 @@
 pub mod hash_instantiation;
-pub mod run_all;
+pub mod hmac_instantiation;
