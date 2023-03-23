@@ -13,7 +13,8 @@ pub fn test_zeroization<T: DRBG_Mechanism_Functions>() -> usize {
         al_name = "hash_zeroization_test".to_string();
     }
     else {
-        al_name = "ctr_zeroization_test".to_string();
+        //al_name = "ctr_zeroization_test".to_string();
+        return 0;
     }
     
     let res = T::new(

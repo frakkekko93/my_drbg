@@ -6,8 +6,8 @@ use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
     This DRBG relies on the HMAC mechanism which supports a maximum of 256 bits of security strength (MAX_SEC_STR).
     It is configured to generate a maximum of 1024 bits per-request (MAX_PRB). This option may actually be changed but be 
     aware of the limits imposed in table 10.1 of NIST SP 800-90A. */
-    const MAX_SEC_STR: usize = 256;
-    const MAX_PRB: usize = 1024;
+const MAX_SEC_STR: usize = 256;
+const MAX_PRB: usize = 1024;
 
 /*  The mechanism that the DRBG is using. */
 pub struct DRBG<T>

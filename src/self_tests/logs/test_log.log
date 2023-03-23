@@ -5,10 +5,10 @@ TEST PASSED (hash_kats) - no_ps_noadd_noprr_ss256: completed generation without 
 TEST PASSED (hash_kats) - no_ps_noadd_prr_ss256: completed generation using prr.
 TEST PASSED (hash_kats) - ps_noadd_noprr_ss256: completed generation without prr.
 TEST PASSED (hash_kats) - ps_add_noprr_ss256: completed double generation without prr.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha224: failed to instantiate DRBG using Sha 224 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha384: failed to instantiate DRBG using Sha 384 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha512trunc224: failed to instantiate DRBG using Sha 512/224 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha384trunc256: failed to instantiate DRBG using Sha 384/256 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
 TEST PASSED (instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
 TEST PASSED (reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
@@ -62,10 +62,10 @@ TEST PASSED (nist_vectors) - 12 with additional data: completed nist vector gene
 TEST PASSED (nist_vectors) - 13 with additional data: completed nist vector generation.
 TEST PASSED (nist_vectors) - 14 with additional data: completed nist vector generation.
 TEST PASSED (HMAC-DRBG-Mech) - nist_vectors: all nist vectors have passed.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha224: failed to instantiate DRBG using Sha 224 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha384: failed to instantiate DRBG using Sha 384 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha512trunc224: failed to instantiate DRBG using Sha 512/224 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved_sha384trunc256: failed to instantiate DRBG using Sha 384/256 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
 TEST PASSED (instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
 TEST PASSED (reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
