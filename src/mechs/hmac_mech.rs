@@ -4,7 +4,7 @@ use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
 use super::gen_mech::DRBG_Mechanism_Functions;
 
-/*  Properties of the HMAC-DRBG mechanism. This mechanism can be intantiated only using Sha256 or Sha512
+/*  Implementation of the HMAC-DRBG mechanism. This mechanism can be instantiated only using Sha256 or Sha512
     (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
     (see NIST SP 800-57pt1r5), this mechanism offers a security strength of max 256 bits.
 
@@ -25,7 +25,7 @@ where
     zeroized: bool,
 }
 
-/*  Implementing funtion that are specific of the HMAC-DRBG mechanism. */
+/*  Implementing functions that are specific of the HMAC-DRBG mechanism. */
 impl<D> HmacDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
@@ -84,7 +84,7 @@ where
     }
 }
 
-/*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait. */
+/*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait (see 'gen_mech'). */
 impl<D> DRBG_Mechanism_Functions for HmacDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
@@ -203,26 +203,14 @@ where
         return 0;
     }
 
-    /*  Returns the reseed counter of this instance.
-
-        Return value:
-            - the reseed counter */
     fn count(&self) -> usize {
         self.count
     }
 
-    /*  Indicates whether a forced reseed is needed for this instance.
-    
-        Return values:
-            - boolean statement */
     fn reseed_needed(&self) -> bool{
         self.count >= self.reseed_interval
     }
 
-    /*  Function needed to check if the current instance is zeroized.
-    
-        Return values:
-            - boolean statement */
     fn _is_zeroized(&self) -> bool{
         self.zeroized
     }

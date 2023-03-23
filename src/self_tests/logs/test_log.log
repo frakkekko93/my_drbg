@@ -10,12 +10,13 @@ TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to ins
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
 TEST PASSED (instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
+TEST PASSED (instantiation_test) - test_ss_supported: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
 TEST PASSED (reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
 TEST PASSED (reseed_test) - add_in_too_long: success on reseed normal operation.
 TEST PASSED (generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (generate_test) - non_empty_out_vec: generate on non-empty out vector failed as expected.
+TEST PASSED (generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
 TEST PASSED (generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
 TEST PASSED (generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
 TEST PASSED (generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
@@ -67,12 +68,13 @@ TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to ins
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
 TEST PASSED (instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
+TEST PASSED (instantiation_test) - test_ss_supported: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
 TEST PASSED (reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
 TEST PASSED (reseed_test) - add_in_too_long: success on reseed normal operation.
 TEST PASSED (generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (generate_test) - non_empty_out_vec: generate on non-empty out vector failed as expected.
+TEST PASSED (generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
 TEST PASSED (generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
 TEST PASSED (generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
 TEST PASSED (generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.

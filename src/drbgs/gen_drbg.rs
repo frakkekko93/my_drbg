@@ -3,13 +3,23 @@ use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 
 /*  Configuration of the DRBG.
     
-    This DRBG relies on the HMAC mechanism which supports a maximum of 256 bits of security strength (MAX_SEC_STR).
-    It is configured to generate a maximum of 1024 bits per-request (MAX_PRB). This option may actually be changed but be 
+    This DRBG can be instantiated using anyone of the mechanisms defined in the 'mechs' module. These mechanisms support 
+    a maximum of 256 bits of security strength (MAX_SEC_STR).
+    The DRBG is configured to generate a maximum of 1024 bits per-request (MAX_PRB). This option may actually be changed but be 
     aware of the limits imposed in table 10.1 of NIST SP 800-90A. */
 const MAX_SEC_STR: usize = 256;
 const MAX_PRB: usize = 1024;
 
-/*  The mechanism that the DRBG is using. */
+/*  This is the general structure of the DRBG. We have:
+        - internal_state: an handle to the state of the underlying mechanism
+        - security_strength: indicates the security strength that a particular instance can support. This parameter is passed
+                             by the application using the DRBG but is always kept <= 256 by this crate.
+    
+    In this design, the prediction_resistance_flag is not used. This has been done because we are assuming that the DRBG is accessing
+    an entropy source that always provides fresh full-entropy bits. This means that is always possible for the DRBG to provide prediction
+    resistance when needed. 
+    For the same reason, the reseed function defined below does not use the prediction_resistance_request parameter, as fresh entropy is
+    provided on every reseed request by default. */
 pub struct DRBG<T>
 {
     pub internal_state: Option<T>,
@@ -18,11 +28,9 @@ pub struct DRBG<T>
 
 #[allow(non_camel_case_types)]
 pub trait DRBG_Functions{
-    /*  This function serves as an evelope to the instantiate algorithm of the underlying DRBG mechanism.
-        Note that this function does not have the 'prediction_resistance_flag' parameter as specified in SP 800-90A section 9.1.
-        This is allowed as long as the DRBG always provides or do not support prediction resistance. In this particular
-        implementation, the DRBG is implemented to always support prediction resistance. This means that calling application may
-        request prediction resistance at any time during bit generation.
+    /*  This function serves as an evelope to the instantiate algorithm of the underlying DRBG mechanism. 
+        It instantiates a new DRBG that supports the requested security strength returning the handle to the new instance.
+        In case the instantiation is not possible, this function returns an error flag to the calling application.
 
         Parameters:
             - req_sec_str: the security strength needed by the calling application
@@ -37,9 +45,9 @@ pub trait DRBG_Functions{
     fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8> where Self: Sized;
 
     /*  This function serves as an envelope to the reseed algorithm of the underlying DRBG mechanism.
-        Note that this function does not have the 'prediction_resistance_request' parameter as specified in SP 800-90A section 9.2.
-        This is allowed as long as the DRBG always/never uses fresh entropy for the reseed process. In this particular
-        implementation, the DRBG mechanism is provided with fresh entropy at each reseed request.
+        It reseeds the internal state of the DRBG by acquiring fresh entropy from the entropy source.
+        If the reseeding fails, an error state >0 is returned to the application that is using the DRBG.
+        If the reseeding succeeds, 0 is returned.
 
         Parameters:
             - add: optional additional input to be used for reseeding
@@ -53,9 +61,13 @@ pub trait DRBG_Functions{
     fn reseed(&mut self, add: Option<&[u8]>) -> usize;
 
     /*  This function serves as an envelope to the generate algorithm of the underlying DRBG mechanism.
+        Its goal is to use the underlying mechanism to generate the requested number of pseudo-random bits needed by
+        the calling application (within the limits imposed by MAX_PBR).
+        On success this function returns 0 and the requested number of pseudo-random bits.
+        On failure this function returns an error flag >0 and a null vector.
 
         Parameters:
-            - bits: a reference to the resulting byte vector
+            - bits: a reference to the resulting byte vector. It is cleared before use.
             - req_bytes: the number of requested bytes for generation
             - req_str: the requested security strength for the generated bits
             - pred_res_req: whether prediction resistance is to be served on this call
@@ -63,16 +75,17 @@ pub trait DRBG_Functions{
         
         Return values:
             0 - SUCCESS, bits have been generated succesfully and can be used for the desired purpose
-            1 - ERROR, return vector must be intitally empty
-            2 - ERROR, internal state is not valid (uninstantiated or never instantiated)
-            3 - ERROR, requested too many pseudo-random bits
-            4 - ERROR, security strenght not supported
-            5 - ERROR, additional input is too long (max security_strength bits)
-            6 - ERROR, bit generation failed unexpectedly
+            1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
+            2 - ERROR, requested too many pseudo-random bits
+            3 - ERROR, security strenght not supported
+            4 - ERROR, additional input is too long (max security_strength bits)
+            5 - ERROR, bit generation failed unexpectedly
     */
     fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize;
 
     /*  This function is used to zeroize the internal state and make it unavailable to the calling application.
+        It overwrites the internal state of the DRBG mechanism and sets the 'zeroized' flag, rendering the internal state unusable.
+        After a call to this function a new instance of the DRBG must be used.
 
         Return values:
             - 0: SUCCESS, the internal state has been succesfully zeroized
@@ -81,7 +94,7 @@ pub trait DRBG_Functions{
     fn uninstantiate(&mut self) -> usize;
 
     /*  This function is used to retrieve entropy bits directly from the underlying entropy source that is available. 
-        For the moment we are assuming that the underlying source of entropy returns FULL ENTROPY bits. It entropy retrieved is
+        For the moment we are assuming that the underlying source of entropy returns FULL ENTROPY bits. The entropy retrieved is
         always fresh as it is always taken from the entropy source directly.
 
         Parameters:
@@ -93,10 +106,11 @@ pub trait DRBG_Functions{
     /*  Utility function that returns the supported security strength of the DRBG.
     
         Return values:
-            - the security strength supported by the DRBG. */
+            - the security strength supported by the DRBG instance. */
     fn get_sec_str(&self) -> usize;
 }
 
+/*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
 impl<T> DRBG_Functions for DRBG<T> 
 where
     T: DRBG_Mechanism_Functions
@@ -106,15 +120,15 @@ where
         if req_sec_str > MAX_SEC_STR{
             return Err(1);
         }
-        if ps.is_some() && ps.unwrap().len() * 8 > MAX_SEC_STR{
+        if ps.is_some() && ps.unwrap().len() * 8 > req_sec_str{
             return Err(2);
         }
 
         // Acquiring the entropy input and nonce parameters from the entropy source.
         let mut entropy= Vec::<u8>::new();
         let mut nonce= Vec::<u8>::new();      
-        DRBG::<T>::get_entropy_input(&mut entropy, MAX_SEC_STR/8);
-        DRBG::<T>::get_entropy_input(&mut nonce, MAX_SEC_STR/16);
+        DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
+        DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
 
         // println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
         // println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
@@ -139,7 +153,7 @@ where
                 return Err(3);
             }
             Some(_) => {
-                Ok(Self{security_strength: MAX_SEC_STR, internal_state: drbg_mech})
+                Ok(Self{security_strength: req_sec_str, internal_state: drbg_mech})
             }
         }
     }
@@ -188,16 +202,16 @@ where
     fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
         // Checking the validity of all the obtained parameters.
         if !bits.is_empty(){
-            return 1;
+            bits.clear();
         }
         if self.internal_state.is_none(){
-                return 2;
+                return 1;
         }
         if req_bytes * 8 > MAX_PRB {
-            return 3;
+            return 2;
         }
         if req_str > self.security_strength {
-            return 4;
+            return 3;
         }
         match add{
             None => {
@@ -208,7 +222,7 @@ where
                 // println!("DRBG - (generate): received add-in: {} - len: {}.", hex::encode(value), value.len());
 
                 if value.len() * 8 > self.security_strength {
-                    return 5;
+                    return 4;
                 }
             }
         }
@@ -240,7 +254,7 @@ where
             return 0;
         }
         else {
-            return 6;
+            return 5;
         }
     }
 
@@ -281,10 +295,6 @@ where
         }
     }
 
-    /*  Utility function that returns the supported security strength of the DRBG.
-    
-        Return values:
-            - the security strength supported by the DRBG. */
     fn get_sec_str(&self) -> usize{
         self.security_strength
     }

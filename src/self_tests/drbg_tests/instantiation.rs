@@ -5,6 +5,7 @@ use crate::self_tests::formats::*;
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
     return test_ss_not_supported::<T>() +
+            test_ss_supported::<T>() +
             ps_is_too_long::<T>();
 }
 
@@ -54,6 +55,28 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
     "instantiation_test".to_string(), 
     "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
     "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
+        return 1;
+    }
+    0
+}
+
+/*  Testing that any security strength that is <=MAX_STR is actually accepted by the DRBG. */
+fn test_ss_supported<T: DRBG_Mechanism_Functions>() -> usize{
+    let res = DRBG::<T>::new(128, None);
+    let mut drbg = None;
+
+    match res{
+        Err(_) => {}
+        Ok(inst) => {
+            drbg = Some(inst);
+        }
+    }
+
+    if check_res(drbg.is_none(), false, 
+    "test_ss_supported".to_string(), 
+    "instantiation_test".to_string(), 
+    "failed to instantiate DRBG using a supported security strength.".to_string(), 
+    "succeeded to instantiate DRBG using a supported security strength as expected.".to_string()) != 0{
         return 1;
     }
     0

@@ -4,7 +4,7 @@ use digest::{BlockInput, FixedOutput, Reset, Update, Digest};
 use generic_array::ArrayLength;
 use super::gen_mech::DRBG_Mechanism_Functions;
 
-/*  Properties of the Hash-DRBG mechanism. This mechanism can be intantiated only using Sha256 or Sha512
+/*  Implementation of the Hash-DRBG mechanism. This mechanism can be instantiated only using Sha256 or Sha512
     (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
     (see NIST SP 800-57pt1r5), this mechanism offers a security strength of max 256 bits.
 
@@ -13,7 +13,7 @@ use super::gen_mech::DRBG_Mechanism_Functions;
     - reseed_interval: the maximum number of generate requests that can be served between reseedings
     - zeroized: boolean flag indicating whether the particular instance has been zeroized
     - seed_len: lengths of the internal state values that depends on the hash function that is used
-    - hash_fun: the hash function that is used.
+    - hash_fun: handle to the hash function that is used.
 */
 pub struct HashDrbgMech<D: 'static>
 where
@@ -30,7 +30,7 @@ where
     hash_fun: D,
 }
 
-/*  Implementing funtion that are specific of the HMAC-DRBG mechanism. */
+/*  Implementing functions that are specific of the HMAC-DRBG mechanism. */
 impl<D> HashDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
@@ -104,7 +104,8 @@ where
         }        
     }
 
-    /*  This is a generation function used by the mechanism to generate bits from the underlying Hash function.
+    /*  This is a derivation function used by the mechanism to generate bits from the underlying Hash function.
+        (NIST SP 800-90A, section 10.3.1)
     
         Parameters:
             - result: the output vector for the generated bits
@@ -189,7 +190,7 @@ where
     }
 }
 
-/*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait. */
+/*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait (see 'gen_mech'). */
 impl<D> DRBG_Mechanism_Functions for HashDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
@@ -353,26 +354,14 @@ where
         0
     }
 
-    /*  Returns the reseed counter of this instance.
-
-        Return value:
-            - the reseed counter */
     fn count(&self) -> usize {
         self.count
     }
 
-    /*  Indicates whether a forced reseed is needed for this instance.
-    
-        Return values:
-            - boolean statement */
     fn reseed_needed(&self) -> bool{
         self.count >= self.reseed_interval
     }
 
-    /*  Function needed to check if the current instance is zeroized.
-    
-        Return values:
-            - boolean statement */
     fn _is_zeroized(&self) -> bool{
         self.zeroized
     }
