@@ -42,7 +42,7 @@ pub trait DRBG_Functions{
             2 - ERROR, personalization string is too long (max security_strength bits)
             3 - ERROR, the instantiation of the underlying mechanism failed
     */
-    fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8> where Self: Sized;
+    fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize> where Self: Sized;
 
     /*  This function serves as an envelope to the reseed algorithm of the underlying DRBG mechanism.
         It reseeds the internal state of the DRBG by acquiring fresh entropy from the entropy source.
@@ -108,6 +108,24 @@ pub trait DRBG_Functions{
         Return values:
             - the security strength supported by the DRBG instance. */
     fn get_sec_str(&self) -> usize;
+
+    /*  Utility function that returns the value of the reseed counter of the DRBG.
+    
+        Return values:
+            - the security strength supported by the DRBG instance. */
+    fn get_count(&self) -> usize;
+
+    /*  Utility function that returns the value seed life of the DRBG.
+    
+        Return values:
+            - the seed life used by the DRBG instance. */
+    fn get_seed_life(&self) -> usize;
+
+    /*  Utility function that returns maximum number of pseudo-random bits that the DRBG can produce for each generate call.
+    
+        Return values:
+            - the seed life used by the DRBG instance. */
+    fn get_max_pbr(&self) -> usize;
 }
 
 /*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
@@ -115,9 +133,9 @@ impl<T> DRBG_Functions for DRBG<T>
 where
     T: DRBG_Mechanism_Functions
 {
-    fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, u8>{
+    fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
         // Checking requirements on the validity of the requested security strength and the personalization string.
-        if req_sec_str > MAX_SEC_STR{
+    if req_sec_str > MAX_SEC_STR || req_sec_str < 112{
             return Err(1);
         }
         if ps.is_some() && ps.unwrap().len() * 8 > req_sec_str{
@@ -297,5 +315,22 @@ where
 
     fn get_sec_str(&self) -> usize{
         self.security_strength
+    }
+
+    fn get_count(&self) -> usize{
+        // Internal state already gone.
+        if self.internal_state.is_none(){
+            return 0;
+        }
+
+        self.internal_state.as_ref().unwrap().count()
+    }
+
+    fn get_seed_life(&self) -> usize {
+        return T::seed_life();
+    }
+
+    fn get_max_pbr(&self) -> usize {
+        return MAX_PRB;
     }
 }

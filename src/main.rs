@@ -8,6 +8,7 @@ use my_drbg::self_tests;
 use rand::Rng;
 use sha2::*;
 use std::io::stdin as stdin;
+use my_drbg::demos::*; 
 
 // Simulates the start-up of a potential fips provider by calling the self test functions.
 #[allow(dead_code)]
@@ -288,8 +289,9 @@ fn extract_kats<T: DRBG_Mechanism_Functions>() {
 }
 
 fn main(){  
-    fips_sim();
+    //fips_sim();
     //test_hash();
     //test_hash_drbg();
     //extract_kats::<HmacDrbgMech<Sha256>>();
+    run_demo();
 }

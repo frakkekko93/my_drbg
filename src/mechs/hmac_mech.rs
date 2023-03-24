@@ -4,6 +4,9 @@ use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
 use super::gen_mech::DRBG_Mechanism_Functions;
 
+/*  The life of each generated seed of this DRBG. */
+const SEED_LIFE: usize = 1000;
+
 /*  Implementation of the HMAC-DRBG mechanism. This mechanism can be instantiated only using Sha256 or Sha512
     (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
     (see NIST SP 800-57pt1r5), this mechanism offers a security strength of max 256 bits.
@@ -117,7 +120,7 @@ where
         // Updating the internal state using the passed parameters.
         this.update(Some(&[entropy, nonce, pers]));
         this.count = 1;
-        this.reseed_interval = 1000;
+        this.reseed_interval = SEED_LIFE;
 
         Some(this)
     }
@@ -217,5 +220,9 @@ where
 
     fn drbg_name() -> String {
         return "HMAC-DRBG".to_string();
+    }
+
+    fn seed_life() -> usize {
+        return SEED_LIFE;
     }
 }

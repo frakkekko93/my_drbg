@@ -4,6 +4,9 @@ use digest::{BlockInput, FixedOutput, Reset, Update, Digest};
 use generic_array::ArrayLength;
 use super::gen_mech::DRBG_Mechanism_Functions;
 
+/*  The life of each generated seed of this DRBG. */
+const SEED_LIFE: usize = 1000;
+
 /*  Implementation of the Hash-DRBG mechanism. This mechanism can be instantiated only using Sha256 or Sha512
     (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
     (see NIST SP 800-57pt1r5), this mechanism offers a security strength of max 256 bits.
@@ -218,7 +221,7 @@ where
             v: Vec::<u8>::new(), 
             c: Vec::<u8>::new(), 
             count: 1, 
-            reseed_interval: 1000, 
+            reseed_interval: SEED_LIFE, 
             zeroized: false, 
             seedlen, 
             hash_fun: D::new(),
@@ -368,5 +371,9 @@ where
 
     fn drbg_name() -> String {
         return "Hash-DRBG".to_string();
+    }
+
+    fn seed_life() -> usize {
+        return SEED_LIFE;
     }
 }

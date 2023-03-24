@@ -94,4 +94,7 @@ pub trait DRBG_Mechanism_Functions: {
 
     /*  Function that retrieves the name of the DRBG implementation. */
     fn drbg_name() -> String;
+
+    /*  Function that retrieves the seed life of the DRBG implementation. */
+    fn seed_life() -> usize;
 }
