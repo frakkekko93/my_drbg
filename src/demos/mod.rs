@@ -13,7 +13,7 @@ pub fn run_demo() {
     println!("\n***************************************************************************");
     println!("Welcome to a demo of this DRBG implementation. This DRBG uses all three of");
     println!("the mechanisms that are prescribed in NIST SP 800-90a (HMAC-DRBG, Hash-DRBG");
-    println!("and CTR-DRBG. The goal of this demo is to show the capabilities of these");
+    println!("and CTR-DRBG). The goal of this demo is to show the capabilities of these");
     println!("implementations. The DRBGs that are used in this crate are supposed to have");
     println!("access to a direct entropy source that provides FULL-ENTROPY bits. This");
     println!("means that each DRBG can always be reseeded using fresh entropy and");
