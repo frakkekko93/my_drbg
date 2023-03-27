@@ -272,6 +272,7 @@ where
             return 0;
         }
         else {
+            bits.clear();
             return 5;
         }
     }
