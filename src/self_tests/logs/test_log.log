@@ -5,6 +5,8 @@ TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: f
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
+TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
+TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
@@ -43,6 +45,8 @@ TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: f
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
+TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
+TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.

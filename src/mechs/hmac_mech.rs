@@ -103,6 +103,11 @@ where
             return None;
         }
 
+        // Entropy and nonce parameters must be present.
+        if entropy.len() == 0 || nonce.len() == 0 {
+            return None
+        }
+
         // Setting initial values for the internal state.
         let mut k = GenericArray::<u8, D::OutputSize>::default();
         let mut v = GenericArray::<u8, D::OutputSize>::default();

@@ -13,14 +13,18 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
                 test_fun_not_approved::<HmacDrbgMech<Sha224>>("Sha 224") + 
                 test_fun_not_approved::<HmacDrbgMech<Sha384>>("Sha 384") + 
                 test_fun_not_approved::<HmacDrbgMech<Sha512Trunc224>>("Sha 512/224") +
-                test_fun_not_approved::<HmacDrbgMech<Sha512Trunc256>>("Sha 512/256");
+                test_fun_not_approved::<HmacDrbgMech<Sha512Trunc256>>("Sha 512/256") +
+                test_empty_entropy::<T>() +
+                test_empty_nonce::<T>();
     }
     else if T::drbg_name() == "Hash-DRBG" {
         return norm_op::<T>() +
                 test_fun_not_approved::<HashDrbgMech<Sha224>>("Sha 224") + 
                 test_fun_not_approved::<HashDrbgMech<Sha384>>("Sha 384") + 
                 test_fun_not_approved::<HashDrbgMech<Sha512Trunc224>>("Sha 512/224") +
-                test_fun_not_approved::<HashDrbgMech<Sha512Trunc256>>("Sha 512/256");
+                test_fun_not_approved::<HashDrbgMech<Sha512Trunc256>>("Sha 512/256") +
+                test_empty_entropy::<T>() +
+                test_empty_nonce::<T>();
     }
     else {
         return 0;
@@ -62,6 +66,34 @@ fn test_fun_not_approved<T: DRBG_Mechanism_Functions>(fun_id: &str) -> usize{
             AL_NAME.to_string(), 
             fail_msg, 
             succ_msg) != 0{
+        return 1;
+    }
+    0
+}
+
+/*  Testing that instantiation with empty entropy input fails */
+fn test_empty_entropy<T: DRBG_Mechanism_Functions>() -> usize {
+    let res = T::new("".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+
+    if check_res(res.is_none(), true, 
+            "test_empty_entropy".to_string(), 
+            AL_NAME.to_string(), 
+            "instantiation with empty entropy of DRBG mechanism succeeded.".to_string(), 
+            "instantiation with empty entropy of DRBG mechanism failed, as expected.".to_string()) != 0{
+        return 1;
+    }
+    0
+}
+
+/*  Testing that instantiation with empty nonce fails */
+fn test_empty_nonce<T: DRBG_Mechanism_Functions>() -> usize {
+    let res = T::new("Trial entropy".as_bytes(), "".as_bytes(), "Trial pers".as_bytes());
+
+    if check_res(res.is_none(), true, 
+            "test_empty_nonce".to_string(), 
+            AL_NAME.to_string(), 
+            "instantiation with empty nonce of DRBG mechanism succeeded.".to_string(), 
+            "instantiation with empty nonce of DRBG mechanism failed, as expected.".to_string()) != 0{
         return 1;
     }
     0

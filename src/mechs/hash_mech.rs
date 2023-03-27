@@ -216,6 +216,11 @@ where
             seedlen = 888;
         }
 
+        // Entropy and nonce parameters must be present.
+        if entropy.len() == 0 || nonce.len() == 0 {
+            return None
+        }
+
         // Init internal state.
         let mut this = Self{ 
             v: Vec::<u8>::new(), 
