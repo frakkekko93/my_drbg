@@ -1,16 +1,27 @@
 
 *** STARTING Hash-DRBG self-tests ***
-TEST PASSED (hash_zeroization_test) - test_zeroization: DRBG has been succesfully zeroized.
-TEST PASSED (hash_kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
-TEST PASSED (hash_kats) - no_ps_noadd_prr_ss256: completed generation using prr.
-TEST PASSED (hash_kats) - ps_noadd_noprr_ss256: completed generation without prr.
-TEST PASSED (hash_kats) - ps_add_noprr_ss256: completed double generation without prr.
+TEST PASSED (instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
 TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
+TEST PASSED (Hash-DRBG-Mech::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
+TEST PASSED (Hash-DRBG-Mech::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
+TEST PASSED (Hash-DRBG-Mech::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
+TEST PASSED (Hash-DRBG-Mech::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
+TEST PASSED (reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
+TEST PASSED (reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
+TEST PASSED (reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
+TEST PASSED (zeroization_test) - test_zeroization: zeroization succeeded, internal state is now unusable.
+TEST PASSED (zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
+TEST PASSED (zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
+TEST PASSED (zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
+TEST PASSED (hash_kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (hash_kats) - no_ps_noadd_prr_ss256: completed generation using prr.
+TEST PASSED (hash_kats) - ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (hash_kats) - ps_add_noprr_ss256: completed double generation without prr.
+TEST PASSED (instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (instantiation_test) - test_ss_supported: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
 TEST PASSED (reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
@@ -27,7 +38,22 @@ TEST PASSED (uninstantiate_test) - double_uninst: success on uninstantiate norma
 TEST PASSED (uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
 *** STARTING HMAC-DRBG self-tests ***
-TEST PASSED (hmac_zeroization_test) - test_zeroization: DRBG has been succesfully zeroized.
+TEST PASSED (instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
+TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
+TEST PASSED (HMAC-DRBG-Mech::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
+TEST PASSED (HMAC-DRBG-Mech::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
+TEST PASSED (HMAC-DRBG-Mech::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
+TEST PASSED (HMAC-DRBG-Mech::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
+TEST PASSED (reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
+TEST PASSED (reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
+TEST PASSED (reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
+TEST PASSED (zeroization_test) - test_zeroization: zeroization succeeded, internal state is now unusable.
+TEST PASSED (zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
+TEST PASSED (zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
+TEST PASSED (zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
 TEST PASSED (hmac_kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
 TEST PASSED (hmac_kats) - no_ps_noadd_prr_ss256: completed generation using prr.
 TEST PASSED (hmac_kats) - ps_noadd_noprr_ss256: completed generation without prr.
@@ -63,12 +89,8 @@ TEST PASSED (nist_vectors) - 12 with additional data: completed nist vector gene
 TEST PASSED (nist_vectors) - 13 with additional data: completed nist vector generation.
 TEST PASSED (nist_vectors) - 14 with additional data: completed nist vector generation.
 TEST PASSED (HMAC-DRBG-Mech) - nist_vectors: all nist vectors have passed.
-TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
+TEST PASSED (instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (instantiation_test) - test_ss_supported: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
 TEST PASSED (reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.

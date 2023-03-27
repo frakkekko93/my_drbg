@@ -7,13 +7,15 @@ use crate::self_tests::formats::*;
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
     if T::drbg_name() == "HMAC-DRBG" {
-        return test_fun_not_approved::<HmacDrbgMech<Sha224>>("Sha 224") + 
+        return norm_op::<T>() +
+                test_fun_not_approved::<HmacDrbgMech<Sha224>>("Sha 224") + 
                 test_fun_not_approved::<HmacDrbgMech<Sha384>>("Sha 384") + 
                 test_fun_not_approved::<HmacDrbgMech<Sha512Trunc224>>("Sha 512/224") +
                 test_fun_not_approved::<HmacDrbgMech<Sha512Trunc256>>("Sha 512/256");
     }
     else if T::drbg_name() == "Hash-DRBG" {
-        return test_fun_not_approved::<HashDrbgMech<Sha224>>("Sha 224") + 
+        return norm_op::<T>() +
+                test_fun_not_approved::<HashDrbgMech<Sha224>>("Sha 224") + 
                 test_fun_not_approved::<HashDrbgMech<Sha384>>("Sha 384") + 
                 test_fun_not_approved::<HashDrbgMech<Sha512Trunc224>>("Sha 512/224") +
                 test_fun_not_approved::<HashDrbgMech<Sha512Trunc256>>("Sha 512/256");
@@ -21,6 +23,20 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
     else {
         return 0;
     }
+}
+
+/*  Testing normal instantiation of the mechanism. */
+fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+
+    if check_res(res.is_none(), false, 
+            "norm_op".to_string(), 
+            "instantiation_test".to_string(), 
+            "normal instantiation of DRBG mechanism failed.".to_string(), 
+            "normal instantiation of DRBG mechanism succeeded.".to_string()) != 0{
+        return 1;
+    }
+    0
 }
 
 /*  Testing use of unapproved functions. */

@@ -1,5 +1,6 @@
 extern crate my_drbg;
 use my_drbg::self_tests;
+#[allow(unused_imports)]
 use my_drbg::demos::*; 
 
 // Simulates the start-up of a potential fips provider by calling the self test functions.
@@ -18,6 +19,6 @@ fn fips_sim(){
 }
 
 fn main(){  
-    //fips_sim();
-    run_demo();
+    fips_sim();
+    //run_demo();
 }
