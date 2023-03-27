@@ -1,9 +1,8 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
-use crate::mechs::hmac_mech::HmacDrbgMech;
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::demos::utility::*;
-use sha2::Sha256;
 
-pub fn hmac_drbg_demo(drbg: &mut DRBG<HmacDrbgMech<Sha256>>) -> usize {
+pub fn drbg_demo<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     let mut user_choice = 1;
 
     println!("\nGreat! Your DRBG has been instantiated.");
@@ -16,6 +15,7 @@ pub fn hmac_drbg_demo(drbg: &mut DRBG<HmacDrbgMech<Sha256>>) -> usize {
         println!("\t1- Generate bits");
         println!("\t2- Reseed the DRBG");
         println!("\t3- Uninstantiate the DRBG and create a new instance");
+        println!("\t4- Run on-demand self-tests for DRBG and mechanism");
         println!("\tAnything else - Terminate the demo and exit.");
         print!("\nYour choice: ");
 
@@ -28,7 +28,7 @@ pub fn hmac_drbg_demo(drbg: &mut DRBG<HmacDrbgMech<Sha256>>) -> usize {
 
         match user_choice {
             1 => {
-                user_choice = generate(drbg);
+                generate(drbg);
             }
             2 => {
                 reseed(drbg);
@@ -36,6 +36,13 @@ pub fn hmac_drbg_demo(drbg: &mut DRBG<HmacDrbgMech<Sha256>>) -> usize {
             3 => {
                 uninstantiate(drbg);
                 return 1;
+            }
+            4 => {
+                let res = run_on_demand_drbg(drbg);
+
+                if res != 0 {
+                    return 1;
+                }
             }
             _ => {
                 println!("\nInvalid choice: {}", user_choice);

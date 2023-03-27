@@ -19,6 +19,6 @@ fn fips_sim(){
 }
 
 fn main(){  
-    fips_sim();
-    //run_demo();
+    //fips_sim();
+    run_demo();
 }

@@ -138,3 +138,14 @@ pub fn uninstantiate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
 
     1
 }
+
+pub fn run_on_demand_drbg<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
+    let res = drbg.run_self_tests();
+
+    match res {
+        0 => {println!("\nAll DRBG and mechanism self-tests have passed.");}
+        _ => {println!("\n{res} DRBG and/or mechanism self-tests have failed (see test log).");}
+    }
+
+    1
+}

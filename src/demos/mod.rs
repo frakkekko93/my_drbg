@@ -1,10 +1,9 @@
-pub mod hmac_demo;
-pub mod hash_demo;
+pub mod drbg_demo;
 pub mod utility;
 
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::mechs::hash_mech::HashDrbgMech;
-use crate::demos::{utility::*, hmac_demo::*, hash_demo::*};
+use crate::demos::{utility::*, drbg_demo::*};
 use sha2::Sha256;
 
 pub fn run_demo() {
@@ -78,7 +77,7 @@ pub fn run_demo() {
                         hmac_drbg = inst;
                     }
                 }
-                user_choice = hmac_drbg_demo(&mut hmac_drbg);
+                user_choice = drbg_demo(&mut hmac_drbg);
             }
             2 => {
                 let res = inst_drbg::<HashDrbgMech<Sha256>>(strength, need_ps);
@@ -97,7 +96,7 @@ pub fn run_demo() {
                         hash_drbg = inst;
                     }
                 }
-                user_choice = hash_drbg_demo(&mut hash_drbg);
+                user_choice = drbg_demo(&mut hash_drbg);
             }
             3 => {
                 println!("\nCTR NOT YET IMPLEMENTED!");

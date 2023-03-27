@@ -2,6 +2,7 @@
 use std::{any::TypeId, ops::Add};
 use digest::{BlockInput, FixedOutput, Reset, Update, Digest};
 use generic_array::ArrayLength;
+
 use super::gen_mech::DRBG_Mechanism_Functions;
 
 /*  The life of each generated seed of this DRBG. */
@@ -227,7 +228,7 @@ where
             c: Vec::<u8>::new(), 
             count: 1, 
             reseed_interval: SEED_LIFE, 
-            zeroized: false, 
+            zeroized: false,
             seedlen, 
             hash_fun: D::new(),
         };

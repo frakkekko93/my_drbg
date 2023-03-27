@@ -1,5 +1,7 @@
 use rand::Rng;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
+use crate::self_tests::{self, formats};
+use crate::self_tests::drbg_tests;
 
 /*  Configuration of the DRBG.
     
@@ -24,6 +26,7 @@ pub struct DRBG<T>
 {
     pub internal_state: Option<T>,
     pub security_strength: usize,
+    pub error_state: bool,
 }
 
 #[allow(non_camel_case_types)]
@@ -54,7 +57,7 @@ pub trait DRBG_Functions{
 
         Return Values:
             0 - SUCCESS, internal state has been succesfully reseeded
-            1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
+            1 - ERROR, internal state is not valid (uninstantiated or in error state)
             2 - ERROR, additional input is too long (max security_strength bits)
             3 - ERROR, internal state reseeding failed unexpectedly
     */
@@ -75,7 +78,7 @@ pub trait DRBG_Functions{
         
         Return values:
             0 - SUCCESS, bits have been generated succesfully and can be used for the desired purpose
-            1 - ERROR, internal state is not valid (uninstantiated or never instantiated)
+            1 - ERROR, internal state is not valid (uninstantiated or in error state)
             2 - ERROR, requested too many pseudo-random bits
             3 - ERROR, security strenght not supported
             4 - ERROR, additional input is too long (max security_strength bits)
@@ -89,7 +92,7 @@ pub trait DRBG_Functions{
 
         Return values:
             - 0: SUCCESS, the internal state has been succesfully zeroized
-            - 1: ERROR, invalid internal state (maybe already zeroized?)
+            - 1: ERROR, invalid internal state (already zeroize or in error state)
     */
     fn uninstantiate(&mut self) -> usize;
 
@@ -110,22 +113,34 @@ pub trait DRBG_Functions{
     fn get_sec_str(&self) -> usize;
 
     /*  Utility function that returns the value of the reseed counter of the DRBG.
+        Eventually returns 0 if the DRBG is zeroized or in error state.
     
         Return values:
             - the security strength supported by the DRBG instance. */
     fn get_count(&self) -> usize;
 
     /*  Utility function that returns the value seed life of the DRBG.
+        Eventually returns 0 if the DRBG is zeroized or in error state.
     
         Return values:
             - the seed life used by the DRBG instance. */
     fn get_seed_life(&self) -> usize;
 
     /*  Utility function that returns maximum number of pseudo-random bits that the DRBG can produce for each generate call.
+        Eventually returns 0 if the DRBG is zeroized or in error state.
     
         Return values:
             - the seed life used by the DRBG instance. */
     fn get_max_pbr(&self) -> usize;
+
+    /*  This function runs on-demand self-tests through a particular instance that is already in use. If self-tests fail an
+        error state is set and that particular instance is zeorized and can no longer be used.
+        
+        Return values:
+            - 0: all tests passed, no error state set
+            - 1: some test falied, error state set
+    */
+    fn run_self_tests(&mut self) -> usize;
 }
 
 /*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
@@ -171,7 +186,7 @@ where
                 return Err(3);
             }
             Some(_) => {
-                Ok(Self{security_strength: req_sec_str, internal_state: drbg_mech})
+                Ok(Self{security_strength: req_sec_str, internal_state: drbg_mech, error_state: false})
             }
         }
     }
@@ -222,7 +237,7 @@ where
         if !bits.is_empty(){
             bits.clear();
         }
-        if self.internal_state.is_none(){
+        if self.internal_state.is_none() || self.error_state{
                 return 1;
         }
         if req_bytes * 8 > MAX_PRB {
@@ -279,7 +294,7 @@ where
 
     fn uninstantiate(&mut self) -> usize{
         // Internal state already gone.
-        if self.internal_state.is_none(){
+        if self.internal_state.is_none() || self.error_state{
             return 1;
         }
         
@@ -315,6 +330,10 @@ where
     }
 
     fn get_sec_str(&self) -> usize{
+        if self.error_state || self.internal_state.is_none() {
+            return 0;
+        }
+
         self.security_strength
     }
 
@@ -328,10 +347,36 @@ where
     }
 
     fn get_seed_life(&self) -> usize {
+        if self.error_state || self.internal_state.is_none() {
+            return 0;
+        }
+
         return T::seed_life();
     }
 
     fn get_max_pbr(&self) -> usize {
+        if self.error_state || self.internal_state.is_none() {
+            return 0;
+        }
+
         return MAX_PRB;
+    }
+
+    fn run_self_tests(&mut self) -> usize {
+        let mut log_message = "\n*** STARTING ".to_string();
+        log_message.push_str(T::drbg_name().as_str());
+        log_message.push_str(" on-demand self-tests ***\n");
+        formats::write_to_log(log_message);
+
+        let res = drbg_tests::run_all::run_tests::<T>() +
+                self_tests::mech_tests::run_all::run_tests::<T>();
+
+        if res != 0 {
+            self.error_state = true;
+            self.uninstantiate();
+            return 1;
+        }
+
+        0
     }
 }

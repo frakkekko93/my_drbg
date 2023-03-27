@@ -81,3 +81,11 @@ fn ps_is_too_long<T: DRBG_Mechanism_Functions>() -> usize{
     }
     0
 }
+
+// fn fail_test() -> usize {
+//     return check_res(1, 0, 
+//     "fail_test".to_string(), 
+//     "DRBG_TESTS::instantiation_test".to_string(), 
+//     "this test always fails.".to_string(), 
+//     "cannot happen.".to_string());
+// }

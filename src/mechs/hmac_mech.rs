@@ -2,6 +2,7 @@ use std::any::TypeId;
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
+
 use super::gen_mech::DRBG_Mechanism_Functions;
 
 /*  The life of each generated seed of this DRBG. */
