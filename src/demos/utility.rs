@@ -31,9 +31,17 @@ pub fn inst_drbg<T: DRBG_Mechanism_Functions>(sec_str: usize, need_ps: usize) ->
     if need_ps == 1 {
         let ps: [u8; 32];
         ps = rand::thread_rng().gen();
-        let actual_pers = &ps[0..sec_str/8];
+        let actual_pers;
         
-        println!("Used pers: {}, len: {}", hex::encode(&actual_pers), actual_pers.len());
+        if sec_str > 256 {
+            actual_pers = ps.as_slice();
+        }
+        else{
+            actual_pers = &ps[0..sec_str/8];
+        }
+        
+        println!("-------------------------------------------------------------------------------------");
+        println!("Used pers: {}, len: {}\n", hex::encode(&actual_pers), actual_pers.len());
 
         return DRBG::<T>::new(sec_str, Some(&actual_pers));
     }
@@ -43,16 +51,16 @@ pub fn inst_drbg<T: DRBG_Mechanism_Functions>(sec_str: usize, need_ps: usize) ->
 }
 
 pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
-    print!("\nHow many bits do you want to generate? (max {}): ", drbg.get_max_pbr());
+    print!("> How many bits do you want to generate? (max {}): ", drbg.get_max_pbr());
     let num_bits = get_input();
 
-    print!("\nWhich security strength is required for these bits? (supported <={}): ", drbg.get_sec_str());
+    print!("> Which security strength is required for these bits? (supported <={}): ", drbg.get_sec_str());
     let sec_str = get_input();
 
-    print!("\nIs prediction resistance required for this generation? (1=yes, 2=no, DEFAULT=no): ");
+    print!("> Is prediction resistance required for this generation? (1=yes, 2=no, DEFAULT=no): ");
     let prr = get_input();
 
-    print!("\nDo you want to use some additional input? (1=yes, 2=no, DEFAULT=no): ");
+    print!("> Do you want to use some additional input? (1=yes, 2=no, DEFAULT=no): ");
     let add = get_input();
 
     let flag_prr;
@@ -65,6 +73,7 @@ pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
         }
     }
 
+    print!("-------------------------------------------------------------------------------------");
     let mut bits = Vec::<u8>::new();
     let res;
     let mut actual_add_in = Vec::<u8>::new();
@@ -84,7 +93,7 @@ pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     }
 
     match res {
-        0 => {println!("\nHere are the bits you requested:\n\n{}\nLen: {} bits.\n", hex::encode(&bits), bits.len() * 8);}
+        0 => {print!("\nHere are the bits you requested:\n\n{}, len: {} bits.\n", hex::encode(&bits), bits.len() * 8);}
         1 => {println!("\nGeneration failed with error {}: internal state is not valid.", res);}
         2 => {println!("\nGeneration failed with error {}: you requested too many bits in one go.", res);}
         3 => {println!("\nGeneration failed with error {}: you requested a security strength that is not supported by this instance.", res);}
@@ -98,7 +107,7 @@ pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
 pub fn reseed<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     let sec_str = drbg.get_sec_str();
 
-    print!("\nDo you want to use some additional input? (1=yes, 2=no, DEFAULT=no): ");
+    print!("> Do you want to use some additional input? (1=yes, 2=no, DEFAULT=no): ");
     let add = get_input();
 
     let res;
@@ -132,8 +141,8 @@ pub fn uninstantiate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     let res = drbg.uninstantiate();
 
     match res {
-        0 => {println!("\nDRBG succesfully uninstantiated.");}
-        _ => {println!("\nUninstantiation failed with error {}: instance was already zeroized.", res);}
+        0 => {println!("DRBG succesfully uninstantiated.");}
+        _ => {println!("Uninstantiation failed with error {}: instance was already zeroized.", res);}
     }
 
     1
@@ -143,8 +152,8 @@ pub fn run_on_demand_drbg<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> us
     let res = drbg.run_self_tests();
 
     match res {
-        0 => {println!("\nAll DRBG and mechanism self-tests have passed.");}
-        _ => {println!("\n{res} DRBG and/or mechanism self-tests have failed (see test log).");}
+        0 => {println!("All DRBG and mechanism self-tests have passed.");}
+        _ => {println!("{res} DRBG and/or mechanism self-tests have failed (see test log).");}
     }
 
     1

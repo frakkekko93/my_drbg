@@ -5,10 +5,13 @@ use crate::demos::utility::*;
 pub fn drbg_demo<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     let mut user_choice = 1;
 
-    println!("\nGreat! Your DRBG has been instantiated.");
+    //println!("\n---------------------------------------------------------------------------");
+    println!("Great! Your DRBG has been instantiated.");
     println!("The supported security strength is: {}", drbg.get_sec_str());
+    //println!("---------------------------------------------------------------------------\n");
 
     while user_choice != 0 {
+        println!("-------------------------------------------------------------------------------------");
         println!("Your reseed counter is of {}", drbg.get_count());
         println!("You still have {} generations before a forced reseed occurs.\n", drbg.get_seed_life() - drbg.get_count());
         println!("What do you want to try?");
@@ -20,6 +23,8 @@ pub fn drbg_demo<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
         print!("\nYour choice: ");
 
         user_choice = get_input();
+
+        println!("-------------------------------------------------------------------------------------");
 
         if user_choice == 0 {
             println!("\n\nThanks for testing my drbg!");
