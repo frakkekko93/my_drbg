@@ -7,5 +7,5 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
             reseed_test::run_tests::<T>() +
             zeroization_test::test_zeroization::<T>() +
             kats::run_all::<T>() +
-            nist_vectors::nist_vectors::<T>();
+            nist_vectors::test_vectors::<T>();
 }

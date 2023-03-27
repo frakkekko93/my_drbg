@@ -15,7 +15,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
     match res{
         Err(_) => {
-            write_to_log(format_message(true, "HMAC-DRBG".to_string(),
+            write_to_log(format_message(true, "DRBG_TESTS".to_string(),
                                     "generate_test".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -32,12 +32,12 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
     return check_res(res, 0, 
         "norm_op".to_string(), 
-        "uninstantiate_test".to_string(), 
+        "DRBG_TESTS::uninstantiate_test".to_string(), 
         "normal uninstantiation operation failed.".to_string(), 
         "success on uninstantiate normal operation.".to_string()) +
             check_res(res2, 1, 
             "norm_op".to_string(), 
-            "uninstantiate_test".to_string(), 
+            "DRBG_TESTS::uninstantiate_test".to_string(), 
             "reseeding on invalid internal state succeeded.".to_string(), 
             "reseeding on invalid internal state failed as expected.".to_string());
 }
@@ -49,7 +49,7 @@ fn double_uninst<T: DRBG_Mechanism_Functions>() -> usize {
 
     match res{
         Err(_) => {
-            write_to_log(format_message(true, "HMAC-DRBG".to_string(),
+            write_to_log(format_message(true, "DRBG_TESTS".to_string(),
                                     "generate_test".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
@@ -66,12 +66,12 @@ fn double_uninst<T: DRBG_Mechanism_Functions>() -> usize {
 
     return check_res(res, 0, 
         "double_uninst".to_string(), 
-        "uninstantiate_test".to_string(), 
+        "DRBG_TESTS::uninstantiate_test".to_string(), 
         "normal uninstantiation operation failed.".to_string(), 
         "success on uninstantiate normal operation.".to_string()) +
             check_res(res2, 1, 
             "double_uninst".to_string(), 
-            "uninstantiate_test".to_string(), 
+            "DRBG_TESTS::uninstantiate_test".to_string(), 
             "uninstantiate on invalid internal state succeeded.".to_string(), 
             "uninstantiate on invalid internal state failed as expected.".to_string());
 }

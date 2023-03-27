@@ -23,7 +23,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
     if check_res(drbg.is_none(), false, 
     "norm_op".to_string(), 
-    "instantiation_test".to_string(), 
+    "DRBG_TESTS::instantiation_test".to_string(), 
     "failed to instantiate DRBG using a supported security strength.".to_string(), 
     "succeeded to instantiate DRBG using a supported security strength as expected.".to_string()) != 0{
         return 1;
@@ -48,7 +48,7 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
 
     if check_res((err, true), (1, drbg.is_none()), 
     "test_ss_not_supported".to_string(), 
-    "instantiation_test".to_string(), 
+    "DRBG_TESTS::instantiation_test".to_string(), 
     "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
     "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
         return 1;
@@ -74,7 +74,7 @@ fn ps_is_too_long<T: DRBG_Mechanism_Functions>() -> usize{
 
     if check_res((err, true), (2, drbg.is_none()), 
     "ps_is_too_long".to_string(), 
-    "instantiation_test".to_string(), 
+    "DRBG_TESTS::instantiation_test".to_string(), 
     "succeeded to instantiate DRBG using not supported personalization string.".to_string(), 
     "failed to instantiate DRBG using not supported personalization string as expected.".to_string()) != 0{
         return 1;

@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use crate::{self_tests::formats::*, mechs::{gen_mech::DRBG_Mechanism_Functions}};
 
+const AL_NAME: &str = "MECH-TESTS::kats";
+
 // Runs all kats.
 pub fn run_all<T: DRBG_Mechanism_Functions>() -> usize {
     return test_kats::<T>();
@@ -23,24 +25,16 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
     }
 
     let tests: Vec<Fixture>;
-    let mod_name;
-    let alg_name;
 
     if T::drbg_name() == "Hash-DRBG" {
         tests = serde_json::from_str(include_str!("fixtures/hash_kats.json")).unwrap();
-        mod_name = "hash_kats".to_string();
-        alg_name = "Hash-DRBG-Mech".to_string();
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         tests = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
-        mod_name = "hmac_kats".to_string();
-        alg_name = "HMAC-DRBG-Mech".to_string();
     }
     else {
         return 0;
     }
-
-    // let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
 
     for test in tests {
         let res = T::new(
@@ -52,8 +46,8 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
 
         match res{
             None => {
-                write_to_log(format_message(true, alg_name.clone(),
-                                    mod_name, 
+                write_to_log(format_message(true, AL_NAME.to_string(),
+                                    AL_NAME.to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
                 );
@@ -87,7 +81,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
             
             drbg.generate(&mut result, full_len, None);
             
-            if check_res(result, expected, test.name, mod_name.clone(), 
+            if check_res(result, expected, test.name, AL_NAME.to_string(), 
                             "failed generation using prr.".to_string(),
                             "completed generation using prr.".to_string()) != 0 {
                 return 1;
@@ -109,7 +103,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name, mod_name.clone(), 
+                if check_res(result, expected, test.name, AL_NAME.to_string(), 
                     "failed double generation without prr.".to_string(),
                     "completed double generation without prr.".to_string()) != 0 {
                     return 1;
@@ -123,7 +117,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
                         None => None
                     });
                 
-                if check_res(result, expected, test.name, mod_name.clone(), 
+                if check_res(result, expected, test.name, AL_NAME.to_string(), 
                     "failed generation without prr.".to_string(),
                     "completed generation without prr.".to_string()) != 0 {
                     return 1;

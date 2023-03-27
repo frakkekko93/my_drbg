@@ -1,9 +1,11 @@
 use serde::Deserialize;
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
+use crate::self_tests::formats::*;
 
-use crate::{mechs::gen_mech::DRBG_Mechanism_Functions, self_tests::formats::{write_to_log, format_message, check_res}};
+const AL_NAME: &str = "MECH-TESTS::nist_vectors";
 
 /*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */
-pub fn nist_vectors<T: DRBG_Mechanism_Functions>() -> usize{
+pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -15,7 +17,6 @@ pub fn nist_vectors<T: DRBG_Mechanism_Functions>() -> usize{
     }
 
     let tests: Vec<Fixture>;
-    let alg_name;
 
     if T::drbg_name() == "Hash-DRBG" {
         // tests = serde_json::from_str(include_str!("fixtures/hash_kats.json")).unwrap();
@@ -23,18 +24,12 @@ pub fn nist_vectors<T: DRBG_Mechanism_Functions>() -> usize{
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
-        alg_name = "HMAC-DRBG-Mech".to_string();
     }
     else {
         return 0;
     }
 
-    // let tests: Vec<Fixture> = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
-
     for test in tests {
-        // let mut name = "nist_vectors::".to_string();
-        // name.push_str(&test.name);
-
         let res = T::new(
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
@@ -43,8 +38,8 @@ pub fn nist_vectors<T: DRBG_Mechanism_Functions>() -> usize{
         let mut drbg;
         match res{
             None => {
-                write_to_log(format_message(true, alg_name.clone(),
-                                    "nist_vectors".to_string(), 
+                write_to_log(format_message(true, AL_NAME.to_string(),
+                                    "test_vectors".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
                 );
@@ -74,15 +69,15 @@ pub fn nist_vectors<T: DRBG_Mechanism_Functions>() -> usize{
                                    None => None,
                                });
         
-        if check_res(result, expected, test.name, "nist_vectors".to_string(), 
+        if check_res(result, expected, test.name, AL_NAME.to_string(), 
             "failed nist vector generation.".to_string(),
             "completed nist vector generation.".to_string()) != 0 {
             return 1;
         }
     }
 
-    write_to_log(format_message(false, alg_name.clone(),
-                                                            "nist_vectors".to_string(), 
+    write_to_log(format_message(false, AL_NAME.to_string(),
+                                                            "test_vectors".to_string(), 
                                                             "all nist vectors have passed.".to_string())
     );
 

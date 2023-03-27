@@ -4,6 +4,8 @@ use crate::mechs::hmac_mech::HmacDrbgMech;
 use sha2::*;
 use crate::self_tests::formats::*;
 
+const AL_NAME: &str = "MECH-TESTS::instantiation_test";
+
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
     if T::drbg_name() == "HMAC-DRBG" {
@@ -31,7 +33,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
     if check_res(res.is_none(), false, 
             "norm_op".to_string(), 
-            "instantiation_test".to_string(), 
+            AL_NAME.to_string(), 
             "normal instantiation of DRBG mechanism failed.".to_string(), 
             "normal instantiation of DRBG mechanism succeeded.".to_string()) != 0{
         return 1;
@@ -57,7 +59,7 @@ fn test_fun_not_approved<T: DRBG_Mechanism_Functions>(fun_id: &str) -> usize{
 
     if check_res(res.is_none(), true, 
             test_name, 
-            "instantiation_test".to_string(), 
+            AL_NAME.to_string(), 
             fail_msg, 
             succ_msg) != 0{
         return 1;
