@@ -10,16 +10,19 @@ pub fn run_demo() {
     let mut scelta_drbg;
     let mut user_choice: usize = 1;
 
-    print!("\n***************************************************************************");
-    println!("***************************************************************************");
+    print!("\n/****************************************************************************");
+    println!("****************************************************************************\\");
     println!("Welcome to a demo of this DRBG implementation. This DRBG uses all three of the mechanisms that are prescribed in NIST SP 800-90a (HMAC-DRBG, Hash-DRBG");
     println!("and CTR-DRBG). The goal of this demo is to show the capabilities of these implementations. The DRBGs that are used in this crate are supposed to have");
     println!("access to a direct entropy source that provides FULL-ENTROPY bits. This means that each DRBG can always be reseeded using fresh entropy and");
     println!("you can request prediction resistance at any time during bit generation. The DRBGs are also designed to have a reseed counter that allows for a");
     println!("limited number of consecutive generations without accessing the entropy source for fresh entropy. Once this limit has been reached, the DRBG will");
     println!("handle the reseeding by itself and you will be able to continue using the active instance.");
-    print!("***************************************************************************");
-    println!("***************************************************************************");
+    println!("Each DRBG implemented here supports a security strength in the interval [112, 256]. It is suggested to request strengths that are multiples of");
+    println!("8 as everything is handled in the form of bytes and eventually truncated (e.g.: sec_str=135 is equivalent to sec_str=128). Same goes for bit generation,");
+    println!("no padding bits are used for requested lenghts that are not multiples of 8.");
+    print!("\\****************************************************************************");
+    println!("****************************************************************************/");
     println!("\nThe first step to test this design is to choose which mechanism you would like to use.");
     
     while user_choice != 0 {
@@ -45,7 +48,7 @@ pub fn run_demo() {
             continue;
         }
 
-        print!("> Which security strength do you need? (must be <=256): ");
+        print!("> Which security strength do you need? (must be 112 <= sec_str <= 256): ");
         // print!("\nYour choice: ");
 
         let strength = get_input();

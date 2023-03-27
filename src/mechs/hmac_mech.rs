@@ -128,6 +128,9 @@ where
         this.count = 1;
         this.reseed_interval = SEED_LIFE;
 
+        println!("HMAC-DRBG-Mech - (instantiate): obtained k: {} - len: {}.", hex::encode(&this.k), this.k.len());
+        println!("HMAC-DRBG-Mech - (instantiate): obtained v: {} - len: {}.", hex::encode(&this.v), this.v.len());
+
         Some(this)
     }
 

@@ -36,7 +36,7 @@ pub trait DRBG_Functions{
         In case the instantiation is not possible, this function returns an error flag to the calling application.
 
         Parameters:
-            - req_sec_str: the security strength needed by the calling application
+            - req_sec_str: the security strength needed by the calling application. This number should be a multiple of 8.
             - ps: optional personalization string to be used for instantiation of the DRBG mechanism
 
         Return values:
@@ -71,7 +71,7 @@ pub trait DRBG_Functions{
 
         Parameters:
             - bits: a reference to the resulting byte vector. It is cleared before use.
-            - req_bytes: the number of requested bytes for generation
+            - req_bits: the number of requested bits for generation. This number should be a multiple of 8.
             - req_str: the requested security strength for the generated bits
             - pred_res_req: whether prediction resistance is to be served on this call
             - add: optional additional input for the generation
@@ -84,7 +84,7 @@ pub trait DRBG_Functions{
             4 - ERROR, additional input is too long (max security_strength bits)
             5 - ERROR, bit generation failed unexpectedly
     */
-    fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize;
+    fn generate(&mut self, bits: &mut Vec<u8>, req_bits: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize;
 
     /*  This function is used to zeroize the internal state and make it unavailable to the calling application.
         It overwrites the internal state of the DRBG mechanism and sets the 'zeroized' flag, rendering the internal state unusable.
@@ -163,8 +163,8 @@ where
         DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
         DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
 
-        // println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
-        // println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
+        println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
+        println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
         
         // Trying to allocate the DRBG's internal state.
         let drbg_mech;
@@ -186,7 +186,7 @@ where
                 return Err(3);
             }
             Some(_) => {
-                Ok(Self{security_strength: req_sec_str, internal_state: drbg_mech, error_state: false})
+                Ok(Self{security_strength: (req_sec_str/8)*8, internal_state: drbg_mech, error_state: false})
             }
         }
     }
@@ -232,7 +232,7 @@ where
         return 0;
     }
 
-    fn generate(&mut self, bits: &mut Vec<u8>, req_bytes: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
+    fn generate(&mut self, bits: &mut Vec<u8>, req_bits: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
         // Checking the validity of all the obtained parameters.
         if !bits.is_empty(){
             bits.clear();
@@ -240,7 +240,7 @@ where
         if self.internal_state.is_none() || self.error_state{
                 return 1;
         }
-        if req_bytes * 8 > MAX_PRB {
+        if req_bits > MAX_PRB {
             return 2;
         }
         if req_str > self.security_strength {
@@ -275,11 +275,11 @@ where
             working_state.reseed(&entropy_input, add);
 
             // Generating the requested bits.
-            gen_res = working_state.generate(bits, req_bytes, None);
+            gen_res = working_state.generate(bits, req_bits/8, None);
         }
         else {
             // Generating the requested bits.
-            gen_res = working_state.generate(bits, req_bytes, add);
+            gen_res = working_state.generate(bits, req_bits/8, add);
         }
 
         // Checking the result of the generation.

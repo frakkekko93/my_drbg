@@ -33,7 +33,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
         }
     }
 
-    let res = drbg.generate(&mut bits, 128, 256, true, Some(add_in.as_slice()));
+    let res = drbg.generate(&mut bits, 1024, 256, true, Some(add_in.as_slice()));
 
     return check_res(res, 0, 
         "norm_op".to_string(), 
@@ -64,7 +64,7 @@ fn non_empty_out_vec<T: DRBG_Mechanism_Functions>() -> usize {
     }
 
     // Making the generate fail for security strength not supported.
-    drbg.generate(&mut bits, 128, 512, false, None);
+    drbg.generate(&mut bits, 1024, 512, false, None);
 
     return check_res(bits.is_empty(), true, 
         "non_empty_out_vec".to_string(), 
@@ -94,7 +94,7 @@ fn int_state_not_valid<T: DRBG_Mechanism_Functions>() -> usize {
     }
 
     drbg.uninstantiate();
-    let res = drbg.generate(&mut bits, 128, 256, false, None);
+    let res = drbg.generate(&mut bits, 1024, 256, false, None);
 
     return check_res(res, 1, 
         "int_state_not_valid".to_string(), 
@@ -123,7 +123,7 @@ fn req_too_many_bytes<T: DRBG_Mechanism_Functions>() -> usize {
         }
     }
 
-    let res = drbg.generate(&mut bits, 129, 256, false, None);
+    let res = drbg.generate(&mut bits, 1025, 256, false, None);
 
     return check_res(res, 2, 
         "req_too_many_bytes".to_string(), 
@@ -152,7 +152,7 @@ fn ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize {
         }
     }
 
-    let res = drbg.generate(&mut bits, 128, 512, false, None);
+    let res = drbg.generate(&mut bits, 1024, 512, false, None);
 
     return check_res(res, 3, 
         "ss_not_supported".to_string(), 
@@ -182,7 +182,7 @@ fn add_in_too_long<T: DRBG_Mechanism_Functions>() -> usize {
         }
     }
 
-    let res = drbg.generate(&mut bits, 128, 256, false, Some(add_in.as_slice()));
+    let res = drbg.generate(&mut bits, 1024, 256, false, Some(add_in.as_slice()));
 
     return check_res(res, 4, 
         "add_in_too_long".to_string(), 

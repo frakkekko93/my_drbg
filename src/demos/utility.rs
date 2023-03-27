@@ -85,10 +85,10 @@ pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
 
             println!("\nUsed add-in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
 
-            res = drbg.generate(&mut bits, num_bits/8, sec_str, flag_prr, Some(actual_add_in.as_slice()));
+            res = drbg.generate(&mut bits, num_bits, sec_str, flag_prr, Some(actual_add_in.as_slice()));
         }
         _ => {
-            res = drbg.generate(&mut bits, num_bits/8, sec_str, flag_prr, None);
+            res = drbg.generate(&mut bits, num_bits, sec_str, flag_prr, None);
         }
     }
 
