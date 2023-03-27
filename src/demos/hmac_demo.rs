@@ -11,7 +11,7 @@ pub fn hmac_drbg_demo(drbg: &mut DRBG<HmacDrbgMech<Sha256>>) -> usize {
 
     while user_choice != 0 {
         println!("Your reseed counter is of {}", drbg.get_count());
-        println!("You still have {} generation before a forced reseed occurs.\n", drbg.get_seed_life() - drbg.get_count());
+        println!("You still have {} generations before a forced reseed occurs.\n", drbg.get_seed_life() - drbg.get_count());
         println!("What do you want to try?");
         println!("\t1- Generate bits");
         println!("\t2- Reseed the DRBG");

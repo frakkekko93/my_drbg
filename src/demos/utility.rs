@@ -3,7 +3,7 @@ use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use std::io::{self, stdin};
 use rand::Rng;
 
-/*  Utility function used to get user choices from cmd input. */
+/*  Utility function used to get user choices from cmd input. If an error occurs, 0 is returned. */
 pub fn get_input() -> usize {
     io::Write::flush(&mut io::stdout()).expect("flush failed!");
 
