@@ -1,11 +1,10 @@
+use super::gen_mech::DRBG_Mechanism_Functions;
+use generic_array::ArrayLength;
 use std::any::TypeId;
 use aes::cipher::{
     BlockCipher, BlockEncrypt, BlockDecrypt, KeyInit,
     generic_array::GenericArray,
 };
-use generic_array::ArrayLength;
-
-use super::gen_mech::DRBG_Mechanism_Functions;
 
 /*  The life of each generated seed of this DRBG. */
 const SEED_LIFE: usize = 1000;
@@ -22,7 +21,6 @@ where
     k: GenericArray<u8, D::KeySize>,
     v: GenericArray<u8, D::BlockSize>,
     count: usize,
-    reseed_interval: usize,
     zeroized: bool,
     seedlen: usize,
     blocklen: usize,
@@ -213,7 +211,6 @@ where
             k,
             v,
             count: 1,
-            reseed_interval: SEED_LIFE,
             zeroized: false,
             seedlen: seed_len,
             blocklen: block_len,
@@ -224,9 +221,6 @@ where
         let mut seed_material = entropy.to_vec();
         CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_pers);
         this.update(&seed_material);
-
-        println!("NEW: initial V: {}, len {}.", hex::encode(&this.v), this.v.len());
-        println!("NEW: initial K: {}, len {}.", hex::encode(&this.k), this.k.len());
 
         // Returning a reference to this instance (step 8)
         Some(this)
@@ -275,8 +269,6 @@ where
                 self.update(&new_add_in);
             }
         }
-
-        println!("GENERATE: using add-in: {}, len: {}, to generate {} bits.", hex::encode(&new_add_in), new_add_in.len(), req_bytes*8);
 
         // Generating blocklen bits at a time using the underlying block cipher (step 3,4).
         let cipher = self.block_cipher();
@@ -364,9 +356,6 @@ where
             }
         }
 
-        println!("RESEED: using entropy: {}, len {}.", hex::encode(&entropy), entropy.len());
-        println!("RESEED: using add_in: {}, len {}.", hex::encode(&new_add_in), new_add_in.len());
-
         // Updating the internal state using the entropy and given additional input (step 3,4)
         let mut seed_material = entropy.to_vec();
         CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_add_in);
@@ -374,9 +363,6 @@ where
 
         // Resetting the reseed counter (step 5)
         self.count = 1;
-
-        println!("RESEED: V after reseed: {}, len {}.", hex::encode(&self.v), self.v.len());
-        println!("RESEED: K after reseed: {}, len {}.", hex::encode(&self.k), self.k.len());
 
         0
     }
@@ -387,6 +373,20 @@ where
             return 1;
         }
 
+        // Zeroizing internal state values
+        for i in 0..self.k.as_slice().len() {
+            self.k[i] = 0x0;
+        }
+
+        for i in 0..self.v.as_slice().len() {
+            self.v[i] = 0x0;
+        }
+
+        self.count = 0;
+        self.seedlen = 0;
+        self.keylen = 0;
+        self.blocklen = 0;
+        self.zeroized = true;
         0
     }
 
@@ -395,7 +395,7 @@ where
     }
 
     fn reseed_needed(&self) -> bool{
-        self.count >= self.reseed_interval
+        self.count >= SEED_LIFE
     }
 
     fn _is_zeroized(&self) -> bool{

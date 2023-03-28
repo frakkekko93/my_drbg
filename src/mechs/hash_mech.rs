@@ -1,9 +1,10 @@
 
+use super::gen_mech::DRBG_Mechanism_Functions;
 use std::{any::TypeId, ops::Add};
 use digest::{BlockInput, FixedOutput, Reset, Update, Digest};
 use generic_array::ArrayLength;
 
-use super::gen_mech::DRBG_Mechanism_Functions;
+
 
 /*  The life of each generated seed of this DRBG. */
 const SEED_LIFE: usize = 1000;
@@ -28,7 +29,6 @@ where
     v: Vec<u8>,
     c: Vec<u8>,
     count: usize,
-    reseed_interval: usize,
     zeroized: bool,
     seedlen: usize,
     hash_fun: D,
@@ -226,8 +226,7 @@ where
         let mut this = Self{ 
             v: Vec::<u8>::new(), 
             c: Vec::<u8>::new(), 
-            count: 1, 
-            reseed_interval: SEED_LIFE, 
+            count: 1,
             zeroized: false,
             seedlen, 
             hash_fun: D::new(),
@@ -258,7 +257,7 @@ where
         }
         
         // Reached reseed interval (ERROR_FLAG=2, step 1)
-        if self.count >= self.reseed_interval{
+        if self.count >= SEED_LIFE{
             return 2;
         }
 
@@ -355,7 +354,6 @@ where
         }
 
         self.count = 0;
-        self.reseed_interval = 0;
         self.zeroized = true;
         self.seedlen = 0;
         self.hash_fun.reset();
@@ -368,7 +366,7 @@ where
     }
 
     fn reseed_needed(&self) -> bool{
-        self.count >= self.reseed_interval
+        self.count >= SEED_LIFE
     }
 
     fn _is_zeroized(&self) -> bool{

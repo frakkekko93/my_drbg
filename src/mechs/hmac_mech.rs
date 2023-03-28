@@ -25,7 +25,6 @@ where
     k: GenericArray<u8, D::OutputSize>,
     v: GenericArray<u8, D::OutputSize>,
     count: usize,
-    reseed_interval: usize,
     zeroized: bool,
 }
 
@@ -121,12 +120,11 @@ where
             v[i] = 0x01;
         }
 
-        let mut this = Self { k, v, count: 0 , reseed_interval: 0, zeroized: false};
+        let mut this = Self { k, v, count: 0 , zeroized: false};
 
         // Updating the internal state using the passed parameters.
         this.update(Some(&[entropy, nonce, pers]));
         this.count = 1;
-        this.reseed_interval = SEED_LIFE;
 
         println!("HMAC-DRBG-Mech - (instantiate): obtained k: {} - len: {}.", hex::encode(&this.k), this.k.len());
         println!("HMAC-DRBG-Mech - (instantiate): obtained v: {} - len: {}.", hex::encode(&this.v), this.v.len());
@@ -141,7 +139,7 @@ where
         }
         
         // Reached reseed interval (ERROR_FLAG=2)
-        if self.count >= self.reseed_interval{
+        if self.count >= SEED_LIFE{
             return 2;
         }
 
@@ -209,7 +207,6 @@ where
         }
 
         self.count = 0;
-        self.reseed_interval = 0;
         self.zeroized = true;
 
         return 0;
@@ -220,7 +217,7 @@ where
     }
 
     fn reseed_needed(&self) -> bool{
-        self.count >= self.reseed_interval
+        self.count >= SEED_LIFE
     }
 
     fn _is_zeroized(&self) -> bool{
