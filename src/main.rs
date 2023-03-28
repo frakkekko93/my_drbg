@@ -44,13 +44,24 @@ fn main(){
         }
     }
 
-    let res = drbg.reseed(&entropy, None);
+    let mut res = drbg.reseed(&entropy, None);
 
     if res == 0 {
         println!("MAIN: reseeding succeeded.");
     }
     else {
-        println!("MAIN: instantiation failed.");
+        println!("MAIN: instantiation failed with error: {}.", res);
+        return;
+    }
+
+    let mut bits = Vec::<u8>::new();
+    res = drbg.generate(&mut bits, 16, Some("Trial add-in.".as_bytes()));
+
+    if res == 0 {
+        println!("MAIN: generated bits: {}, len: {}.", hex::encode(&bits), bits.len()*8);
+    }
+    else {
+        println!("MAIN: generation failed with error: {}.", res);
         return;
     }
 }

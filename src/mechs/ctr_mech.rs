@@ -37,7 +37,7 @@ where
     D::KeySize: ArrayLength<u8>,
 {
     /*  Performs bit a bit XOR between two vectors of the same size. */
-    fn xor_vecs(vec1: &mut Vec<u8>, vec2: Vec<u8>) {
+    fn xor_vecs(vec1: &mut Vec<u8>, vec2: &Vec<u8>) {
         if vec1.len() != vec2.len() {
             return;
         }
@@ -78,7 +78,7 @@ where
         
         Parameters:
             - provided_data: the data to be used for the update (exaclty seedlen bits) */
-    fn update(&mut self, provided_data: Vec<u8>) {
+    fn update(&mut self, provided_data: &Vec<u8>) {
         // Provided data must not be empty and must be seedlen long
         if provided_data.is_empty() || provided_data.len() != self.seedlen/8 {
             return;
@@ -222,8 +222,8 @@ where
 
         // Updating the internal state using the entropy and given personalization string (step 3,6)
         let mut seed_material = entropy.to_vec();
-        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, new_pers);
-        this.update(seed_material);
+        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_pers);
+        this.update(&seed_material);
 
         println!("NEW: initial V: {}, len {}.", hex::encode(&this.v), this.v.len());
         println!("NEW: initial K: {}, len {}.", hex::encode(&this.k), this.k.len());
@@ -232,20 +232,106 @@ where
         Some(this)
     }
 
-    fn generate(&mut self, _result: &mut Vec<u8>, _req_bytes: usize, _add: Option<&[u8]>) -> usize {
+    /*  This function is implemented following the algorithm described at 10.2.1.5.1 for a CTR-DRBG that doesn't use a df. */
+    fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
+        // Eventually deleting data in result
+        if !result.is_empty() {
+            result.clear();
+        }
+        
         // No generate on a zeroized status (ERROR_FLAG=1)
         if self.zeroized {
             return 1;
         }
         
-        // Reached reseed interval (ERROR_FLAG=2)
-        if self.count >= self.reseed_interval{
+        // Reached reseed interval (ERROR_FLAG=2, step 1)
+        if self.count >= SEED_LIFE{
             return 2;
         }
+
+        // Restricting add-in to be of seedlen bits and eventually using 0^seedlen id add is None (step 2)
+        let mut new_add_in = Vec::<u8>::new();
+        match add {
+            None => {
+                for _i in 0..self.seedlen/8 {
+                    new_add_in.push(0x00);
+                }
+            }
+            Some(add_in) => {
+                if add_in.len() < self.seedlen/8 {
+                    new_add_in.append(&mut add_in.to_vec());
+        
+                    for _i in 0..self.seedlen/8-add_in.len() {
+                        new_add_in.push(0x00);
+                    }
+                }
+                else if add_in.len() == self.seedlen/8 {
+                    new_add_in.clone_from_slice(&add_in);
+                }
+                else {
+                    new_add_in.clone_from_slice(&add_in[..self.seedlen/8]);
+                }
+
+                self.update(&new_add_in);
+            }
+        }
+
+        println!("GENERATE: using add-in: {}, len: {}, to generate {} bits.", hex::encode(&new_add_in), new_add_in.len(), req_bytes*8);
+
+        // Generating blocklen bits at a time using the underlying block cipher (step 3,4).
+        let cipher = self.block_cipher();
+        let mut i: usize = 0;
+        while i < req_bytes {
+            // Appropriately increment the counter based on his size (step 4.1)
+            if CTR_LEN < self.blocklen {
+                let mid_point = self.blocklen/8 - CTR_LEN/8;
+                
+                // Increment the rigth-most CTR_LEN/8 bytes of V (step 4.1.1)
+                let mut right_v = self.v[mid_point..].to_vec();
+                CtrDrbgMech::<D>::modular_add(&mut right_v, 0x01);
+
+                // Creating a clone of V with the incremented right-most CTR_LEN/8 bytes
+                let mut v_clone = GenericArray::<u8, D::BlockSize>::default();
+                let (left, right) = v_clone.split_at_mut(mid_point);
+                left.clone_from_slice(&self.v[..mid_point]);
+                right.clone_from_slice(&right_v.as_slice());
+
+                // Update V (step 4.1.2)
+                self.v.clone_from(&v_clone);
+            }
+            else {
+                // Increment V (step 4.1 alternative)
+                let mut v_clone = self.v.to_vec();
+                CtrDrbgMech::<D>::modular_add(&mut v_clone, 0x01);
+
+                // Update V
+                self.v.clone_from_slice(&v_clone);
+            }
+
+            // Encrypt V (step 4.2)
+            let mut block = self.v.clone();
+            cipher.encrypt_block(&mut block);
+
+            // Append encrypted block to temporary vector (step 4.3)
+            result.append(&mut block.to_vec());
+
+            // Increment counter
+            i += self.blocklen/8;
+        }
+
+        // Taking only req_bytes (step 5)
+        result.resize(req_bytes, 0x00);
+
+        // Updating internal state (step 6)
+        self.update(&new_add_in);
+
+        // Incrementing reseed counter (step 7)
+        self.count += 1;
 
         0
     }
 
+    /*  This function is implemented following the algorithm described at 10.2.1.4.1 for a CTR-DRBG that doesn't use a df. */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
@@ -283,8 +369,8 @@ where
 
         // Updating the internal state using the entropy and given additional input (step 3,4)
         let mut seed_material = entropy.to_vec();
-        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, new_add_in);
-        self.update(seed_material);
+        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_add_in);
+        self.update(&seed_material);
 
         // Resetting the reseed counter (step 5)
         self.count = 1;
