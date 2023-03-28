@@ -1,5 +1,4 @@
 use std::any::TypeId;
-use aes::*;
 use aes::cipher::{
     BlockCipher, BlockEncrypt, BlockDecrypt, KeyInit,
     generic_array::GenericArray,
@@ -40,12 +39,18 @@ where
     /*  Performs bit a bit XOR between two vectors of the same size. */
     fn xor_vecs(vec1: &mut Vec<u8>, vec2: Vec<u8>) {
         if vec1.len() != vec2.len() {
+
+            println!("VEC-XOR: vectors are of different sizes ({} and {}).", vec1.len(), vec2.len());
+
             return;
         }
 
-        vec1.iter_mut()
-        .zip(vec2.iter())
-        .for_each(|(x1, x2)| *x1 ^= *x2);
+        for i in 0..vec1.len() {
+            vec1[i] = vec1[i] ^ vec2[i];
+        }
+        // vec1.iter_mut()
+        // .zip(vec2.iter())
+        // .for_each(|(x1, x2)| *x1 ^= *x2);
     }
 
     /*  Performs a modular addition between a vector of bytes and a single byte. */
@@ -85,6 +90,10 @@ where
             return;
         }
 
+        // println!("UPDATE: v before update: {}, len: {}", hex::encode(&self.v), self.v.len());
+        // println!("UPDATE: k before update: {}, len: {}", hex::encode(&self.k), self.k.len());
+        // println!("UPDATE: received data: {}, len: {}", hex::encode(&provided_data), provided_data.len());
+
         // Init local variables (step 1)
         let mut temp = Vec::<u8>::new();
         let cipher = self.block_cipher();
@@ -92,14 +101,18 @@ where
         // Fill temporary vector block by block until seedlen is reached (step 2)
         let mut i: usize = 0;
         while i < self.seedlen {
-
             // Appropriately increment the counter based on his size (step 2.1)
             if CTR_LEN < self.blocklen {
                 let mid_point = self.blocklen/8 - CTR_LEN/8;
                 
                 // Increment the rigth-most CTR_LEN/8 bytes of V (step 2.1.1)
                 let mut right_v = self.v[mid_point..].to_vec();
+
+                // println!("UPDATE: taken bytes: {}, len: {}, for increment.", hex::encode(&right_v), right_v.len());
+
                 CtrDrbgMech::<D>::modular_add(&mut right_v, 0x01);
+
+                // println!("UPDATE: obtained bytes: {}, len: {}, after increment", hex::encode(&right_v), right_v.len());
 
                 // Creating a clone of V with the incremented right-most CTR_LEN/8 bytes
                 let mut v_clone = GenericArray::<u8, D::BlockSize>::default();
@@ -119,11 +132,15 @@ where
 
                 // Update V
                 self.v.clone_from_slice(&v_clone);
+                
+                // println!("UPDATE: incremented whole v: {}, len: {}", hex::encode(&self.v), self.v.len());
             }
 
             // Encrypt V (step 2.2)
             let mut block = self.v.clone();
             cipher.encrypt_block(&mut block);
+
+            // println!("UPDATE: appended encrypted v: {}, len: {}", hex::encode(&block), block.len());
 
             // Append encrypted block to temporary vector (step 2.3)
             temp.append(&mut block.to_vec());
@@ -133,16 +150,23 @@ where
         }
 
         // Taking only seedlen bits (step 3)
-        temp.resize(self.seedlen, 0x00);
+        temp.resize(self.seedlen/8, 0x00);
+
+        // println!("UPDATE: temp before XOR: {}, len: {}", hex::encode(&temp), temp.len());
 
         // Performing temp XOR provided_data (step 4)
         CtrDrbgMech::<D>::xor_vecs(&mut temp, provided_data);
+
+        // println!("UPDATE: temp after XOR: {}, len: {}", hex::encode(&temp), temp.len());
 
         // Update K (step 5)
         self.k.clone_from_slice(&temp[..self.keylen/8]);
 
         // Update V (step 6)
         self.v.clone_from_slice(&temp[self.keylen/8..]);
+
+        // println!("UPDATE: v after update: {}, len: {}", hex::encode(&self.v), self.v.len());
+        // println!("UPDATE: k after update: {}, len: {}", hex::encode(&self.k), self.k.len());
     }
 
     /*  Retrieves and instance of the hmac primitive that uses self.k as a key.
@@ -160,25 +184,96 @@ where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,
     D::BlockSize: ArrayLength<u8>,
     D::KeySize: ArrayLength<u8>,
-{
-    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> {
-        // Runtime check on the use of any unallowed hash function.
-        let this_id = TypeId::of::<D>();
-        let sha256_id = TypeId::of::<sha2::Sha256>();
-        let sha512_id = TypeId::of::<sha2::Sha512>();
-        if this_id != sha256_id && this_id != sha512_id{
-            return None;
-        }
+{   
+    /*  This function is implemented following the algorithm described at 10.2.1.3.2 for a CTR-DRBG that doesn't use a df. */
+    fn new(entropy: &[u8], _nonce: &[u8], pers: &[u8]) -> Option<Self> {
+        let seed_len: usize;
+        let key_len: usize;
+        let block_len: usize = 128;
 
-        // Entropy and nonce parameters must be present.
-        if entropy.len() == 0 || nonce.len() == 0 {
+        // Runtime check on the use of any unallowed hash function and according parameter setup.
+        let this_id = TypeId::of::<D>();
+        let aes128_id = TypeId::of::<aes::Aes128>();
+        let aes192_id = TypeId::of::<aes::Aes192>();
+        let aes256_id = TypeId::of::<aes::Aes256>();
+
+        if this_id == aes128_id {key_len = 128;}
+        else if this_id == aes192_id {key_len = 192;}
+        else if this_id == aes256_id {key_len = 256;}
+        else {return None;}
+        seed_len = block_len + key_len;
+
+        // println!("NEW: set block len: {}.", block_len);
+        // println!("NEW: set key len: {}.", key_len);
+        // println!("NEW: set seedlen len: {}.", seed_len);
+        
+        // Entropy parameter must be present and of seedlen bits.
+        if entropy.len() != seed_len/8/*|| nonce.len() == 0*/ {
             return None
         }
 
-        None
+        // Taking exactly seedlen bits from the PS that has been passed (step 1,2).
+        // If an empty pers is received we will use 0^seedlen as pers.
+        let mut new_pers = Vec::<u8>::new();
+        if pers.len() < seed_len/8 {
+            new_pers.append(&mut pers.to_vec());
+
+            for _i in 0..seed_len/8-pers.len() {
+                new_pers.push(0x00);
+            }
+        }
+        else if pers.len() == seed_len/8 {
+            new_pers.clone_from_slice(&pers);
+        }
+        else {
+            new_pers.clone_from_slice(&pers[..seed_len/8]);
+        }
+
+        // println!("NEW: using pers: {}, len: {}.", hex::encode(&new_pers), new_pers.len());
+
+        // Setting initial values for the internal state (step 4,5,7).
+        let mut k = GenericArray::<u8, D::KeySize>::default();
+        let mut v = GenericArray::<u8, D::BlockSize>::default();
+
+        for i in 0..k.as_slice().len() {
+            k[i] = 0x0;
+        }
+
+        for i in 0..v.as_slice().len() {
+            v[i] = 0x0;
+        }
+
+        // println!("NEW: init k: {}, len: {}.", hex::encode(&k), k.len());
+        // println!("NEW: using v: {}, len: {}.", hex::encode(&v), v.len());
+
+        let mut this = Self{
+            k,
+            v,
+            count: 1,
+            reseed_interval: SEED_LIFE,
+            zeroized: false,
+            seedlen: seed_len,
+            blocklen: block_len,
+            keylen: key_len,
+        };
+
+        // Updating the internal state using the entropy and given personalization string (step 3,6)
+        let mut seed_material = entropy.to_vec();
+        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, new_pers.to_vec());
+
+        // println!("NEW: using entropy: {}, len: {}.", hex::encode(&entropy), entropy.len());
+        // println!("NEW: XORed entropy with pers and obtained: {}, len: {}.", hex::encode(&seed_material), seed_material.len());
+
+        this.update(seed_material);
+
+        // println!("NEW: k after update: {}, len: {}.", hex::encode(&this.k), this.k.len());
+        // println!("NEW: v after update: {}, len: {}.", hex::encode(&this.v), this.v.len());
+
+        // Returning a reference to this instance (step 8)
+        Some(this)
     }
 
-    fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
+    fn generate(&mut self, _result: &mut Vec<u8>, _req_bytes: usize, _add: Option<&[u8]>) -> usize {
         // No generate on a zeroized status (ERROR_FLAG=1)
         if self.zeroized {
             return 1;
@@ -192,7 +287,7 @@ where
         0
     }
 
-    fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
+    fn reseed(&mut self, _entropy: &[u8], _add: Option<&[u8]>) -> usize {
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
             return 1;
