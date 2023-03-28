@@ -26,20 +26,31 @@ fn main(){
     //fips_sim();
     //run_demo();
     let entropy_part:[u8; 32] = rand::thread_rng().gen();
-    let entropy_part2: [u8; 16] = rand::thread_rng().gen();
+    let entropy_part2: [u8; 8] = rand::thread_rng().gen();
     let mut entropy = Vec::<u8>::new();
     entropy.append(&mut entropy_part.to_vec());
     entropy.append(&mut entropy_part2.to_vec());
-    let res = CtrDrbgMech::<Aes256>::new(&entropy, "Trial nonce".as_bytes(), "Trial nonce".as_bytes());
+    let res = CtrDrbgMech::<Aes192>::new(&entropy, "Trial nonce".as_bytes(), "Trial nonce".as_bytes());
 
-    let _drbg;
+    let mut drbg;
     match res {
         None => {
             println!("MAIN: instantiation failed.");
+            return;
         }
         Some(inst) => {
             println!("MAIN: instantiation succeeded.");
-            _drbg = inst;
+            drbg = inst;
         }
+    }
+
+    let res = drbg.reseed(&entropy, None);
+
+    if res == 0 {
+        println!("MAIN: reseeding succeeded.");
+    }
+    else {
+        println!("MAIN: instantiation failed.");
+        return;
     }
 }
