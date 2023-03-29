@@ -150,18 +150,27 @@ where
 {
     fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
         // Checking requirements on the validity of the requested security strength and the personalization string.
-    if req_sec_str > MAX_SEC_STR || req_sec_str < 112{
+        if req_sec_str > MAX_SEC_STR || req_sec_str < 112{
             return Err(1);
         }
         if ps.is_some() && ps.unwrap().len() * 8 > req_sec_str{
             return Err(2);
         }
 
-        // Acquiring the entropy input and nonce parameters from the entropy source.
+        // Acquiring the entropy input according to mechanisms' specifics.
         let mut entropy= Vec::<u8>::new();
-        let mut nonce= Vec::<u8>::new();      
-        DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
-        DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
+        if T::drbg_name() != "CTR-DRBG" {
+            DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
+        }
+        else {
+            DRBG::<T>::get_entropy_input(&mut entropy, 48);
+        }
+
+        // Acquiring the nonce for mechanisms that are different from CTR-DRBG withouth derivation function.
+        let mut nonce= Vec::<u8>::new();
+        if T::drbg_name() != "CTR-DRBG" {      
+            DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
+        }
 
         println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
         println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());

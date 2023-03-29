@@ -181,8 +181,12 @@ where
         seed_len = block_len + key_len;
         
         // Entropy parameter must be present and of seedlen bits.
-        if entropy.len() != seed_len/8 {
-            return None
+        let mut new_entropy = Vec::<u8>::new();
+        if entropy.len() >= seed_len/8 {
+            new_entropy.append(&mut entropy[..seed_len/8].to_vec());
+        }
+        else {
+            return None;
         }
 
         // Taking exactly seedlen bits from the PS that has been passed (step 1,2).
@@ -196,11 +200,14 @@ where
             }
         }
         else if pers.len() == seed_len/8 {
-            new_pers.clone_from_slice(&pers);
+            new_pers.append(&mut pers.to_vec());
         }
         else {
-            new_pers.clone_from_slice(&pers[..seed_len/8]);
+            new_pers.append(&mut pers[..seed_len/8].to_vec());
         }
+
+        println!("NEW: used entropy: {}, len: {}", hex::encode(&new_entropy), new_entropy.len()*8);
+        println!("NEW: used pers: {}, len: {}", hex::encode(&new_pers), new_pers.len()*8);
 
         // Setting initial values for the internal state (step 4,5,7).
         let mut k = GenericArray::<u8, D::KeySize>::default();
@@ -225,7 +232,7 @@ where
         };
 
         // Updating the internal state using the entropy and given personalization string (step 3,6)
-        let mut seed_material = entropy.to_vec();
+        let mut seed_material = new_entropy.clone();
         CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_pers);
         this.update(&seed_material);
 
@@ -267,15 +274,17 @@ where
                     }
                 }
                 else if add_in.len() == self.seedlen/8 {
-                    new_add_in.clone_from_slice(&add_in);
+                    new_add_in.append(&mut add_in.to_vec());
                 }
                 else {
-                    new_add_in.clone_from_slice(&add_in[..self.seedlen/8]);
+                    new_add_in.append(&mut add_in[..self.seedlen/8].to_vec());
                 }
 
                 self.update(&new_add_in);
             }
         }
+
+        println!("GENERATE: used add_in: {}, len: {}", hex::encode(&new_add_in), new_add_in.len()*8);
 
         // Generating blocklen bits at a time using the underlying block cipher (step 3,4).
         let cipher = self.block_cipher();
@@ -355,13 +364,15 @@ where
                     }
                 }
                 else if add_in.len() == self.seedlen/8 {
-                    new_add_in.clone_from_slice(&add_in);
+                    new_add_in.append(&mut add_in.to_vec());
                 }
                 else {
-                    new_add_in.clone_from_slice(&add_in[..self.seedlen/8]);
+                    new_add_in.append(&mut add_in[..self.seedlen/8].to_vec());
                 }
             }
         }
+
+        println!("RESEED: used add_in: {}, len: {}", hex::encode(&new_add_in), new_add_in.len()*8);
 
         // Updating the internal state using the entropy and given additional input (step 3,4)
         let mut seed_material = entropy.to_vec();
