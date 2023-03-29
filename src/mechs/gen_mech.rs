@@ -18,12 +18,13 @@ pub trait DRBG_Mechanism_Functions: {
             - entropy: the entropy to be used for the instantiation
             - nonce: the nonce to be used for the instantiation
             - pers: the optional personalization string to be used for the instantiation
+            - req_str: the security strength that is required for the DRBG mechanism
         
         Return value:
             - Some(inst): where 'inst' pointer to the newly created instance
             - None: instantiation failed
     */
-    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> where Self: Sized;
+    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> where Self: Sized;
     
     /*  Generates a vector of pseudorandom bytes.
         This function is called by DRBG_Functions::generate envelope. This envelope is responsible for checking

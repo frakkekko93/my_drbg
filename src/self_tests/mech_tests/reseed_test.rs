@@ -11,7 +11,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Testing normal reseeding operation. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     let mut drbg;
         match res{
@@ -43,7 +43,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Making reseed failed after trying to reseed zeroized internal state */
 fn reseed_fail<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     let mut drbg;
         match res{

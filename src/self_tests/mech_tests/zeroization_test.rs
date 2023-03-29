@@ -9,7 +9,8 @@ pub fn test_zeroization<T: DRBG_Mechanism_Functions>() -> usize {
     let res = T::new(
         "Trial entropy".as_bytes(),
         "Trial nonce".as_bytes(),
-        "Trial pers".as_bytes()
+        "Trial pers".as_bytes(),
+        &mut 128
     );
 
     let mut drbg;

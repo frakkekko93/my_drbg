@@ -5,7 +5,7 @@ use crate::demos::utility::*;
 pub fn drbg_demo<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     let mut user_choice = 1;
 
-    println!("Great! Your DRBG has been instantiated.");
+    println!("Great! Your {} has been instantiated.", T::drbg_name());
     println!("The supported security strength is: {}", drbg.get_sec_str());
 
     while user_choice != 0 {

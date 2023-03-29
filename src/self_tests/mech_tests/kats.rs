@@ -40,7 +40,9 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
         let res = T::new(
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
-            &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap());
+            &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap(),
+            &mut 128
+        );
 
         let mut drbg;
 

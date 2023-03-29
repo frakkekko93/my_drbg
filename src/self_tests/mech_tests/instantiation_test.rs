@@ -33,7 +33,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Testing normal instantiation of the mechanism. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     if check_res(res.is_none(), false, 
             "norm_op".to_string(), 
@@ -47,7 +47,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Testing use of unapproved functions. */
 fn test_fun_not_approved<T: DRBG_Mechanism_Functions>(fun_id: &str) -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     let mut test_name = "test_fun_not_approved::".to_string();
     test_name.push_str(fun_id);
@@ -73,7 +73,7 @@ fn test_fun_not_approved<T: DRBG_Mechanism_Functions>(fun_id: &str) -> usize{
 
 /*  Testing that instantiation with empty entropy input fails */
 fn test_empty_entropy<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = T::new("".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     if check_res(res.is_none(), true, 
             "test_empty_entropy".to_string(), 
@@ -87,7 +87,7 @@ fn test_empty_entropy<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Testing that instantiation with empty nonce fails */
 fn test_empty_nonce<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = T::new("Trial entropy".as_bytes(), "".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trial entropy".as_bytes(), "".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     if check_res(res.is_none(), true, 
             "test_empty_nonce".to_string(), 

@@ -94,7 +94,7 @@ where
     D::BlockSize: ArrayLength<u8>,
     D::OutputSize: ArrayLength<u8>,
 {
-    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8]) -> Option<Self> {
+    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
         // Runtime check on the use of any unallowed hash function.
         let this_id = TypeId::of::<D>();
         let sha256_id = TypeId::of::<sha2::Sha256>();
@@ -102,6 +102,10 @@ where
         if this_id != sha256_id && this_id != sha512_id{
             return None;
         }
+
+        // Security strength not supported
+        if *req_str > 256 {return None}
+        *req_str = 256;
 
         // Entropy and nonce parameters must be present.
         if entropy.len() == 0 || nonce.len() == 0 {

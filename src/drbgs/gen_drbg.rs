@@ -148,7 +148,7 @@ impl<T> DRBG_Functions for DRBG<T>
 where
     T: DRBG_Mechanism_Functions
 {
-    fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
+    fn new(mut req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
         // Checking requirements on the validity of the requested security strength and the personalization string.
         if req_sec_str > MAX_SEC_STR || req_sec_str < 112{
             return Err(1);
@@ -179,13 +179,13 @@ where
         let drbg_mech;
         match ps {
             None => {
-                drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), "".as_bytes());
+                drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), "".as_bytes(), &mut req_sec_str);
             }
             Some(pers) => {
 
                 // println!("DRBG - (instantiate): received pers: {} - len: {}.", hex::encode(pers), pers.len());
 
-                drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &pers);
+                drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &pers, &mut req_sec_str);
             }
         }
 
@@ -195,7 +195,7 @@ where
                 return Err(3);
             }
             Some(_) => {
-                Ok(Self{security_strength: (req_sec_str/8)*8, internal_state: drbg_mech, error_state: false})
+                Ok(Self{security_strength: req_sec_str, internal_state: drbg_mech, error_state: false})
             }
         }
     }

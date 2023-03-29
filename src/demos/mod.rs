@@ -20,8 +20,8 @@ pub fn run_demo() {
     println!("you can request prediction resistance at any time during bit generation. The DRBGs are also designed to have a reseed counter that allows for a");
     println!("limited number of consecutive generations without accessing the entropy source for fresh entropy. Once this limit has been reached, the DRBG will");
     println!("handle the reseeding by itself and you will be able to continue using the active instance.");
-    println!("Each DRBG implemented here supports a security strength in the interval [112, 256]. It is suggested to request strengths that are multiples of");
-    println!("8 as everything is handled in the form of bytes and eventually truncated (e.g.: sec_str=135 is equivalent to sec_str=128). Same goes for bit generation,");
+    println!("Each DRBG implemented here supports a security strength in the interval [128, 256]. It is suggested to request strengths that are multiples of");
+    println!("8 bits as everything is handled in the form of bytes and eventually truncated (e.g.: sec_str=135 is equivalent to sec_str=128). Same goes for bit generation,");
     println!("no padding bits are used for requested lenghts that are not multiples of 8.");
     print!("\\****************************************************************************");
     println!("****************************************************************************/");
@@ -45,7 +45,7 @@ pub fn run_demo() {
             return;
         }
 
-        print!("> Which security strength do you need? (must be 112 <= sec_str <= 256): ");
+        print!("> Which security strength do you need? (must be 128 <= sec_str <= 256): ");
 
         let strength = get_input();
 
@@ -59,7 +59,7 @@ pub fn run_demo() {
                 println!("-------------------------------------------------------------------------------------");
                 println!("Which mechanism would you like to use?:");
                 println!("\t1- HMAC-DRBG with Sha 256 (supports a security strength of 256)");
-                println!("\t2- HMAC-DRBG with Sha 256 (supports a security strength of 256)");
+                println!("\t2- HMAC-DRBG with Sha 512 (supports a security strength of 256)");
                 println!("\tAnything else - Interrupt the demo");
                 print!("\nYour choice: ");
 
@@ -73,9 +73,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC Sha 256 mechanism failed.", err);}
                                 }
 
                                 continue;
@@ -93,9 +93,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC Sha 512 mechanism failed.", err);}
                                 }
 
                                 continue;
@@ -117,7 +117,7 @@ pub fn run_demo() {
                 println!("-------------------------------------------------------------------------------------");
                 println!("Which mechanism would you like to use?:");
                 println!("\t1- Hash-DRBG with Sha 256 (supports a security strength of 256)");
-                println!("\t2- Hash-DRBG with Sha 256 (supports a security strength of 256)");
+                println!("\t2- Hash-DRBG with Sha 512 (supports a security strength of 256)");
                 println!("\tAnything else - Interrupt the demo");
                 print!("\nYour choice: ");
 
@@ -131,9 +131,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the Hash Sha 256 mechanism failed.", err);}
                                 }
 
                                 continue;
@@ -151,9 +151,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the Hash Sha 512 mechanism failed.", err);}
                                 }
 
                                 continue;
@@ -188,9 +188,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <=256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the CTR AES 128 (no df) mechanism failed.", err);}
                                 }
 
                                 continue;
@@ -208,9 +208,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the CTR AES 192 (no df) mechanism failed.", err);}
                                 }
 
                                 continue;
@@ -228,9 +228,9 @@ pub fn run_demo() {
                         match res {
                             Err(err) => {
                                 match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the CTR AES 256 (no df) mechanism failed.", err);}
                                 }
 
                                 continue;

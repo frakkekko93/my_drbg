@@ -12,7 +12,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  TODO: norm_op */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     let mut drbg;
         match res{
@@ -45,7 +45,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Making generate fail by zeroizing internal state. */
 fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     let mut drbg;
         match res{
@@ -88,7 +88,7 @@ fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Reaching the end of seed life and trying a generate after. */
 fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes());
+    let res = T::new("Trail entropy".as_bytes(), "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 128);
 
     let mut drbg;
         match res{

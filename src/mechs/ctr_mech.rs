@@ -163,7 +163,7 @@ where
     D::KeySize: ArrayLength<u8>,
 {   
     /*  This function is implemented following the algorithm described at 10.2.1.3.2 for a CTR-DRBG that doesn't use a df. */
-    fn new(entropy: &[u8], _nonce: &[u8], pers: &[u8]) -> Option<Self> {
+    fn new(entropy: &[u8], _nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
         let seed_len: usize;
         let key_len: usize;
         let block_len: usize = 128;
@@ -174,9 +174,21 @@ where
         let aes192_id = TypeId::of::<aes::Aes192>();
         let aes256_id = TypeId::of::<aes::Aes256>();
 
-        if this_id == aes128_id {key_len = 128;}
-        else if this_id == aes192_id {key_len = 192;}
-        else if this_id == aes256_id {key_len = 256;}
+        if this_id == aes128_id {
+            if *req_str > 128 {return None}
+            key_len = 128;
+            *req_str = 128;
+        }
+        else if this_id == aes192_id {
+            if *req_str > 192 {return None}
+            key_len = 192;
+            *req_str = 192;
+        }
+        else if this_id == aes256_id {
+            if *req_str > 256 {return None}
+            key_len = 256;
+            *req_str = 256;
+        }
         else {return None;}
         seed_len = block_len + key_len;
         
