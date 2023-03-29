@@ -130,9 +130,6 @@ where
         this.update(Some(&[entropy, nonce, pers]));
         this.count = 1;
 
-        println!("HMAC-DRBG-Mech - (instantiate): obtained k: {} - len: {}.", hex::encode(&this.k), this.k.len());
-        println!("HMAC-DRBG-Mech - (instantiate): obtained v: {} - len: {}.", hex::encode(&this.v), this.v.len());
-
         Some(this)
     }
 

@@ -172,8 +172,8 @@ where
             DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
         }
 
-        println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
-        println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
+        // println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
+        // println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
         
         // Trying to allocate the DRBG's internal state.
         let drbg_mech;

@@ -218,9 +218,6 @@ where
             new_pers.append(&mut pers[..seed_len/8].to_vec());
         }
 
-        println!("NEW: used entropy: {}, len: {}", hex::encode(&new_entropy), new_entropy.len()*8);
-        println!("NEW: used pers: {}, len: {}", hex::encode(&new_pers), new_pers.len()*8);
-
         // Setting initial values for the internal state (step 4,5,7).
         let mut k = GenericArray::<u8, D::KeySize>::default();
         let mut v = GenericArray::<u8, D::BlockSize>::default();
@@ -295,8 +292,6 @@ where
                 self.update(&new_add_in);
             }
         }
-
-        println!("GENERATE: used add_in: {}, len: {}", hex::encode(&new_add_in), new_add_in.len()*8);
 
         // Generating blocklen bits at a time using the underlying block cipher (step 3,4).
         let cipher = self.block_cipher();
@@ -383,8 +378,6 @@ where
                 }
             }
         }
-
-        println!("RESEED: used add_in: {}, len: {}", hex::encode(&new_add_in), new_add_in.len()*8);
 
         // Updating the internal state using the entropy and given additional input (step 3,4)
         let mut seed_material = entropy.to_vec();
