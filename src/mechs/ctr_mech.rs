@@ -218,9 +218,6 @@ where
             new_pers.append(&mut pers[..seed_len/8].to_vec());
         }
 
-        println!("CTR-Mech (NEW): used entropy: {}, len: {}", hex::encode(&new_entropy), new_entropy.len()*8);
-        println!("CTR-Mech (NEW): used pers: {}, len: {}", hex::encode(&new_pers), new_pers.len()*8);
-
         // Setting initial values for the internal state (step 4,5,7).
         let mut k = GenericArray::<u8, D::KeySize>::default();
         let mut v = GenericArray::<u8, D::BlockSize>::default();
@@ -269,7 +266,7 @@ where
             return 2;
         }
 
-        // Restricting add-in to be of seedlen bits and eventually using 0^seedlen id add is None (step 2)
+        // Restricting add-in to be of seedlen bits and eventually using 0^seedlen if add is None (step 2)
         let mut new_add_in = Vec::<u8>::new();
         match add {
             None => {
@@ -295,8 +292,6 @@ where
                 self.update(&new_add_in);
             }
         }
-
-        println!("CTR-Mech (GENERATE): used add_in: {}, len: {}", hex::encode(&new_add_in), new_add_in.len()*8);
 
         // Generating blocklen bits at a time using the underlying block cipher (step 3,4).
         let cipher = self.block_cipher();
@@ -384,11 +379,17 @@ where
             }
         }
 
-        println!("\nCTR-Mech (RESEED): used entropy: {}, len: {}", hex::encode(&entropy), entropy.len()*8);
-        println!("CTR-Mech (RESEED): used add_in: {}, len: {}", hex::encode(&new_add_in), new_add_in.len()*8);
+        // Entropy parameter must be present and of seedlen bits.
+        let mut new_entropy = Vec::<u8>::new();
+        if entropy.len() >= self.seedlen/8 {
+            new_entropy.append(&mut entropy[..self.seedlen/8].to_vec());
+        }
+        else {
+            return 2;
+        }
 
         // Updating the internal state using the entropy and given additional input (step 3,4)
-        let mut seed_material = entropy.to_vec();
+        let mut seed_material = new_entropy.to_vec();
         CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_add_in);
         self.update(&seed_material);
 
