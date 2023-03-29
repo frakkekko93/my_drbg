@@ -1,10 +1,12 @@
 pub mod drbg_demo;
 pub mod utility;
 
+use crate::mechs::ctr_mech::CtrDrbgMech;
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::mechs::hash_mech::HashDrbgMech;
 use crate::demos::{utility::*, drbg_demo::*};
-use sha2::Sha256;
+use aes::{Aes128, Aes192, Aes256};
+use sha2::*;
 
 pub fn run_demo() {
     let mut scelta_drbg;
@@ -43,13 +45,7 @@ pub fn run_demo() {
             return;
         }
 
-        if scelta_drbg == 3 {
-            println!("\n\nCTR NOT YET IMPLEMENTED!");
-            continue;
-        }
-
         print!("> Which security strength do you need? (must be 112 <= sec_str <= 256): ");
-        // print!("\nYour choice: ");
 
         let strength = get_input();
 
@@ -58,51 +54,198 @@ pub fn run_demo() {
 
         let need_ps = get_input();
 
-        let mut hmac_drbg;
-        let mut hash_drbg;
-        // let mut ctr_drbg;
         match scelta_drbg {
             1 => {
-                let res = inst_drbg::<HmacDrbgMech<Sha256>>(strength, need_ps);
+                println!("-------------------------------------------------------------------------------------");
+                println!("Which mechanism would you like to use?:");
+                println!("\t1- HMAC-DRBG with Sha 256 (supports a security strength of 256)");
+                println!("\t2- HMAC-DRBG with Sha 256 (supports a security strength of 256)");
+                println!("\tAnything else - Interrupt the demo");
+                print!("\nYour choice: ");
 
-                match res {
-                    Err(err) => {
-                        match err {
-                            1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
-                            2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                            _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                let mech = get_input();
+
+                match mech {
+                    1 => {
+                        let res = inst_drbg::<HmacDrbgMech<Sha256>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
                         }
-
-                        continue;
+                        user_choice = drbg_demo(&mut drbg);
                     }
-                    Ok(inst) => {
-                        hmac_drbg = inst;
+                    2 => {
+                        let res = inst_drbg::<HmacDrbgMech<Sha512>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
+                        }
+                        user_choice = drbg_demo(&mut drbg);
+                    }
+                    _ => {
+                        println!("\n\nThanks for testing my drbg!");
+                        return;
                     }
                 }
-                user_choice = drbg_demo(&mut hmac_drbg);
+                
             }
             2 => {
-                let res = inst_drbg::<HashDrbgMech<Sha256>>(strength, need_ps);
+                println!("-------------------------------------------------------------------------------------");
+                println!("Which mechanism would you like to use?:");
+                println!("\t1- Hash-DRBG with Sha 256 (supports a security strength of 256)");
+                println!("\t2- Hash-DRBG with Sha 256 (supports a security strength of 256)");
+                println!("\tAnything else - Interrupt the demo");
+                print!("\nYour choice: ");
 
-                match res {
-                    Err(err) => {
-                        match err {
-                            1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
-                            2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                            _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                let mech = get_input();
+
+                match mech {
+                    1 => {
+                        let res = inst_drbg::<HashDrbgMech<Sha256>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
                         }
-
-                        continue;
+                        user_choice = drbg_demo(&mut drbg);
                     }
-                    Ok(inst) => {
-                        hash_drbg = inst;
+                    2 => {
+                        let res = inst_drbg::<HashDrbgMech<Sha512>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
+                        }
+                        user_choice = drbg_demo(&mut drbg);
+                    }
+                    _ => {
+                        println!("\n\nThanks for testing my drbg!");
+                        return;
                     }
                 }
-                user_choice = drbg_demo(&mut hash_drbg);
             }
             3 => {
-                println!("\nCTR NOT YET IMPLEMENTED!");
-                continue;
+                println!("-------------------------------------------------------------------------------------");
+                println!("Which mechanism would you like to use?:");
+                println!("\t1- CTR-DRBG (no df) with AES 128 (supports a security strength of 128)");
+                println!("\t2- CTR-DRBG (no df) with AES 192 (supports a security strength of 192)");
+                println!("\t3- CTR-DRBG (no df) with AES 256 (supports a security strength of 256)");
+                print!("\nYour choice: ");
+
+                let mech = get_input();
+
+                match mech {
+                    1 => {
+                        let res = inst_drbg::<CtrDrbgMech<Aes128>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
+                        }
+                        user_choice = drbg_demo(&mut drbg);
+                    }
+                    2 => {
+                        let res = inst_drbg::<CtrDrbgMech<Aes192>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
+                        }
+                        user_choice = drbg_demo(&mut drbg);
+                    }
+                    3 => {
+                        let res = inst_drbg::<CtrDrbgMech<Aes256>>(strength, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (112 <= sec_str <= 256).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC mechanism failed.", err);}
+                                }
+
+                                continue;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
+                        }
+                        user_choice = drbg_demo(&mut drbg);
+                    }
+                    _ => {
+                        println!("\n\nThanks for testing my drbg!");
+                        return;
+                    }
+                }
             }
             0 => {
                 println!("\n\nThanks for testing my drbg!");

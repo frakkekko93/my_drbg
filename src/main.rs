@@ -1,10 +1,11 @@
 extern crate my_drbg;
-use aes::*;
-use my_drbg::{self_tests, mechs::gen_mech::DRBG_Mechanism_Functions};
+// use aes::*;
+// use my_drbg::{self_tests, mechs::gen_mech::DRBG_Mechanism_Functions};
 #[allow(unused_imports)]
-use my_drbg::demos::*; 
-use my_drbg::mechs::ctr_mech::CtrDrbgMech;
-use rand::Rng;
+use my_drbg::demos::*;
+use my_drbg::self_tests; 
+// use my_drbg::mechs::ctr_mech::CtrDrbgMech;
+// use rand::Rng;
 
 // Simulates the start-up of a potential fips provider by calling the self test functions.
 #[allow(dead_code)]
