@@ -11,7 +11,14 @@ const SEED_LIFE: usize = 1000;
 
 const CTR_LEN: usize = 16;
 
-/*   */
+/*  Implementation of the CTR-DRBG mechanisms as specified in section 10.2.1 of NIST SP 800-90A. The publication prescribes
+    two different implementations for this mechanisms: one using a derivation function and one that doesn't. The latter can
+    be used only when we have an entropy source that ALWAYS provides us with fresh FULL ENTROPY bits. Since this is one of
+    the assumptions we have made in the development of this crate, this implementation of the CTR-DRBG is not using a df.
+    SP 800-90A prescribes as possible block ciphers AES 128/192/256 and TDES. However, since TDES is on the verge of getting
+    unapproved by NIST, I decided to only use AES 128/192/256 for this implementation.
+    According to NIST SP 800-57 AES 128/192/256 support security strengths of respectively 128/192/256 bits. Thus, since this
+    implementation supports every one of these block ciphers, it also can support any security strength in the range [128, 256]. */
 pub struct CtrDrbgMech<D: 'static>
 where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,

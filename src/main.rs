@@ -41,7 +41,6 @@ fn main(){
         Some(inst) => {
             println!("MAIN: instantiation succeeded.");
             drbg = inst;
-            assert_eq!(1, drbg.count());
         }
     }
 
@@ -49,7 +48,6 @@ fn main(){
 
     if res == 0 {
         println!("MAIN: reseeding succeeded.");
-        assert_eq!(1, drbg.count());
     }
     else {
         println!("MAIN: instantiation failed with error: {}.", res);
@@ -61,7 +59,6 @@ fn main(){
 
     if res == 0 {
         println!("MAIN: generated bits: {}, len: {}.", hex::encode(&bits), bits.len()*8);
-        assert_eq!(2, drbg.count());
     }
     else {
         println!("MAIN: generation failed with error: {}.", res);
