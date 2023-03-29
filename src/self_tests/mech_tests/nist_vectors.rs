@@ -34,7 +34,7 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap(),
-            &mut 128
+            &mut 256
         );
         
         let mut drbg;

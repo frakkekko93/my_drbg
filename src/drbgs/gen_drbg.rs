@@ -226,8 +226,14 @@ where
         }
 
         // Retrieving new entropy and reseeding the internal state.
-        let mut entropy_input = Vec::<u8>::new();
-        DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
+        // Acquiring the entropy input according to mechanisms' specifics.
+        let mut entropy_input= Vec::<u8>::new();
+        if T::drbg_name() != "CTR-DRBG" {
+            DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
+        }
+        else {
+            DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
+        }
 
         // println!("DRBG - (reseed): used entropy: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
         
@@ -276,8 +282,15 @@ where
 
             // println!("DRBG - (generate): received prr.");
 
-            let mut entropy_input = Vec::<u8>::new();
-            DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
+            // Retrieving new entropy and reseeding the internal state.
+            // Acquiring the entropy input according to mechanisms' specifics.
+            let mut entropy_input= Vec::<u8>::new();
+            if T::drbg_name() != "CTR-DRBG" {
+                DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
+            }
+            else {
+                DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
+            }
 
             // println!("DRBG - (generate): used entropy for reseed: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
 

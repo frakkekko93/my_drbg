@@ -33,7 +33,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
         tests = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
     }
     else {
-        return 0;
+        tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats.json")).unwrap();
     }
 
     for test in tests {
@@ -41,7 +41,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap(),
-            &mut 128
+            &mut 256
         );
 
         let mut drbg;
