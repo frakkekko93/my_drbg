@@ -57,6 +57,7 @@ pub trait DRBG_Mechanism_Functions: {
         Return values:
             - 0: SUCCESS, instantiation successfully reseeded
             - 1: ERROR, instantiation cannot be reseeded
+            - 2: ERROR, the passed entropy is too short to be used
     */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize;
 

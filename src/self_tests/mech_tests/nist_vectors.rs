@@ -1,7 +1,8 @@
-use serde::Deserialize;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
+use serde::Deserialize;
 
+/*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::nist_vectors";
 
 /*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */

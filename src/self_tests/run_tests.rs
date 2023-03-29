@@ -1,5 +1,5 @@
-use aes::Aes256;
 use sha2::Sha256;
+use aes::Aes256;
 
 use crate::mechs::{hash_mech::HashDrbgMech, hmac_mech::HmacDrbgMech, ctr_mech::CtrDrbgMech};
 

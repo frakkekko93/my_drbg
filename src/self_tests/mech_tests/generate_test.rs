@@ -1,8 +1,8 @@
-use rand::Rng;
-
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
+use rand::Rng;
 
+/*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::generate_test";
 
 /*  Aggregator that runs all the tests in this file. */

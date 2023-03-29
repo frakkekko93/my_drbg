@@ -1,7 +1,7 @@
-use rand::Rng;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::{self, formats};
 use crate::self_tests::drbg_tests;
+use rand::Rng;
 
 /*  Configuration of the DRBG.
     

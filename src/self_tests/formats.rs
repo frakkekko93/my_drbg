@@ -1,5 +1,5 @@
-use std::fs::*;
 use std::io::prelude::*;
+use std::fs::*;
 
 /*  Function used to format a single log message. */
 pub fn format_message(failed: bool, alg_name: String, test_name: String, message: String) -> String{

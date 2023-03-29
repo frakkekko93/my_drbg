@@ -1,5 +1,5 @@
-use crate::self_tests::mech_tests::*;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
+use crate::self_tests::mech_tests::*;
 
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
     return instantiation_test::run_tests::<T>() + 

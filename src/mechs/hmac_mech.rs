@@ -1,9 +1,8 @@
-use std::any::TypeId;
+use super::gen_mech::DRBG_Mechanism_Functions;
 use digest::{BlockInput, FixedOutput, Reset, Update};
 use generic_array::{ArrayLength, GenericArray};
 use hmac::{Hmac, Mac, NewMac};
-
-use super::gen_mech::DRBG_Mechanism_Functions;
+use std::any::TypeId;
 
 /*  The life of each generated seed of this DRBG. */
 const SEED_LIFE: usize = 1000;

@@ -1,6 +1,7 @@
 use super::gen_mech::DRBG_Mechanism_Functions;
 use generic_array::ArrayLength;
 use std::any::TypeId;
+use super::utility::*;
 use aes::cipher::{
     BlockCipher, BlockEncrypt, BlockDecrypt, KeyInit,
     generic_array::GenericArray,
@@ -9,6 +10,7 @@ use aes::cipher::{
 /*  The life of each generated seed of this DRBG. */
 const SEED_LIFE: usize = 1000;
 
+/*  The length of the counter used by the block cipher in bits. */
 const CTR_LEN: usize = 16;
 
 /*  Implementation of the CTR-DRBG mechanisms as specified in section 10.2.1 of NIST SP 800-90A. The publication prescribes
@@ -41,43 +43,6 @@ where
     D::BlockSize: ArrayLength<u8>,
     D::KeySize: ArrayLength<u8>,
 {
-    /*  Performs bit a bit XOR between two vectors of the same size. */
-    fn xor_vecs(vec1: &mut Vec<u8>, vec2: &Vec<u8>) {
-        if vec1.len() != vec2.len() {
-            return;
-        }
-
-        for i in 0..vec1.len() {
-            vec1[i] = vec1[i] ^ vec2[i];
-        }
-    }
-
-    /*  Performs a modular addition between a vector of bytes and a single byte. */
-    fn modular_add(num: &mut Vec<u8>, rhs: u8) {
-        if num.is_empty() {
-            return;
-        }
-
-        let len = num.len();
-        let mut j = len-1;
-        let (mut res, mut carry) = num[j].overflowing_add(rhs);
-        num[j] = res;
-
-        if j>=1 {
-            j -= 1;
-            while carry && j>0 {
-                (res, carry) = num[j].overflowing_add(1);
-                num[j] = res;
-                j -= 1;
-            }
-        }
-
-        if carry {
-            res= num[0].wrapping_add(1);
-            num[0] = res;
-        }        
-    }
-
     /*  This function is used to update the internal state of the CTR-DRBG.
         (see NIST SP 800-90A, section 10.2.1.2)
         
@@ -102,7 +67,7 @@ where
                 
                 // Increment the rigth-most CTR_LEN/8 bytes of V (step 2.1.1)
                 let mut right_v = self.v[mid_point..].to_vec();
-                CtrDrbgMech::<D>::modular_add(&mut right_v, 0x01);
+                modular_add(&mut right_v, 0x01);
 
                 // Creating a clone of V with the incremented right-most CTR_LEN/8 bytes
                 let mut v_clone = GenericArray::<u8, D::BlockSize>::default();
@@ -116,7 +81,7 @@ where
             else {
                 // Increment V (step 2.1 alternative)
                 let mut v_clone = self.v.to_vec();
-                CtrDrbgMech::<D>::modular_add(&mut v_clone, 0x01);
+                modular_add(&mut v_clone, 0x01);
 
                 // Update V
                 self.v.clone_from_slice(&v_clone);
@@ -137,7 +102,7 @@ where
         temp.resize(self.seedlen/8, 0x00);
 
         // Performing temp XOR provided_data (step 4)
-        CtrDrbgMech::<D>::xor_vecs(&mut temp, provided_data);
+        xor_vecs(&mut temp, provided_data);
 
         // Update K (step 5)
         self.k.clone_from_slice(&temp[..self.keylen/8]);
@@ -242,7 +207,7 @@ where
 
         // Updating the internal state using the entropy and given personalization string (step 3,6)
         let mut seed_material = new_entropy.clone();
-        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_pers);
+        xor_vecs(&mut seed_material, &new_pers);
         this.update(&seed_material);
 
         // Returning a reference to this instance (step 8)
@@ -303,7 +268,7 @@ where
                 
                 // Increment the rigth-most CTR_LEN/8 bytes of V (step 4.1.1)
                 let mut right_v = self.v[mid_point..].to_vec();
-                CtrDrbgMech::<D>::modular_add(&mut right_v, 0x01);
+                modular_add(&mut right_v, 0x01);
 
                 // Creating a clone of V with the incremented right-most CTR_LEN/8 bytes
                 let mut v_clone = GenericArray::<u8, D::BlockSize>::default();
@@ -317,7 +282,7 @@ where
             else {
                 // Increment V (step 4.1 alternative)
                 let mut v_clone = self.v.to_vec();
-                CtrDrbgMech::<D>::modular_add(&mut v_clone, 0x01);
+                (&mut v_clone, 0x01);
 
                 // Update V
                 self.v.clone_from_slice(&v_clone);
@@ -390,7 +355,7 @@ where
 
         // Updating the internal state using the entropy and given additional input (step 3,4)
         let mut seed_material = new_entropy.to_vec();
-        CtrDrbgMech::<D>::xor_vecs(&mut seed_material, &new_add_in);
+        xor_vecs(&mut seed_material, &new_add_in);
         self.update(&seed_material);
 
         // Resetting the reseed counter (step 5)

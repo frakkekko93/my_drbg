@@ -1,6 +1,8 @@
+use crate::mechs::{gen_mech::DRBG_Mechanism_Functions};
+use crate::self_tests::formats::*;
 use serde::Deserialize;
-use crate::{self_tests::formats::*, mechs::{gen_mech::DRBG_Mechanism_Functions}};
 
+/*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::kats";
 
 // Runs all kats.

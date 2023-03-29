@@ -1,8 +1,8 @@
-use rand::Rng;
-
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
+use rand::Rng;
 
+/*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::reseed_test";
 
 /*  Aggregator that runs all the tests in this file. */
@@ -40,7 +40,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
             }
     }
 
-    let res = drbg.reseed("Some reseed entropy".as_bytes(), Some("Add-in reseed".as_bytes()));
+    let res = drbg.reseed(&entropy, Some("Add-in reseed".as_bytes()));
 
     if check_res(res, 0, 
             "norm_op".to_string(), 

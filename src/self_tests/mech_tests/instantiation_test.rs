@@ -2,11 +2,12 @@ use crate::mechs::ctr_mech::CtrDrbgMech;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::mechs::hash_mech::HashDrbgMech;
 use crate::mechs::hmac_mech::HmacDrbgMech;
+use crate::self_tests::formats::*;
 use rand::Rng;
 use sha2::*;
-use crate::self_tests::formats::*;
 use des::*;
 
+/*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::instantiation_test";
 
 /*  Aggregator that runs all the tests in this file. */
