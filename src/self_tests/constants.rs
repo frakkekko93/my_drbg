@@ -16,8 +16,11 @@ pub const ENTROPY_TOO_SHORT: [u8; 16] =
      178, 239, 255, 10, 79, 212, 99, 33];
 
 /*  Nonce constants */
-pub const NONCE: [u8; 16] = ENTROPY_TOO_SHORT;
-pub const NONCE_TOO_SHORT: [u8; 8] = [0; 8];
+pub const NONCE: [u8; 16] = 
+    [16, 155, 36, 155, 57, 142, 88, 2,
+     19, 20, 33, 231, 8, 252, 103, 171];
+pub const NONCE_TOO_SHORT: [u8; 8] = 
+    [16, 155, 36, 155, 57, 142, 88, 2];
 
 /*  Personalization string constants */
 pub const PERS: [u8; 32] = 
