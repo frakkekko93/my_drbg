@@ -4,9 +4,9 @@ use crate::self_tests::formats::*;
 
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
-    return internal_state_not_valid::<T>() +
-            add_in_too_long::<T>() +
-            norm_op::<T>();
+    return norm_op::<T>() +
+            internal_state_not_valid::<T>() +
+            add_in_too_long::<T>();
 }
 
 /*  Verifying normal reseed operation. */

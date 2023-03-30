@@ -150,7 +150,7 @@ where
 {
     fn new(mut req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
         // Checking requirements on the validity of the requested security strength and the personalization string.
-        if req_sec_str > MAX_SEC_STR || req_sec_str < 112{
+        if req_sec_str > MAX_SEC_STR{
             return Err(1);
         }
         if ps.is_some() && ps.unwrap().len() * 8 > req_sec_str{

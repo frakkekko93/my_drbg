@@ -11,7 +11,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Testing that any security strength that is <=MAX_STR is actually accepted by the DRBG. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(128, Some("Trial pers".as_bytes()));
+    let res = DRBG::<T>::new(256, Some("Trial pers".as_bytes()));
     let mut drbg = None;
 
     match res{
