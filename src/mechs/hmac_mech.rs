@@ -25,6 +25,7 @@ where
     v: GenericArray<u8, D::OutputSize>,
     count: usize,
     zeroized: bool,
+    sec_str: usize,
 }
 
 /*  Implementing functions that are specific of the HMAC-DRBG mechanism. */
@@ -107,7 +108,7 @@ where
         *req_str = 256;
 
         // Entropy and nonce parameters must be present.
-        if entropy.len() == 0 || nonce.len() == 0 {
+        if entropy.len() < *req_str/8 || nonce.len() < *req_str/16 {
             return None
         }
 
@@ -123,7 +124,7 @@ where
             v[i] = 0x01;
         }
 
-        let mut this = Self { k, v, count: 0 , zeroized: false};
+        let mut this = Self { k, v, count: 0 , zeroized: false, sec_str: *req_str};
 
         // Updating the internal state using the passed parameters.
         this.update(Some(&[entropy, nonce, pers]));
@@ -188,12 +189,16 @@ where
         if self.zeroized {
             return 1;
         }
-        else{
-            // Updating the internal state using the passed parameters.
-            self.update(Some(&[entropy, add.unwrap_or(&[])]));
-            self.count = 1;
-            return 0;
+
+        // Entropy and nonce parameters must be present.
+        if entropy.len() < self.sec_str/8 {
+            return 2;
         }
+
+        // Updating the internal state using the passed parameters.
+        self.update(Some(&[entropy, add.unwrap_or(&[])]));
+        self.count = 1;
+        return 0;
     }
 
     fn zeroize(&mut self) -> usize{

@@ -19,7 +19,9 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
                 test_fun_not_approved::<HmacDrbgMech<Sha512Trunc224>>("Sha 512/224") +
                 test_fun_not_approved::<HmacDrbgMech<Sha512Trunc256>>("Sha 512/256") +
                 test_empty_entropy::<T>() +
-                test_empty_nonce::<T>();
+                test_empty_nonce::<T>() +
+                test_entropy_too_short::<T>() +
+                test_nonce_too_short::<T>();
     }
     else if T::drbg_name() == "Hash-DRBG" {
         return norm_op::<T>() +
@@ -28,7 +30,9 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
                 test_fun_not_approved::<HashDrbgMech<Sha512Trunc224>>("Sha 512/224") +
                 test_fun_not_approved::<HashDrbgMech<Sha512Trunc256>>("Sha 512/256") +
                 test_empty_entropy::<T>() +
-                test_empty_nonce::<T>();
+                test_empty_nonce::<T>() +
+                test_entropy_too_short::<T>() +
+                test_nonce_too_short::<T>();
     }
     else {
         return norm_op::<T>() +
@@ -37,7 +41,8 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
                 test_fun_not_approved::<CtrDrbgMech<TdesEee2>>("3DES-EEE2") +
                 test_fun_not_approved::<CtrDrbgMech<TdesEee3>>("3DES-EEE3") +
                 test_empty_entropy::<T>() +
-                test_empty_nonce::<T>();
+                test_empty_nonce::<T>() +
+                test_entropy_too_short::<T>();
     }
 }
 
@@ -140,6 +145,42 @@ fn test_empty_nonce<T: DRBG_Mechanism_Functions>() -> usize {
                 "instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).".to_string()) != 0{
             return 1;
         }
+    }
+
+    0
+}
+
+/*  Testing that entropy too short is refused by HMAC and Hash mechanisms. */
+fn test_entropy_too_short<T: DRBG_Mechanism_Functions>() -> usize{
+    let res;
+    if T::drbg_name() == "CTR-DRBG" {
+        res = T::new(&ENTROPY, "".as_bytes(), &PERS, &mut 256);
+    }
+    else {
+        res = T::new(&ENTROPY_TOO_SHORT, &NONCE, &PERS, &mut 256);
+    }
+
+    if check_res(res.is_none(), true, 
+            "test_entropy_too_short".to_string(), 
+            AL_NAME.to_string(), 
+            "instantiation with entropy too short of DRBG mechanism succeeded.".to_string(), 
+            "instantiation with entropy too short of DRBG mechanism failed, as expected.".to_string()) != 0{
+        return 1;
+    }
+
+    0
+}
+
+/*  Testing that entropy too short is refused by HMAC and Hash mechanisms. */
+fn test_nonce_too_short<T: DRBG_Mechanism_Functions>() -> usize{
+    let res = T::new(&ENTROPY, &NONCE_TOO_SHORT, &PERS, &mut 256);
+
+    if check_res(res.is_none(), true, 
+            "test_entropy_too_short".to_string(), 
+            AL_NAME.to_string(), 
+            "instantiation with nonce too short of DRBG mechanism succeeded.".to_string(), 
+            "instantiation with nonce too short of DRBG mechanism failed, as expected.".to_string()) != 0{
+        return 1;
     }
 
     0
