@@ -1,6 +1,6 @@
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
-use rand::Rng;
+use crate::self_tests::constants::*;
 
 /*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::generate_test";
@@ -12,18 +12,15 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
             generate_on_seed_expired::<T>();
 }
 
-/*  TODO: norm_op */
+/*  This tests the normal operation of the instantiate function of a generic DRBG mechanism. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let mut entropy = Vec::<u8>::new();
-    let entropy_part: [u8; 32] = rand::thread_rng().gen();
-    entropy.append(&mut entropy_part.to_vec());
-
+    let res;
     if T::drbg_name() == "CTR-DRBG" {
-        let entropy_part2: [u8; 16] = rand::thread_rng().gen();
-        entropy.append(&mut entropy_part2.to_vec());
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
     }
-
-    let res = T::new(&entropy, "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 256);
+    else{
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+    }
 
     let mut drbg;
         match res{
@@ -42,7 +39,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
     }
 
     let mut bits = Vec::<u8>::new();
-    let res = drbg.generate(&mut bits, 32, Some("Add-in".as_bytes()));
+    let res = drbg.generate(&mut bits, 32, Some(&ADD_IN));
 
     if check_res(res == 0 && bits.len() == 32, true, 
             "norm_op".to_string(), 
@@ -56,16 +53,13 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Making generate fail by zeroizing internal state. */
 fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
-    let mut entropy = Vec::<u8>::new();
-    let entropy_part: [u8; 32] = rand::thread_rng().gen();
-    entropy.append(&mut entropy_part.to_vec());
-
+    let res;
     if T::drbg_name() == "CTR-DRBG" {
-        let entropy_part2: [u8; 16] = rand::thread_rng().gen();
-        entropy.append(&mut entropy_part2.to_vec());
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
     }
-
-    let res = T::new(&entropy, "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 256);
+    else{
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+    }
 
     let mut drbg;
         match res{
@@ -94,7 +88,7 @@ fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
     }
 
     let mut bits = Vec::<u8>::new();
-    res = drbg.generate(&mut bits, 32, Some("Add-in".as_bytes()));
+    res = drbg.generate(&mut bits, 32, Some(&ADD_IN));
 
     if check_res(res, 1, 
             "generate_on_invalid_state".to_string(), 
@@ -108,16 +102,13 @@ fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Reaching the end of seed life and trying a generate after. */
 fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>() -> usize{
-    let mut entropy = Vec::<u8>::new();
-    let entropy_part: [u8; 32] = rand::thread_rng().gen();
-    entropy.append(&mut entropy_part.to_vec());
-
+    let res;
     if T::drbg_name() == "CTR-DRBG" {
-        let entropy_part2: [u8; 16] = rand::thread_rng().gen();
-        entropy.append(&mut entropy_part2.to_vec());
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
     }
-
-    let res = T::new(&entropy, "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 256);
+    else{
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+    }
 
     let mut drbg;
         match res{
@@ -139,7 +130,7 @@ fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>() -> usize{
     let mut res;
 
     while drbg.count() < T::seed_life() {
-        res = drbg.generate(&mut bits, 1, Some("Add-in".as_bytes()));
+        res = drbg.generate(&mut bits, 1, Some(&ADD_IN));
 
         if res != 0 {
             write_to_log(format_message(true, AL_NAME.to_string(),
@@ -154,7 +145,7 @@ fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>() -> usize{
         bits.clear();
     }
 
-    res = drbg.generate(&mut bits, 1, Some("Add-in".as_bytes()));
+    res = drbg.generate(&mut bits, 1, Some(&ADD_IN));
 
     if check_res(res, 2, 
             "generate_on_seed_expired".to_string(), 

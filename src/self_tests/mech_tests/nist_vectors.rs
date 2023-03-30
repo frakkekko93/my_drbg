@@ -20,13 +20,14 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
     let tests: Vec<Fixture>;
 
     if T::drbg_name() == "Hash-DRBG" {
-        // tests = serde_json::from_str(include_str!("fixtures/hash_kats.json")).unwrap();
+        // tests = serde_json::from_str(include_str!("fixtures/hash_nist_vectors.json")).unwrap();
         return 0;
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
     }
     else {
+        // tests = serde_json::from_str(include_str!("fixtures/ctr_nist_vectors.json")).unwrap();
         return 0;
     }
 
@@ -65,7 +66,7 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
                                    None => None,
                                });
 
-        result.clear();
+        //result.clear();
         drbg.generate(&mut result, full_len,
                                match add1 {
                                    Some(ref add1) => Some(add1.as_ref()),

@@ -1,6 +1,7 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
+use crate::self_tests::constants::*;
 
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
@@ -17,7 +18,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
     let res = DRBG::<T>::new(256, None);
     let mut drbg;
     let mut bits = Vec::<u8>::new();
-    let add_in: [u8; 32] = [0; 32];
+    // let add_in: [u8; 32] = [0; 32];
 
     match res{
         Err(_) => {
@@ -33,7 +34,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
         }
     }
 
-    let res = drbg.generate(&mut bits, 1024, 256, true, Some(add_in.as_slice()));
+    let res = drbg.generate(&mut bits, 1024, 256, true, Some(&ADD_IN));
 
     return check_res(res, 0, 
         "norm_op".to_string(), 
@@ -166,7 +167,7 @@ fn add_in_too_long<T: DRBG_Mechanism_Functions>() -> usize {
     let res = DRBG::<T>::new(256, None);
     let mut drbg;
     let mut bits = Vec::<u8>::new();
-    let add_in: [u8; 33] = [0; 33];
+    // let add_in: [u8; 33] = [0; 33];
 
     match res{
         Err(_) => {
@@ -182,7 +183,7 @@ fn add_in_too_long<T: DRBG_Mechanism_Functions>() -> usize {
         }
     }
 
-    let res = drbg.generate(&mut bits, 1024, 256, false, Some(add_in.as_slice()));
+    let res = drbg.generate(&mut bits, 1024, 256, false, Some(&ADD_IN_TOO_LONG));
 
     return check_res(res, 4, 
         "add_in_too_long".to_string(), 

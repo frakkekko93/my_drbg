@@ -1,6 +1,7 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
+use crate::self_tests::constants::*;
 
 /*  Aggregator that runs all the tests in this file. */
 pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
@@ -11,7 +12,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Testing that any security strength that is <=MAX_STR is actually accepted by the DRBG. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(256, Some("Trial pers".as_bytes()));
+    let res = DRBG::<T>::new(256, Some(&PERS));
     let mut drbg = None;
 
     match res{
@@ -58,8 +59,8 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Testing that the limit on the length of the personalization string is actually enforced. */
 fn ps_is_too_long<T: DRBG_Mechanism_Functions>() -> usize{
-    let ps: [u8; 33] = [0; 33];
-    let res = DRBG::<T>::new(256, Some(&ps));
+    // let ps: [u8; 33] = [0; 33];
+    let res = DRBG::<T>::new(256, Some(&PERS_TOO_LONG));
     let mut err= 0;
     let mut drbg = None;
 
@@ -81,11 +82,3 @@ fn ps_is_too_long<T: DRBG_Mechanism_Functions>() -> usize{
     }
     0
 }
-
-// fn fail_test() -> usize {
-//     return check_res(1, 0, 
-//     "fail_test".to_string(), 
-//     "DRBG_TESTS::instantiation_test".to_string(), 
-//     "this test always fails.".to_string(), 
-//     "cannot happen.".to_string());
-// }

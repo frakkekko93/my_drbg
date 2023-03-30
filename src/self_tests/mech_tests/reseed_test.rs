@@ -1,6 +1,6 @@
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
-use rand::Rng;
+use crate::self_tests::constants::*;
 
 /*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::reseed_test";
@@ -13,16 +13,13 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Testing normal reseeding operation. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let mut entropy = Vec::<u8>::new();
-    let entropy_part: [u8; 32] = rand::thread_rng().gen();
-    entropy.append(&mut entropy_part.to_vec());
-
+    let res;
     if T::drbg_name() == "CTR-DRBG" {
-        let entropy_part2: [u8; 16] = rand::thread_rng().gen();
-        entropy.append(&mut entropy_part2.to_vec());
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
     }
-
-    let res = T::new(&entropy, "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 256);
+    else{
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+    }
 
     let mut drbg;
         match res{
@@ -40,7 +37,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
             }
     }
 
-    let res = drbg.reseed(&entropy, Some("Add-in reseed".as_bytes()));
+    let res = drbg.reseed(&ENTROPY_CTR, Some(&ADD_IN));
 
     if check_res(res, 0, 
             "norm_op".to_string(), 
@@ -54,16 +51,13 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Making reseed failed after trying to reseed zeroized internal state */
 fn reseed_fail<T: DRBG_Mechanism_Functions>() -> usize{
-    let mut entropy = Vec::<u8>::new();
-    let entropy_part: [u8; 32] = rand::thread_rng().gen();
-    entropy.append(&mut entropy_part.to_vec());
-
+    let res;
     if T::drbg_name() == "CTR-DRBG" {
-        let entropy_part2: [u8; 16] = rand::thread_rng().gen();
-        entropy.append(&mut entropy_part2.to_vec());
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
     }
-
-    let res = T::new(&entropy, "Trial nonce".as_bytes(), "Trial pers".as_bytes(), &mut 256);
+    else{
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+    }
 
     let mut drbg;
         match res{
@@ -91,7 +85,7 @@ fn reseed_fail<T: DRBG_Mechanism_Functions>() -> usize{
         return 1;
     }
 
-    res = drbg.reseed("Some reseed entropy".as_bytes(), Some("Add-in reseed".as_bytes()));
+    res = drbg.reseed(&ENTROPY, Some(&ADD_IN));
 
     if check_res(res, 1, 
             "reseed_fail".to_string(), 

@@ -189,6 +189,11 @@ where
     }
 
     fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
+        // Eventually deleting data in result
+        if !result.is_empty() {
+            result.clear();
+        }
+        
         // No generate on a zeroized status (ERROR_FLAG=1)
         if self.zeroized {
             return 1;

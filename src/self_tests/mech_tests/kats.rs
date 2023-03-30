@@ -100,7 +100,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
                     None => None
                 });
                 
-                result.clear();
+                //result.clear();
                 drbg.generate(&mut result, full_len, 
                     match add1 {
                         Some(ref add_in) => Some(&add_in.as_slice()),

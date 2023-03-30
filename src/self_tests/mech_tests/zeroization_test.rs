@@ -1,6 +1,6 @@
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
-use rand::Rng;
+use crate::self_tests::constants::*;
 
 /*  The name of the test module to be printed in the log. */
 const AL_NAME: &str = "MECH-TESTS::zeroization_test";
@@ -8,21 +8,13 @@ const AL_NAME: &str = "MECH-TESTS::zeroization_test";
 /*  Testing that the internal state of a mechanism
     is actually zeroized after a call to the zeroize function. */
 pub fn test_zeroization<T: DRBG_Mechanism_Functions>() -> usize {
-    let mut entropy = Vec::<u8>::new();
-    let entropy_part: [u8; 32] = rand::thread_rng().gen();
-    entropy.append(&mut entropy_part.to_vec());
-
+    let res;
     if T::drbg_name() == "CTR-DRBG" {
-        let entropy_part2: [u8; 16] = rand::thread_rng().gen();
-        entropy.append(&mut entropy_part2.to_vec());
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
     }
-    
-    let res = T::new(
-        &entropy,
-        "Trial nonce".as_bytes(),
-        "Trial pers".as_bytes(),
-        &mut 256
-    );
+    else{
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+    }
 
     let mut drbg;
         match res{
@@ -62,7 +54,12 @@ pub fn test_zeroization<T: DRBG_Mechanism_Functions>() -> usize {
         return 1;
     }
 
-    res = drbg.reseed("Trial entropy 2".as_bytes(), None);
+    if T::drbg_name() == "CTR-DRBG" {
+        res = drbg.reseed(&ENTROPY_CTR, None);
+    }
+    else{
+        res = drbg.reseed(&ENTROPY, None);
+    }
     
     if check_res(res, 1, 
             "test_zeroized_reseed".to_string(), 
