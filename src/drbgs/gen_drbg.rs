@@ -8,14 +8,16 @@ use rand::Rng;
     This DRBG can be instantiated using anyone of the mechanisms defined in the 'mechs' module. These mechanisms support 
     a maximum of 256 bits of security strength (MAX_SEC_STR).
     The DRBG is configured to generate a maximum of 1024 bits per-request (MAX_PRB). This option may actually be changed but be 
-    aware of the limits imposed in table 10.1 of NIST SP 800-90A. */
+    aware of the limits imposed in tables 2 and 3 of NIST SP 800-90A. */
 const MAX_SEC_STR: usize = 256;
 const MAX_PRB: usize = 1024;
 
 /*  This is the general structure of the DRBG. We have:
         - internal_state: an handle to the state of the underlying mechanism
         - security_strength: indicates the security strength that a particular instance can support. This parameter is passed
-                             by the application using the DRBG but is always kept <= 256 by this crate.
+                             by the application using the DRBG but is always kept <= MAX_SEC_STR by this crate.
+        - error_state: indicates whether the DRBG entered an error state following a failure during normal operation and/or a failure
+                       of on-demand self-tests. If set, this instance has to be deleted and recreated by the user.
     
     In this design, the prediction_resistance_flag is not used. This has been done because we are assuming that the DRBG is accessing
     an entropy source that always provides fresh full-entropy bits. This means that is always possible for the DRBG to provide prediction
@@ -31,13 +33,14 @@ pub struct DRBG<T>
 
 #[allow(non_camel_case_types)]
 pub trait DRBG_Functions{
-    /*  This function serves as an evelope to the instantiate algorithm of the underlying DRBG mechanism. 
-        It instantiates a new DRBG that supports the requested security strength returning the handle to the new instance.
+    /*  This function serves as an evelope to the instantiate algorithm of the underlying DRBG mechanism and is defined in section 9.1 of the SP. 
+        It instantiates a new DRBG that supports the requested security strength returning a handle to the new instance.
         In case the instantiation is not possible, this function returns an error flag to the calling application.
 
         Parameters:
-            - req_sec_str: the security strength needed by the calling application. This number should be a multiple of 8.
-            - ps: optional personalization string to be used for instantiation of the DRBG mechanism
+            - req_sec_str: the security strength needed by the calling application. This number should be a multiple of 8 bits <=MAX_SEC_STR.
+            - ps: optional personalization string to be used for instantiation of the DRBG mechanism. Its length must be kept under 256 bits to be
+                  protected by this DRBG.
 
         Return values:
             Self - SUCCESS, a pointer to the newly created DRBG instance
@@ -47,7 +50,7 @@ pub trait DRBG_Functions{
     */
     fn new(req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize> where Self: Sized;
 
-    /*  This function serves as an envelope to the reseed algorithm of the underlying DRBG mechanism.
+    /*  This function serves as an envelope to the reseed algorithm of the underlying DRBG mechanism and is defined in section 9.2 of the SP.
         It reseeds the internal state of the DRBG by acquiring fresh entropy from the entropy source.
         If the reseeding fails, an error state >0 is returned to the application that is using the DRBG.
         If the reseeding succeeds, 0 is returned.
@@ -58,12 +61,12 @@ pub trait DRBG_Functions{
         Return Values:
             0 - SUCCESS, internal state has been succesfully reseeded
             1 - ERROR, internal state is not valid (uninstantiated or in error state)
-            2 - ERROR, additional input is too long (max security_strength bits)
+            2 - ERROR, additional input is too long (max MAX_SEC_STR bits)
             3 - ERROR, internal state reseeding failed unexpectedly
     */
     fn reseed(&mut self, add: Option<&[u8]>) -> usize;
 
-    /*  This function serves as an envelope to the generate algorithm of the underlying DRBG mechanism.
+    /*  This function serves as an envelope to the generate algorithm of the underlying DRBG mechanism and is specified in section 9.3 of the SP.
         Its goal is to use the underlying mechanism to generate the requested number of pseudo-random bits needed by
         the calling application (within the limits imposed by MAX_PBR).
         On success this function returns 0 and the requested number of pseudo-random bits.
@@ -86,7 +89,7 @@ pub trait DRBG_Functions{
     */
     fn generate(&mut self, bits: &mut Vec<u8>, req_bits: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize;
 
-    /*  This function is used to zeroize the internal state and make it unavailable to the calling application.
+    /*  This function is used to zeroize the internal state and make it unavailable to the calling application and is defined in section 9.4 of the SP.
         It overwrites the internal state of the DRBG mechanism and sets the 'zeroized' flag, rendering the internal state unusable.
         After a call to this function a new instance of the DRBG must be used.
 
@@ -105,6 +108,8 @@ pub trait DRBG_Functions{
             - bytes: number of entropy bytes to be generated
     */
     fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize);
+
+    /*  FROM HERE WE HAVE UTILITY FUNCTIONS THAT ARE NOT SPECIFICALLY TIED TO THE SP REQUIREMENTS. */
 
     /*  Utility function that returns the supported security strength of the DRBG.
     
@@ -148,47 +153,51 @@ impl<T> DRBG_Functions for DRBG<T>
 where
     T: DRBG_Mechanism_Functions
 {
+    /*  Step 4 of this process (as specified in the SP) is handled directly by the mechanisms by allowing then to modify the security strength accordingly. */
     fn new(mut req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
-        // Checking requirements on the validity of the requested security strength and the personalization string.
+        // Checking the validity of the security strength (step 1).
         if req_sec_str > MAX_SEC_STR{
             return Err(1);
         }
-        if ps.is_some() && ps.unwrap().len() * 8 > req_sec_str{
-            return Err(2);
-        }
 
-        // Acquiring the entropy input according to mechanisms' specifics.
-        let mut entropy= Vec::<u8>::new();
+        // Extracting the eventual personalization string.
         let mut actual_pers = Vec::<u8>::new();
-        if T::drbg_name() != "CTR-DRBG" {
-            if ps.is_some() {
-                actual_pers.append(&mut ps.unwrap().to_vec());
+        if ps.is_some() {
+            actual_pers.append(&mut ps.unwrap().to_vec());
+
+            // Checking the validity of the personalization string (step 3).
+            if actual_pers.len() * 8 > req_sec_str {
+                return Err(2);
             }
 
-            DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
-        }
-        else {
-            // Padding personalization string with random bytes
-            if ps.is_some() {
+            // Eventually padding the personalization string with random bytes in case of CTR mechanism with no DF.
+            if T::drbg_name() == "CTR-DRBG" {
                 let mut padding = Vec::<u8>::new();
                 DRBG::<T>::get_entropy_input(&mut padding, 48 - ps.unwrap().len());
                 actual_pers.append(&mut ps.unwrap().to_vec());
                 actual_pers.append(&mut padding);
             }
+        }
 
+        // Acquiring the entropy input according to mechanisms' specifics (step 6).
+        let mut entropy= Vec::<u8>::new();
+        if T::drbg_name() != "CTR-DRBG" {
+            DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
+        }
+        else {
             DRBG::<T>::get_entropy_input(&mut entropy, 48);
         }
 
-        // Acquiring the nonce for mechanisms that are different from CTR-DRBG withouth derivation function.
+        // Acquiring the nonce for mechanisms that are different from CTR-DRBG withouth derivation function (step 8).
         let mut nonce= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {      
             DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
         }
         
-        // Trying to allocate the DRBG's internal state.
+        // Trying to allocate the DRBG's internal state (step 9).
         let drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &actual_pers.as_slice(), &mut req_sec_str);
 
-        // Checking the validity of the allocated state.
+        // Checking the validity of the allocated state (step 10,11,12).
         match drbg_mech{
             None => {
                 return Err(3);
@@ -200,7 +209,7 @@ where
     }
 
     fn reseed(&mut self, add: Option<&[u8]>) -> usize{
-        // Retrieving the actual internal state if available and valid.
+        // Retrieving the actual internal state if available and valid (step 1).
         let working_state;
         match self.internal_state.as_mut(){
             None => {
@@ -211,35 +220,37 @@ where
             }
         }
 
-        // Checking the validity of the passed additional input.
+        // Retrieving the additional input if present.
         let mut actual_add_in = Vec::<u8>::new();
         match add{
             None => {}
             Some(value) => {
+                // Checking the validity of the additional input (step 3).
                 if value.len() * 8 > self.security_strength {
                     return 2;
                 }
 
                 actual_add_in.append(&mut value.to_vec());
+
+                // Eventually padding the additional input with random bytes if the mechanism is CTR with no DF.
+                if T::drbg_name() == "CTR-DRBG" {
+                    let mut padding = Vec::<u8>::new();
+                    DRBG::<T>::get_entropy_input(&mut padding, 48 - actual_add_in.len());
+                    actual_add_in.append(&mut padding);
+                }
             }
         }
 
-        // Retrieving new entropy and reseeding the internal state.
-        // Acquiring the entropy input according to mechanisms' specifics.
+        // Acquiring the entropy input according to mechanisms' specifics (step 4).
         let mut entropy_input= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {
             DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
         }
         else {
-            // Eventually padding add_in
-            if actual_add_in.len() != 0{
-                let mut padding = Vec::<u8>::new();
-                DRBG::<T>::get_entropy_input(&mut padding, 48 - actual_add_in.len());
-                actual_add_in.append(&mut padding);
-            }
             DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
         }
 
+        // Reseeding the internal state (step 6).
         let res;
         if actual_add_in.len() != 0 {
             res = working_state.reseed(&entropy_input, Some(&actual_add_in));
@@ -248,7 +259,7 @@ where
             res = working_state.reseed(&entropy_input, None);
         }
 
-        // Internal state reseed failure.
+        // Internal state reseed failure (step 5).
         if res > 0 {
             return 3;
         }
@@ -257,31 +268,39 @@ where
     }
 
     fn generate(&mut self, bits: &mut Vec<u8>, req_bits: usize, req_str: usize, pred_res_req: bool, add: Option<&[u8]>) -> usize {
-        // Checking the validity of all the obtained parameters.
+        // Eventually clearing existing data from the return vector.
         if !bits.is_empty(){
             bits.clear();
         }
+
+        // Checking the validity of the internal state (step 1).
         if self.internal_state.is_none() || self.error_state{
                 return 1;
         }
+
+        // Checking the validity of the requested number of bits (step 2).
         if req_bits > MAX_PRB {
             return 2;
         }
+
+        // Checking that the requested strength is supported by this instance (step 3).
         if req_str > self.security_strength {
             return 3;
         }
 
-        // Checking the validity of the passed additional input.
+        // Retrieving the eventual additional input.
         let mut actual_add_in = Vec::<u8>::new();
         match add{
             None => {}
             Some(value) => {
+                // Checking the validity of the additional input (step 4).
                 if value.len() * 8 > self.security_strength {
                     return 4;
                 }
 
                 actual_add_in.append(&mut value.to_vec());
 
+                // Eventually padding the additional input if the CTR mechanism with no DF is used.
                 if T::drbg_name() == "CTR-DRBG" {
                     let mut padding = Vec::<u8>::new();
                     DRBG::<T>::get_entropy_input(&mut padding, 48 - actual_add_in.len());
@@ -290,17 +309,20 @@ where
             }
         }
         
-        // Eventually reseeding the internal state if needed.
+        // Eventually reseeding the internal state if needed (step 7).
         let working_state = self.internal_state.as_mut().unwrap();
         let gen_res;
         if pred_res_req || working_state.reseed_needed() {
             let mut entropy_input= Vec::<u8>::new();
+            // Retreiving entropy for the reseed.
             if T::drbg_name() != "CTR-DRBG" {
                 DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
             }
             else {
                 DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
             }
+
+            // Reseeding the internal state (step 7.1).
             if actual_add_in.len() != 0 {
                 working_state.reseed(&entropy_input, Some(&actual_add_in));
             }
@@ -308,11 +330,11 @@ where
                 working_state.reseed(&entropy_input, None);
             }
 
-            // Generating the requested bits.
+            // Generating the requested bits (step 8, prr).
             gen_res = working_state.generate(bits, req_bits/8, None);
         }
         else {
-            // Generating the requested bits.
+            // Generating the requested bits (step 8, no prr).
             if actual_add_in.len() != 0 {
                 gen_res = working_state.generate(bits, req_bits/8, Some(&actual_add_in));
             }
@@ -321,7 +343,7 @@ where
             }
         }
 
-        // Checking the result of the generation.
+        // Checking the result of the generation (step 10,11).
         if gen_res == 0 {
             return 0;
         }

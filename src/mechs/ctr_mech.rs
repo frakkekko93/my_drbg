@@ -20,7 +20,15 @@ const CTR_LEN: usize = 16;
     SP 800-90A prescribes as possible block ciphers AES 128/192/256 and TDES. However, since TDES is on the verge of getting
     unapproved by NIST, I decided to only use AES 128/192/256 for this implementation.
     According to NIST SP 800-57 AES 128/192/256 support security strengths of respectively 128/192/256 bits. Thus, since this
-    implementation supports every one of these block ciphers, it also can support any security strength in the range [128, 256]. */
+    implementation supports every one of these block ciphers, it also can support any security strength in the range [128, 256].
+    
+    - k: key of the underlying block cipher
+    - v: vector used for block encryptions
+    - count: reseed counter
+    - zeroized: indicates whether the instance has been zeroized (a new instance is needed)
+    - seedlen: length of the parameters used by this mechanism (=> blocklen + keylen)
+    - blocklen: length of the input/output blocks of the block cipher
+    - keylen: length of the key of the blockcipher */
 pub struct CtrDrbgMech<D: 'static>
 where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,

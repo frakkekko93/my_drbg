@@ -136,6 +136,7 @@ where
     D::BlockSize: ArrayLength<u8>,
     D::OutputSize: ArrayLength<u8>,
 {
+    /*  Function defined in section 10.1.2 of the SP. */
     fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
         // Runtime check on the use of any unallowed hash function.
         let seedlen;
@@ -145,7 +146,7 @@ where
         if this_id != sha256_id && this_id != sha512_id{
             return None;
         }
-        else if this_id == sha256_id {
+        else if this_id == sha256_id {      // Setting the appropriate seedlen for the mechanism based on the hash fun.
             seedlen = 440;
         }
         else {
@@ -156,7 +157,7 @@ where
         if *req_str > 256 {return None}
         *req_str = 256;
 
-        // Entropy and nonce parameters must be present.
+        // Entropy and nonce parameters must be present and of sufficient lengths.
         if entropy.len() < *req_str/8 || nonce.len() < *req_str/16 {
             return None
         }
@@ -190,6 +191,7 @@ where
         Some(this)
     }
 
+    /*  Function defined in section 10.1.1.4 of the SP. */
     fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
         // Eventually deleting data in result
         if !result.is_empty() {
@@ -247,13 +249,14 @@ where
         0
     }
 
+    /*  Function defined in section 10.1.1.3 of the SP. */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
             return 1;
         }
         
-        // Entropy and nonce parameters must be present.
+        // Entropy and nonce parameters must be present and of sufficient length.
         if entropy.len() < self.sec_str/8 {
             return 2;
         }

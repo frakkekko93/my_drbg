@@ -14,7 +14,8 @@ const SEED_LIFE: usize = 1000;
     - k,v: internal state secret value that are used for he generation of pseudorandombits
     - count: the reseed counter
     - reseed_interval: the maximum number of generate requests that can be served between reseedings
-    - zeroized: boolean flag indicating whether the particular instance has been zeroized */
+    - zeroized: boolean flag indicating whether the particular instance has been zeroized 
+    - sec_str: the security strength supported by this instance. */
 pub struct HmacDrbgMech<D: 'static>
 where
     D: Update + BlockInput + FixedOutput + Default,
@@ -36,11 +37,12 @@ where
     D::OutputSize: ArrayLength<u8>,
 {
     /*  Updates the internal status of the DRBG using eventual additional seeds as inputs.
+        (NIST SP 800-90A, section 10.1.2.2)
 
         Parameters:
             - seeds: additional inputs to be used for the update of the internal state */
     fn update(&mut self, seeds: Option<&[&[u8]]>) {
-        // Using the hmac primitive to update the internal state.
+        // Using the hmac primitive to update the internal state (step 1).
         let mut kmac = self.hmac();
         kmac.update(&self.v);
         kmac.update(&[0x00]);
@@ -52,16 +54,17 @@ where
         }
         self.k = kmac.finalize().into_bytes();
 
+        // Updating V (step 2).
         let mut vmac = self.hmac();
         vmac.update(&self.v);
         self.v = vmac.finalize().into_bytes();
 
-        // If no additional seeds are given, we have done everything needed.
+        // If no additional seeds are given, we have done everything needed (step 3).
         if seeds.is_none() {
             return;
         }
 
-        // Additional update of the internal state using optional seeds
+        // Additional update of the internal state using optional seeds (step 4).
         let seeds = seeds.unwrap();
 
         let mut kmac = self.hmac();
@@ -73,6 +76,7 @@ where
         }
         self.k = kmac.finalize().into_bytes();
         
+        // Updating V (step 5).
         let mut vmac = self.hmac();
         vmac.update(&self.v);
         self.v = vmac.finalize().into_bytes();
@@ -94,6 +98,7 @@ where
     D::BlockSize: ArrayLength<u8>,
     D::OutputSize: ArrayLength<u8>,
 {
+    /*  Function defined in section 10.1.2.3 of the SP. */
     fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
         // Runtime check on the use of any unallowed hash function.
         let this_id = TypeId::of::<D>();
@@ -107,12 +112,12 @@ where
         if *req_str > 256 {return None}
         *req_str = 256;
 
-        // Entropy and nonce parameters must be present.
+        // Entropy and nonce parameters must be present and of sufficient lengths.
         if entropy.len() < *req_str/8 || nonce.len() < *req_str/16 {
             return None
         }
 
-        // Setting initial values for the internal state.
+        // Setting initial values for the internal state (step 2,3).
         let mut k = GenericArray::<u8, D::OutputSize>::default();
         let mut v = GenericArray::<u8, D::OutputSize>::default();
         
@@ -126,13 +131,16 @@ where
 
         let mut this = Self { k, v, count: 0 , zeroized: false, sec_str: *req_str};
 
-        // Updating the internal state using the passed parameters.
+        // Updating the internal state using the passed parameters (step 1,4).
         this.update(Some(&[entropy, nonce, pers]));
+
+        // Initializing the reseed counter (step 5).
         this.count = 1;
 
         Some(this)
     }
 
+    /*  Function defined in section 10.1.2.5 of the SP. */
     fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
         // Eventually deleting data in result
         if !result.is_empty() {
@@ -144,17 +152,17 @@ where
             return 1;
         }
         
-        // Reached reseed interval (ERROR_FLAG=2)
+        // Reached reseed interval (ERROR_FLAG=2, step 1)
         if self.count >= SEED_LIFE{
             return 2;
         }
 
-        // Updating internal state using additional input
+        // Updating internal state using additional input (step 2)
         if let Some(add) = add {
             self.update(Some(&[add]));
         }
 
-        // Using hmac primitive to generate the required bytes
+        // Using hmac primitive to generate the required bytes (step 4)
         let mut i = 0;
         while i < req_bytes {
             let mut vmac = self.hmac();
@@ -170,7 +178,7 @@ where
             i += self.v.len();
         }
         
-        // Updating the internal state one final time
+        // Updating the internal state one final time (step 6)
         match add {
             Some(add) => {
                 self.update(Some(&[add]));
@@ -179,11 +187,13 @@ where
                 self.update(None);
             }
         }
-        // Update the reseed counter
+
+        // Update the reseed counter (step 7)
         self.count += 1;
         return 0;
     }
 
+    /*  Function defined in section 10.1.2.4 of the SP. */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
@@ -195,8 +205,10 @@ where
             return 2;
         }
 
-        // Updating the internal state using the passed parameters.
+        // Updating the internal state using the passed parameters (step 1,2).
         self.update(Some(&[entropy, add.unwrap_or(&[])]));
+
+        // Resetting the counter (step 3)
         self.count = 1;
         return 0;
     }

@@ -1,7 +1,7 @@
 /*  This public trait defines the functions that are common to all implemented DRBG mechanisms. 
     The functions declared in this trait are not supposed to be directly used by external applications. Instead,
     they are designed to be used by the DRBG functions defined by the DRBG_Functions trait (see module 'gen_drbg').
-    The functions defined in such trait serve as evelops to the ones defined here. Those evelopes check the validity
+    The functions defined in such trait serve as envelops to the ones defined here. Those evelopes check the validity
     of the parameters that the functions of this trait receive from external applications. Other parameters (such as
     entropy inputs, nonces, and others) are directly derived by the function envelopes according to the needs of the
     specific mechanism. */
@@ -21,7 +21,7 @@ pub trait DRBG_Mechanism_Functions: {
             - req_str: the security strength that is required for the DRBG mechanism
         
         Return value:
-            - Some(inst): where 'inst' pointer to the newly created instance
+            - Some(inst): where 'inst' is a pointer to the newly created instance
             - None: instantiation failed
     */
     fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> where Self: Sized;
@@ -48,7 +48,7 @@ pub trait DRBG_Mechanism_Functions: {
         This function is called by DRBG_Functions::reseed envelope. This envelope is responsible for deriving the
         entropy parameter and checking the validity of the additional input received from the calling application.
         On success, this function returns 0.
-        On failure, this function returns 1.
+        On failure, this function returns an error flag >0.
         
         Parameters:
             - entropy: the new entropy to be used for reseeding
