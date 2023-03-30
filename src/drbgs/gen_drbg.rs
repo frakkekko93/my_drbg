@@ -163,8 +163,6 @@ where
         if T::drbg_name() != "CTR-DRBG" {
             if ps.is_some() {
                 actual_pers.append(&mut ps.unwrap().to_vec());
-
-                println!("NOT-CTR: used pers: {}, len: {}", hex::encode(&actual_pers), actual_pers.len());
             }
 
             DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
@@ -176,8 +174,6 @@ where
                 DRBG::<T>::get_entropy_input(&mut padding, 48 - ps.unwrap().len());
                 actual_pers.append(&mut ps.unwrap().to_vec());
                 actual_pers.append(&mut padding);
-
-                println!("CTR: used pers: {}, len: {}", hex::encode(&actual_pers), actual_pers.len());
             }
 
             DRBG::<T>::get_entropy_input(&mut entropy, 48);
@@ -188,9 +184,6 @@ where
         if T::drbg_name() != "CTR-DRBG" {      
             DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
         }
-
-        // println!("DRBG - (instantiate): used entropy: {} - len: {}.", hex::encode(&entropy), entropy.len());
-        // println!("DRBG - (instantiate): used nonce: {} - len: {}.", hex::encode(&nonce), nonce.len());
         
         // Trying to allocate the DRBG's internal state.
         let drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &actual_pers.as_slice(), &mut req_sec_str);
@@ -223,9 +216,6 @@ where
         match add{
             None => {}
             Some(value) => {
-
-                // println!("DRBG - (reseed): received add-in: {} - len: {}.", hex::encode(value), value.len());
-
                 if value.len() * 8 > self.security_strength {
                     return 2;
                 }
@@ -238,8 +228,6 @@ where
         // Acquiring the entropy input according to mechanisms' specifics.
         let mut entropy_input= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {
-
-            println!("NOT-CTR: used add_in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
             DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
         }
         else {
@@ -249,12 +237,9 @@ where
                 DRBG::<T>::get_entropy_input(&mut padding, 48 - actual_add_in.len());
                 actual_add_in.append(&mut padding);
             }
-
-            println!("CTR: used add_in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
             DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
         }
 
-        // println!("DRBG - (reseed): used entropy: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
         let res;
         if actual_add_in.len() != 0 {
             res = working_state.reseed(&entropy_input, Some(&actual_add_in));
@@ -291,9 +276,6 @@ where
         match add{
             None => {}
             Some(value) => {
-
-                // println!("DRBG - (reseed): received add-in: {} - len: {}.", hex::encode(value), value.len());
-
                 if value.len() * 8 > self.security_strength {
                     return 4;
                 }
@@ -314,18 +296,12 @@ where
         if pred_res_req || working_state.reseed_needed() {
             let mut entropy_input= Vec::<u8>::new();
             if T::drbg_name() != "CTR-DRBG" {
-                println!("NOT-CTR: used add_in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
                 DRBG::<T>::get_entropy_input(&mut entropy_input, self.security_strength/8);
             }
             else {
-                println!("CTR: used add_in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
                 DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
             }
-
-            // println!("DRBG - (generate): used entropy for reseed: {} - len: {}.", hex::encode(&entropy_input), entropy_input.len());
-            
             if actual_add_in.len() != 0 {
-                println!("GEN: used add_in on prr req: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
                 working_state.reseed(&entropy_input, Some(&actual_add_in));
             }
             else {
@@ -338,7 +314,6 @@ where
         else {
             // Generating the requested bits.
             if actual_add_in.len() != 0 {
-                println!("GEN: used add_in with no prr req: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
                 gen_res = working_state.generate(bits, req_bits/8, Some(&actual_add_in));
             }
             else {

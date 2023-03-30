@@ -48,9 +48,6 @@ pub fn check_res<T: std::cmp::PartialEq>(result: T, expected: T, test_name: Stri
             }
             Ok(_) => {}
         }
-
-        //println!("{}", format_message(true, module_name, test_id, fail_msg));
-
         return 1;
     }
     else {
@@ -60,9 +57,6 @@ pub fn check_res<T: std::cmp::PartialEq>(result: T, expected: T, test_name: Stri
             }
             Ok(_) => {}
         }
-
-        //println!("{}", format_message(false, module_name, test_id, succ_msg));
-
         return 0;
     }
 }

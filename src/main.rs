@@ -20,6 +20,6 @@ fn fips_sim(){
 
 #[allow(unused_assignments)]
 fn main(){  
-    //fips_sim();
-    run_demo();
+    fips_sim();
+    //run_demo();
 }
