@@ -1,3 +1,15 @@
+/*  Number of bits/bytes to be generated per request during testing. */
+pub const MIN_BITS: usize = 8;
+pub const MAX_BITS: usize = 1024;
+pub const NS_BITS: usize = 2048;
+pub const MIN_BYTES: usize = MIN_BITS/8;
+pub const MAX_BYTES: usize = MAX_BITS/8;
+pub const NS_BYTES: usize = NS_BITS/8;
+
+/*  Security stregths used to test DRBG and Mechs. */
+pub const SEC_STR: usize = 256;
+pub const NS_SEC_SRT: usize = 512;
+
 /*  Entropy constants */
 pub const ENTROPY: [u8; 32] = 
     [156, 186, 175, 146, 33, 53, 148, 237,

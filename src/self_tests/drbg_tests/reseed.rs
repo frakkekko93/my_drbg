@@ -12,9 +12,8 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Verifying normal reseed operation. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = DRBG::<T>::new(256, None);
+    let res = DRBG::<T>::new(SEC_STR, None);
     let mut drbg;
-    // let add_in: [u8; 32] = [0; 32];
 
     match res{
         Err(_) => {
@@ -41,7 +40,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Verifying that the reseed of an invalid internal state is not allowed. */
 fn internal_state_not_valid<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(256, None);
+    let res = DRBG::<T>::new(SEC_STR, None);
     let mut drbg;
 
     match res{
@@ -71,9 +70,8 @@ fn internal_state_not_valid<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Verifying that additional inputs that are too long are rejected. */
 fn add_in_too_long<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = DRBG::<T>::new(256, None);
+    let res = DRBG::<T>::new(SEC_STR, None);
     let mut drbg;
-    // let add_in: [u8; 33] = [0; 33];
 
     match res{
         Err(_) => {

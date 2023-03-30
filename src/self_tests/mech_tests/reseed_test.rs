@@ -13,13 +13,14 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize{
 }
 
 /*  Testing normal reseeding operation. */
+#[allow(const_item_mutation)]
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut SEC_STR);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut SEC_STR);
     }
 
     let mut drbg;
@@ -51,13 +52,14 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 }
 
 /*  Making reseed failed after trying to reseed zeroized internal state */
+#[allow(const_item_mutation)]
 fn test_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut SEC_STR);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut SEC_STR);
     }
 
     let mut drbg;
@@ -99,13 +101,14 @@ fn test_invalid_state<T: DRBG_Mechanism_Functions>() -> usize{
 }
 
 /*  Testing that entropy too short is refused by HMAC and Hash mechanisms. */
+#[allow(const_item_mutation)]
 fn test_entropy_too_short<T: DRBG_Mechanism_Functions>() -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut 256);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut SEC_STR);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS, &mut 256);
+        res = T::new(&ENTROPY, &NONCE, &PERS, &mut SEC_STR);
     }
 
     let mut drbg;

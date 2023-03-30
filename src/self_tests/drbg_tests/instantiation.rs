@@ -12,7 +12,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Testing that any security strength that is <=MAX_STR is actually accepted by the DRBG. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(256, Some(&PERS));
+    let res = DRBG::<T>::new(SEC_STR, Some(&PERS));
     let mut drbg = None;
 
     match res{
@@ -34,7 +34,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Testing that not supported security strengths are actually rejected by the DRBG. */
 fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(512, None);
+    let res = DRBG::<T>::new(NS_SEC_SRT, None);
     let mut err= 0;
     let mut drbg = None;
 
@@ -59,8 +59,7 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Testing that the limit on the length of the personalization string is actually enforced. */
 fn ps_is_too_long<T: DRBG_Mechanism_Functions>() -> usize{
-    // let ps: [u8; 33] = [0; 33];
-    let res = DRBG::<T>::new(256, Some(&PERS_TOO_LONG));
+    let res = DRBG::<T>::new(SEC_STR, Some(&PERS_TOO_LONG));
     let mut err= 0;
     let mut drbg = None;
 

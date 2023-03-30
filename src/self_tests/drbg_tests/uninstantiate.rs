@@ -1,5 +1,6 @@
 use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
+use crate::self_tests::constants::*;
 use crate::self_tests::formats::*;
 
 /*  Aggregator that runs all the tests in this file. */
@@ -10,7 +11,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
 
 /*  Verifying that the reseed of an invalid internal state is not allowed. */
 fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(256, None);
+    let res = DRBG::<T>::new(SEC_STR, None);
     let mut drbg;
 
     match res{
@@ -44,7 +45,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 
 /*  Verifying that a double uninstantiate is not allowed. */
 fn double_uninst<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = DRBG::<T>::new(256, None);
+    let res = DRBG::<T>::new(SEC_STR, None);
     let mut drbg;
 
     match res{

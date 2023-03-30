@@ -1,4 +1,5 @@
 use crate::mechs::{gen_mech::DRBG_Mechanism_Functions};
+use crate::self_tests::constants::*;
 use crate::self_tests::formats::*;
 use serde::Deserialize;
 
@@ -11,7 +12,7 @@ pub fn run_all<T: DRBG_Mechanism_Functions>() -> usize {
 }
 
 // Test KATs for HMAC-DRBG mech.
-#[allow(non_snake_case)]
+#[allow(const_item_mutation)]
 pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
     #[derive(Deserialize, Debug)]
     struct Fixture {
@@ -43,7 +44,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap(),
-            &mut 256
+            &mut SEC_STR
         );
 
         let mut drbg;
