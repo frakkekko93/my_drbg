@@ -32,7 +32,7 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         if fun_id == "Sha 256" {
-            tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors_sha256.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/hmac_nist_vectors_sha256.json")).unwrap();
         }
         else {
             // tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors_sha512.json")).unwrap();

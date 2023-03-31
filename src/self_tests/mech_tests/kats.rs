@@ -32,33 +32,29 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usize)
     // Selecting the rigth file based on the mechanism that is being tested.
     if T::drbg_name() == "Hash-DRBG" {
         if fun_id == "Sha 256" {
-            tests = serde_json::from_str(include_str!("fixtures/hash_kats_sha256.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/kats/hash/hash_kats_sha256.json")).unwrap();
         }
         else {
-            // tests = serde_json::from_str(include_str!("fixtures/hash_kats_sha512.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/kats/hash/hash_kats_sha512.json")).unwrap();
         }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         if fun_id == "Sha 256" {
-            tests = serde_json::from_str(include_str!("fixtures/hmac_kats_sha256.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/kats/hmac/hmac_kats_sha256.json")).unwrap();
         }
         else {
-            // tests = serde_json::from_str(include_str!("fixtures/hmac_kats_sha512.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/kats/hmac/hmac_kats_sha512.json")).unwrap();
         }
     }
     else {
         if fun_id == "AES 128" {
-            //tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats_aes128.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/kats/ctr_no_df/ctr_no_df_kats_aes128.json")).unwrap();
         }
         else if fun_id == "AES 192" {
-            // tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats_aes192.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/kats/ctr_no_df/ctr_no_df_kats_aes192.json")).unwrap();
         }
         else {
-            tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats_aes256.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/kats/ctr_no_df/ctr_no_df_kats_aes256.json")).unwrap();
         }
     }
 

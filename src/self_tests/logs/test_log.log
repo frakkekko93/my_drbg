@@ -64,6 +64,10 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_prr_ss256: completed generation using prr.
+TEST PASSED (MECH-TESTS::kats) - ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - ps_add_noprr_ss256: completed double generation without prr.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -177,6 +181,10 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_prr_ss256: completed generation using prr.
+TEST PASSED (MECH-TESTS::kats) - ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - ps_add_noprr_ss256: completed double generation without prr.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -215,6 +223,10 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_prr_ss256: completed generation using prr.
+TEST PASSED (MECH-TESTS::kats) - ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - ps_add_noprr_ss256: completed double generation without prr.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -253,6 +265,10 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_prr_ss256: completed generation using prr.
+TEST PASSED (MECH-TESTS::kats) - ps_noadd_noprr_ss256: completed generation without prr.
+TEST PASSED (MECH-TESTS::kats) - ps_add_noprr_ss256: completed double generation without prr.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.

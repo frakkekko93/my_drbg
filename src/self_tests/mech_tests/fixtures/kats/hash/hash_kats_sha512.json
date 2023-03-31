@@ -1,0 +1,59 @@
+[
+    {
+      "name": "no_ps_noadd_noprr_ss256",
+      "entropy": "e06a0cf3a6465b432f69f2f5a9a7e825f88d4b3649d32a2031449ee0796c3fb9",
+      "nonce": "d9c0832ec95d6eb03d4aefc73fb2d354",
+      "pers": null,
+      "prr": false,
+      "reseed_entropy": null,
+      "add": [
+        null,
+        null
+      ],
+      "double_gen": false,
+      "expected": "24741753b435f124311f987ab30a71d2d569be51283c9a1024116840b229ccba19cf128039c3a934bb2e492a00a72654143665096f5744630c934dfa709151f77575798ad8394abbc2ef446d0a6dcbf86aab21cd760613edb2c79aee2ccc7db91a0377195c6a875a4814107e04895380f3e39d981dbe075010725164902fe645"
+    },
+    {
+        "name":"no_ps_noadd_prr_ss256",
+        "entropy":"b6f62caf17857d1c59f04e4976fe56d628085973c9e440b9c74873286621f9ef",
+        "nonce":"fe22fdabe9f294e78a5127305536deca",
+        "pers": null,
+        "prr": true,
+        "reseed_entropy":"3e893baa83728c2378e7766a56d32b3305535e3ef591bca8071a058dfd76c891",
+        "add":[
+            null,
+            null
+        ],
+        "double_gen": false,
+        "expected":"0b264bab702f53addd90f76c61af1675362d6821e9b7b9add03adf3a15115d12adf788540727974fb7adee59ea6268b01c1a9f7b97a68dfde25ad19015576f9d880837ebba0b9b680a5c34d1c09736fbe2e5b837e53bad0452c4917f46011941e5962302c4312832d0b4507f1ae021265ea941f2001a2ecc2bfcfadcf4975af4"
+    },
+    {
+        "name":"ps_noadd_noprr_ss256",
+        "entropy":"a48ae4b6c7b8e96bcebc7fe7f3ccf1d40f6b486fba6a098bdcac2760a099d39e",
+        "nonce":"4acf116b817d049a92dfd7b39cee617d",
+        "pers":"01f243afa6e2fe164ba2249ec3a48ccc41396a59c5157faaefc34c1c5e6b6242",
+        "prr": false,
+        "reseed_entropy": null,
+        "add":[
+            null,
+            null
+        ],
+        "double_gen": false,
+        "expected":"af24a1c25061f057c5a16a8c4759b4c88e89ec631b62c3195c93ac35671c07ae43868269e8d499c9a26ad7ee5c8df9c8b21cd5193a6d31bd3194bb9b4d97d9c28fcaed7fa3bd26af31055666a87d3ee65174f6820629c229aceeba8040cc578ba82ecd477a6aabf9bbee6900e8cb112994a141c3ddb97654667b6a7fa52163d2"
+    },
+    {
+        "name":"ps_add_noprr_ss256",
+        "entropy":"00d1eba77b6dac5d90bcf4caa457eb669aa479cb1aa8b8346a7b49d1f17666f0",
+        "nonce":"44e68d10320c7e044c1cb3c6b13835ae",
+        "pers":"6521b3d3718085bc3fda8e0a00cb8cfa66ec1577961f401a52f7c0d7dfa62a67",
+        "prr": false,
+        "reseed_entropy": null,
+        "add":[
+            null,
+            "c57359795d9bc4ea052e1cc5bf3f26af349a862856f73d6d53a2e45d73483a58"
+        ],
+        "double_gen": true,
+        "expected":"2b8daa1b69ee89e01cec9af4cc7a5e1a2730c1b01e578447f61b30f2ed4ca6cb40f114440da43ab7a4b1cee836d84e354e3c3a435c552c546a22d648cccb3fa3cb749f389b0eb2ee2f3dcdefc5e9470e8eeb993a1e440450d21a16fcf254d153a4bbd5e12570fa1223e32f6bc5d6c6a2c2c8e4179f5f16811afd1ffb4973058a"
+    }
+]
+  
