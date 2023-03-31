@@ -2,11 +2,34 @@ pub mod drbg_demo;
 pub mod utility;
 
 use crate::mechs::ctr_mech::CtrDrbgMech;
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::mechs::hash_mech::HashDrbgMech;
 use crate::demos::{utility::*, drbg_demo::*};
 use aes::{Aes128, Aes192, Aes256};
 use sha2::*;
+
+/*  Tries to instantiate the requested DRBG and run the related demo. */
+fn try_run_demo<T: DRBG_Mechanism_Functions>(str: usize, need_ps: usize) -> usize {
+    let res = inst_drbg::<T>(str, need_ps);
+
+                        let mut drbg;
+                        match res {
+                            Err(err) => {
+                                match err {
+                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength.", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the internal mechanism failed.", err);}
+                                }
+
+                                return 1;
+                            }
+                            Ok(inst) => {
+                                drbg = inst;
+                            }
+                        }
+                        return drbg_demo(&mut drbg);                        
+}
 
 pub fn run_demo() {
     let mut scelta_drbg;
@@ -67,44 +90,10 @@ pub fn run_demo() {
 
                 match mech {
                     1 => {
-                        let res = inst_drbg::<HmacDrbgMech<Sha256>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC Sha 256 mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<HmacDrbgMech<Sha256>>(strength, need_ps);
                     }
                     2 => {
-                        let res = inst_drbg::<HmacDrbgMech<Sha512>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the HMAC Sha 512 mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<HmacDrbgMech<Sha512>>(strength, need_ps);
                     }
                     _ => {
                         println!("\n\nThanks for testing my drbg!");
@@ -125,44 +114,10 @@ pub fn run_demo() {
 
                 match mech {
                     1 => {
-                        let res = inst_drbg::<HashDrbgMech<Sha256>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the Hash Sha 256 mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<HashDrbgMech<Sha256>>(strength, need_ps);
                     }
                     2 => {
-                        let res = inst_drbg::<HashDrbgMech<Sha512>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the Hash Sha 512 mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<HashDrbgMech<Sha512>>(strength, need_ps);
                     }
                     _ => {
                         println!("\n\nThanks for testing my drbg!");
@@ -182,64 +137,13 @@ pub fn run_demo() {
 
                 match mech {
                     1 => {
-                        let res = inst_drbg::<CtrDrbgMech<Aes128>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <=256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the CTR AES 128 (no df) mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<CtrDrbgMech<Aes128>>(strength, need_ps);
                     }
                     2 => {
-                        let res = inst_drbg::<CtrDrbgMech<Aes192>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the CTR AES 192 (no df) mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<CtrDrbgMech<Aes192>>(strength, need_ps);
                     }
                     3 => {
-                        let res = inst_drbg::<CtrDrbgMech<Aes256>>(strength, need_ps);
-
-                        let mut drbg;
-                        match res {
-                            Err(err) => {
-                                match err {
-                                    1 => {println!("\nInstantiation failed with error {}: inappropriate security strength (sec_str <= 256).", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
-                                    _ => {println!("\nInstantiation failed with error {}: instantiation of the CTR AES 256 (no df) mechanism failed.", err);}
-                                }
-
-                                continue;
-                            }
-                            Ok(inst) => {
-                                drbg = inst;
-                            }
-                        }
-                        user_choice = drbg_demo(&mut drbg);
+                        user_choice = try_run_demo::<CtrDrbgMech<Aes256>>(strength, need_ps);
                     }
                     _ => {
                         println!("\n\nThanks for testing my drbg!");

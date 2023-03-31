@@ -54,7 +54,7 @@ fn gen_vecs() {
 
 #[allow(unused_assignments)]
 fn main(){  
-    fips_sim();
-    //run_demo();
+    //fips_sim();
+    run_demo();
     //gen_vecs();
 }
