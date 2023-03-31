@@ -1,6 +1,5 @@
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
-use crate::self_tests::constants::*;
 use serde::Deserialize;
 
 /*  The name of the test module to be printed in the log. */
@@ -8,7 +7,7 @@ const AL_NAME: &str = "MECH-TESTS::nist_vectors";
 
 /*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */
 #[allow(const_item_mutation)]
-pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
+pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usize) -> usize{
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -22,15 +21,37 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
     let tests: Vec<Fixture>;
 
     if T::drbg_name() == "Hash-DRBG" {
-        // tests = serde_json::from_str(include_str!("fixtures/hash_nist_vectors.json")).unwrap();
-        return 0;
+        if fun_id == "Sha 256" {
+            //tests = serde_json::from_str(include_str!("fixtures/hash_nist_vectors_sha256.json")).unwrap();
+            return 0;
+        }
+        else {
+            // tests = serde_json::from_str(include_str!("fixtures/hash_nist_vectors_sha512.json")).unwrap();
+            return 0;
+        }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
-        tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors.json")).unwrap();
+        if fun_id == "Sha 256" {
+            tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors_sha256.json")).unwrap();
+        }
+        else {
+            // tests = serde_json::from_str(include_str!("fixtures/hmac_nist_vectors_sha512.json")).unwrap();
+            return 0;
+        }
     }
     else {
-        // tests = serde_json::from_str(include_str!("fixtures/ctr_nist_vectors.json")).unwrap();
-        return 0;
+        if fun_id == "AES 128" {
+            //tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_nist_vectors_aes128.json")).unwrap();
+            return 0;
+        }
+        else if fun_id == "AES 192" {
+            // tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_nist_vectors_aes192.json")).unwrap();
+            return 0;
+        }
+        else {
+            // tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_nist_vectors_aes256.json")).unwrap();
+            return 0;
+        }
     }
 
     for test in tests {
@@ -38,7 +59,7 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap(),
-            &mut SEC_STR
+            &mut strength
         );
         
         let mut drbg;
@@ -68,7 +89,6 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>() -> usize{
                                    None => None,
                                });
 
-        //result.clear();
         drbg.generate(&mut result, full_len,
                                match add1 {
                                    Some(ref add1) => Some(add1.as_ref()),

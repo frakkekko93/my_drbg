@@ -1,7 +1,12 @@
+use std::any::TypeId;
+
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
+use crate::mechs::hash_mech::HashDrbgMech;
+use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::self_tests::{self, formats};
 use crate::self_tests::drbg_tests;
 use rand::Rng;
+use sha2::Sha512;
 
 /*  Configuration of the DRBG.
     
@@ -151,7 +156,7 @@ pub trait DRBG_Functions{
 /*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
 impl<T> DRBG_Functions for DRBG<T> 
 where
-    T: DRBG_Mechanism_Functions
+    T: DRBG_Mechanism_Functions + 'static
 {
     /*  Step 4 of this process (as specified in the SP) is handled directly by the mechanisms by allowing then to modify the security strength accordingly. */
     fn new(mut req_sec_str: usize, ps: Option<&[u8]>) -> Result<Self, usize>{
@@ -424,14 +429,37 @@ where
     }
 
     fn run_self_tests(&mut self) -> usize {
+        let this_id = TypeId::of::<T>();
+
+        // Building the log message based on the mechanism that is being tested.
         let mut log_message = "\n*** STARTING ".to_string();
         log_message.push_str(T::drbg_name().as_str());
+
+        if T::drbg_name() == "CTR-DRBG" {
+            log_message.push_str(" AES-");
+            log_message.push_str(&self.security_strength.to_string());
+            log_message.push_str(" (no DF)");
+        }
+        else {
+            log_message.push_str(" Sha ");
+
+            if this_id == TypeId::of::<HashDrbgMech<Sha512>>() 
+                || this_id == TypeId::of::<HmacDrbgMech<Sha512>>() {
+                log_message.push_str("512");
+            }
+            else {
+                log_message.push_str(&self.security_strength.to_string());
+            }
+        }
+        
         log_message.push_str(" on-demand self-tests ***\n");
         formats::write_to_log(log_message);
 
-        let res = drbg_tests::run_all::run_tests::<T>() +
-                self_tests::mech_tests::run_all::run_tests::<T>();
+        // Running tests
+        let res = drbg_tests::run_all::run_tests::<T>(self.security_strength) +
+                self_tests::mech_tests::run_all::run_tests::<T>(self.security_strength);
 
+        // If tests have failed we set the error state and uninstantiate the DRBG.
         if res != 0 {
             self.error_state = true;
             self.uninstantiate();

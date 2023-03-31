@@ -1,5 +1,4 @@
-use crate::mechs::{gen_mech::DRBG_Mechanism_Functions};
-use crate::self_tests::constants::*;
+use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::self_tests::formats::*;
 use serde::Deserialize;
 
@@ -7,13 +6,14 @@ use serde::Deserialize;
 const AL_NAME: &str = "MECH-TESTS::kats";
 
 // Runs all kats.
-pub fn run_all<T: DRBG_Mechanism_Functions>() -> usize {
-    return test_kats::<T>();
+pub fn run_all<T: DRBG_Mechanism_Functions>(fun_id: &str, strength: usize) -> usize {
+    return test_kats::<T>(fun_id, strength);
 }
 
 // Test KATs for HMAC-DRBG mech.
 #[allow(const_item_mutation)]
-pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
+pub fn test_kats<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usize) -> usize{
+    // The structure of each test contained in the .json file.
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -29,14 +29,37 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
 
     let tests: Vec<Fixture>;
 
+    // Selecting the rigth file based on the mechanism that is being tested.
     if T::drbg_name() == "Hash-DRBG" {
-        tests = serde_json::from_str(include_str!("fixtures/hash_kats.json")).unwrap();
+        if fun_id == "Sha 256" {
+            tests = serde_json::from_str(include_str!("fixtures/hash_kats_sha256.json")).unwrap();
+        }
+        else {
+            // tests = serde_json::from_str(include_str!("fixtures/hash_kats_sha512.json")).unwrap();
+            return 0;
+        }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
-        tests = serde_json::from_str(include_str!("fixtures/hmac_kats.json")).unwrap();
+        if fun_id == "Sha 256" {
+            tests = serde_json::from_str(include_str!("fixtures/hmac_kats_sha256.json")).unwrap();
+        }
+        else {
+            // tests = serde_json::from_str(include_str!("fixtures/hmac_kats_sha512.json")).unwrap();
+            return 0;
+        }
     }
     else {
-        tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats.json")).unwrap();
+        if fun_id == "AES 128" {
+            //tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats_aes128.json")).unwrap();
+            return 0;
+        }
+        else if fun_id == "AES 192" {
+            // tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats_aes192.json")).unwrap();
+            return 0;
+        }
+        else {
+            tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_kats_aes256.json")).unwrap();
+        }
     }
 
     for test in tests {
@@ -44,7 +67,7 @@ pub fn test_kats<T: DRBG_Mechanism_Functions>() -> usize{
             &hex::decode(&test.entropy).unwrap(),
             &hex::decode(&test.nonce).unwrap(),
             &hex::decode(&test.pers.unwrap_or("".to_string())).unwrap(),
-            &mut SEC_STR
+            &mut strength
         );
 
         let mut drbg;

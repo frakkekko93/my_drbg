@@ -2,7 +2,7 @@ use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::demos::utility::*;
 
-pub fn drbg_demo<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
+pub fn drbg_demo<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let mut user_choice = 1;
 
     println!("Great! Your {} has been instantiated.", T::drbg_name());
@@ -41,11 +41,7 @@ pub fn drbg_demo<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
                 return 1;
             }
             4 => {
-                let res = run_on_demand_drbg(drbg);
-
-                if res != 0 {
-                    return 1;
-                }
+                run_on_demand_drbg(drbg);
             }
             _ => {
                 println!("\nInvalid choice: {}", user_choice);

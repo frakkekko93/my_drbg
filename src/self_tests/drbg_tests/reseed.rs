@@ -4,15 +4,15 @@ use crate::self_tests::formats::*;
 use crate::self_tests::constants::*;
 
 /*  Aggregator that runs all the tests in this file. */
-pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
-    return norm_op::<T>() +
-            internal_state_not_valid::<T>() +
-            add_in_too_long::<T>();
+pub fn run_tests<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
+    return norm_op::<T>(strength) +
+            internal_state_not_valid::<T>(strength) +
+            add_in_too_long::<T>(strength);
 }
 
 /*  Verifying normal reseed operation. */
-fn norm_op<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = DRBG::<T>::new(SEC_STR, None);
+fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
+    let res = DRBG::<T>::new(strength, None);
     let mut drbg;
 
     match res{
@@ -29,7 +29,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize {
         }
     }
 
-    let res = drbg.reseed(Some(&ADD_IN));
+    let res = drbg.reseed(Some(&ADD_IN_256[..strength/8]));
 
     return check_res(res, 0, 
         "add_in_too_long".to_string(), 
@@ -39,8 +39,8 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize {
 }
 
 /*  Verifying that the reseed of an invalid internal state is not allowed. */
-fn internal_state_not_valid<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(SEC_STR, None);
+fn internal_state_not_valid<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
+    let res = DRBG::<T>::new(strength, None);
     let mut drbg;
 
     match res{
@@ -69,8 +69,8 @@ fn internal_state_not_valid<T: DRBG_Mechanism_Functions>() -> usize{
 }
 
 /*  Verifying that additional inputs that are too long are rejected. */
-fn add_in_too_long<T: DRBG_Mechanism_Functions>() -> usize {
-    let res = DRBG::<T>::new(SEC_STR, None);
+fn add_in_too_long<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
+    let res = DRBG::<T>::new(strength, None);
     let mut drbg;
 
     match res{

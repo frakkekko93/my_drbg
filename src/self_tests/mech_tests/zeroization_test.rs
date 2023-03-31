@@ -8,13 +8,13 @@ const AL_NAME: &str = "MECH-TESTS::zeroization_test";
 /*  Testing that the internal state of a mechanism
     is actually zeroized after a call to the zeroize function. */
 #[allow(const_item_mutation)]
-pub fn test_zeroization<T: DRBG_Mechanism_Functions>() -> usize {
+pub fn test_zeroization<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize {
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS, &mut SEC_STR);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS, &mut SEC_STR);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
     }
 
     let mut drbg;

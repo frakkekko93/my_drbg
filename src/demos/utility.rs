@@ -27,7 +27,7 @@ pub fn get_input() -> usize {
 
 /*  Utility function that instantiates the desired DRBG with the desired strength and ps. Enventually returns an
     error if instantiation fails. */
-pub fn inst_drbg<T: DRBG_Mechanism_Functions>(sec_str: usize, need_ps: usize) -> Result<DRBG<T>, usize> {
+pub fn inst_drbg<T: DRBG_Mechanism_Functions + 'static>(sec_str: usize, need_ps: usize) -> Result<DRBG<T>, usize> {
     if need_ps == 1 {
         let ps: [u8; 32];
         ps = rand::thread_rng().gen();
@@ -50,7 +50,7 @@ pub fn inst_drbg<T: DRBG_Mechanism_Functions>(sec_str: usize, need_ps: usize) ->
     }
 }
 
-pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
+pub fn generate<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     print!("> How many bits do you want to generate? (max {}): ", drbg.get_max_pbr());
     let num_bits = get_input();
 
@@ -104,7 +104,7 @@ pub fn generate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     1
 }
 
-pub fn reseed<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
+pub fn reseed<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let sec_str = drbg.get_sec_str();
 
     print!("> Do you want to use some additional input? (1=yes, 2=no, DEFAULT=no): ");
@@ -137,7 +137,7 @@ pub fn reseed<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     1
 }
 
-pub fn uninstantiate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
+pub fn uninstantiate<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let res = drbg.uninstantiate();
 
     match res {
@@ -148,13 +148,17 @@ pub fn uninstantiate<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
     1
 }
 
-pub fn run_on_demand_drbg<T: DRBG_Mechanism_Functions>(drbg: &mut DRBG<T>) -> usize {
+pub fn run_on_demand_drbg<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let res = drbg.run_self_tests();
 
     match res {
-        0 => {println!("All DRBG and mechanism self-tests have passed.");}
-        _ => {println!("{res} DRBG and/or mechanism self-tests have failed (see test log).");}
+        0 => {
+            println!("All DRBG and mechanism self-tests have passed.");
+            return 0;
+        }
+        _ => {
+            println!("{res} DRBG and/or mechanism self-tests have failed (see test log).");
+            return res;
+        }
     }
-
-    1
 }

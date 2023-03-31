@@ -4,15 +4,15 @@ use crate::self_tests::formats::*;
 use crate::self_tests::constants::*;
 
 /*  Aggregator that runs all the tests in this file. */
-pub fn run_tests<T: DRBG_Mechanism_Functions>() -> usize {
-    return norm_op::<T>() +
-            test_ss_not_supported::<T>() +
-            ps_is_too_long::<T>();
+pub fn run_tests<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
+    return norm_op::<T>(strength) +
+            test_ss_not_supported::<T>(strength) +
+            ps_is_too_long::<T>(strength);
 }
 
 /*  Testing that any security strength that is <=MAX_STR is actually accepted by the DRBG. */
-fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(SEC_STR, Some(&PERS));
+fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
+    let res = DRBG::<T>::new(strength, Some(&PERS_256[..strength/8]));
     let mut drbg = None;
 
     match res{
@@ -33,8 +33,8 @@ fn norm_op<T: DRBG_Mechanism_Functions>() -> usize{
 }
 
 /*  Testing that not supported security strengths are actually rejected by the DRBG. */
-fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(NS_SEC_SRT, None);
+fn test_ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
+    let res = DRBG::<T>::new(strength+64, None);
     let mut err= 0;
     let mut drbg = None;
 
@@ -47,19 +47,31 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions>() -> usize{
         }
     }
 
-    if check_res((err, true), (1, drbg.is_none()), 
-    "test_ss_not_supported".to_string(), 
-    "DRBG_TESTS::instantiation_test".to_string(), 
-    "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
-    "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
-        return 1;
+    if T::drbg_name() == "CTR-DRBG" && strength < 256{
+        if check_res((err, true), (3, drbg.is_none()), 
+        "test_ss_not_supported".to_string(), 
+        "DRBG_TESTS::instantiation_test".to_string(), 
+        "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
+        "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
+            return 1;
+        }
+        0
     }
-    0
+    else {
+        if check_res((err, true), (1, drbg.is_none()), 
+        "test_ss_not_supported".to_string(), 
+        "DRBG_TESTS::instantiation_test".to_string(), 
+        "succeeded to instantiate DRBG using not supported security strength.".to_string(), 
+        "failed to instantiate DRBG using not supported security strength as expected.".to_string()) != 0{
+            return 1;
+        }
+        0
+    }
 }
 
 /*  Testing that the limit on the length of the personalization string is actually enforced. */
-fn ps_is_too_long<T: DRBG_Mechanism_Functions>() -> usize{
-    let res = DRBG::<T>::new(SEC_STR, Some(&PERS_TOO_LONG));
+fn ps_is_too_long<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
+    let res = DRBG::<T>::new(strength, Some(&PERS_TOO_LONG));
     let mut err= 0;
     let mut drbg = None;
 

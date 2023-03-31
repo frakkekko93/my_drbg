@@ -10,7 +10,7 @@ use aes::{Aes128, Aes192, Aes256};
 use sha2::*;
 
 /*  Tries to instantiate the requested DRBG and run the related demo. */
-fn try_run_demo<T: DRBG_Mechanism_Functions>(str: usize, need_ps: usize) -> usize {
+fn try_run_demo<T: DRBG_Mechanism_Functions + 'static>(str: usize, need_ps: usize) -> usize {
     let res = inst_drbg::<T>(str, need_ps);
 
                         let mut drbg;
