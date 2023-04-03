@@ -95,11 +95,21 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
                                    None => None,
                                });
         
-        if check_res(result, expected, test.name, AL_NAME.to_string(), 
-            "failed nist vector generation.".to_string(),
-            "completed nist vector generation.".to_string()) != 0 {
+        if result != expected {
+            let mut message = "nist vector ".to_string();
+            message.push_str(&test.name);
+            message.push_str(" failed unexpectedly.");
+            write_to_log(format_message(false, AL_NAME.to_string(),
+                                                            "test_vectors".to_string(), 
+                                                            message)
+            );
             return 1;
         }
+        // if check_res(result, expected, test.name, AL_NAME.to_string(), 
+        //     "failed nist vector generation.".to_string(),
+        //     "completed nist vector generation.".to_string()) != 0 {
+        //     return 1;
+        // }
     }
 
     write_to_log(format_message(false, AL_NAME.to_string(),
