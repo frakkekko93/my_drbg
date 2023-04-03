@@ -12,10 +12,10 @@ use sha2::Sha512;
     
     This DRBG can be instantiated using anyone of the mechanisms defined in the 'mechs' module. These mechanisms support 
     a maximum of 256 bits of security strength (MAX_SEC_STR).
-    The DRBG is configured to generate a maximum of 1024 bits per-request (MAX_PRB). This option may actually be changed but be 
+    The DRBG is configured to generate a maximum of 2048 bits per-request (MAX_PRB). This option may actually be changed but be 
     aware of the limits imposed in tables 2 and 3 of NIST SP 800-90A. */
 const MAX_SEC_STR: usize = 256;
-const MAX_PRB: usize = 1024;
+const MAX_PRB: usize = 2048;
 
 /*  This is the general structure of the DRBG. We have:
         - internal_state: an handle to the state of the underlying mechanism

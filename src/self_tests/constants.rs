@@ -1,7 +1,7 @@
 /*  Number of bits/bytes to be generated per request during testing. */
 pub const MIN_BITS: usize = 8;
 pub const MAX_BITS: usize = 1024;
-pub const NS_BITS: usize = 2048;
+pub const NS_BITS: usize = 2056;
 pub const MIN_BYTES: usize = MIN_BITS/8;
 pub const MAX_BYTES: usize = MAX_BITS/8;
 
