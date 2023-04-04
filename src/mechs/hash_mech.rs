@@ -63,10 +63,6 @@ where
         let string_bytes = &mut num_bits_return.to_be_bytes()[3..];
         string_bytes[0] = counter;
 
-        // println!("DRBG-DF: used initial counter: {:?}", counter);
-        // println!("DRBG-DF: used num-blocks: {:?}", hex::encode(&string_bytes));
-        // println!("DRBG-DF: used input: {:?}", hex::encode(&input));
-
         // Generating hash_len byted at a time (step 4)
         let mut i: usize = 0;
         while i < num_bytes {
@@ -76,10 +72,6 @@ where
             self.hash_fun.update(&input);
             let hash = self.hash_fun.finalize_reset().to_vec();
             let hash_len = hash.len();
-
-            // println!("DRBG-DF: used string counter: {:?}", hex::encode(&string_bytes));
-            // println!("DRBG-DF: used input counter: {:?}", hex::encode(&input));
-
 
             for j in 0..hash_len {
                 // The requested number of bytes has beem reached (step 5)
@@ -199,9 +191,6 @@ where
         this.hash_df(&mut res, seed_material, seedlen/8);
         this.c.append(&mut res);
 
-        println!("DRBG-NEW: value of V: {}", hex::encode(&this.v));
-        println!("DRBG-NEW: value of C: {}", hex::encode(&this.c));
-
         // Return instance (step 5-6)
         Some(this)
     }
@@ -242,29 +231,21 @@ where
         self.hashgen(result, req_bytes);
 
         // Updating V (step 4-5)
-        println!("DRBG-GENERATE: value of V before generate: {}", hex::encode(&self.v));
         let mut seed_material = self.v.clone();
         seed_material.insert(0, 0x03);
         self.hash_fun.update(seed_material);
         let w = self.hash_fun.finalize_reset().to_vec();
 
-        println!("DRBG-GENERATE: value of w: {}", hex::encode(&w));
-        println!("DRBG-GENERATE: value of C: {}", hex::encode(&self.c));
-
         // V = (V+w+C+counter) mod 2^seedlen
         let mut v_clone = self.v.clone();
         modular_add_vec(&mut v_clone, w);
         self.v.clear();
-        self.v.append(&mut v_clone);
-
-        println!("DRBG-GENERATE: value of V+w: {}", hex::encode(&self.v));        
+        self.v.append(&mut v_clone);       
 
         let mut v_clone = self.v.clone();
         modular_add_vec(&mut v_clone, self.c.clone());
         self.v.clear();
         self.v.append(&mut v_clone);
-
-        println!("DRBG-GENERATE: value of V+w+C: {}", hex::encode(&self.v));
         
         let mut v_clone = self.v.clone();
         modular_add(&mut v_clone, self.count.try_into().unwrap());
@@ -273,9 +254,6 @@ where
 
         // Updating the reseed counter (step 6)
         self.count += 1;
-
-        println!("DRBG-GENERATE: value of V after generate: {}", hex::encode(&self.v));
-        println!("DRBG-GENERATE: counter: {}", self.count);
 
         0
     }
@@ -318,9 +296,6 @@ where
 
         // Re-init reseed counter (step 5).
         self.count = 1;
-
-        println!("DRBG-RESEED: value of V: {}", hex::encode(&self.v));
-        println!("DRBG-RESEED: value of C: {}", hex::encode(&self.c));
 
         0
     }

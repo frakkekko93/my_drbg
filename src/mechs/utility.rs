@@ -16,12 +16,12 @@ pub fn modular_add(num: &mut Vec<u8>, rhs: u8) {
             num[j] = res;
             j -= 1;
         }
-    }
 
-    // if carry {
-    //     res= num[0].wrapping_add(1);
-    //     num[0] = res;
-    // }        
+        if carry {
+            res= num[0].wrapping_add(1);
+            num[0] = res;
+        }   
+    }     
 }
 
 /*  This function performs a modular addition between two numbers represented as byte vectors.
@@ -31,12 +31,8 @@ pub fn modular_add_vec(num1: &mut Vec<u8>, num2: Vec<u8>) {
         return;
     }
 
-    println!("MODULAR ADD: received num1: \n{:?}", num1);
-    println!("MODULAR ADD: received num1: \n{:?}", num2);
-
     let len1 = num1.len();
     let len2 = num2.len();
-    // let mut global_carry= false;
     
     if len2 > len1 {
         return;
@@ -47,12 +43,6 @@ pub fn modular_add_vec(num1: &mut Vec<u8>, num2: Vec<u8>) {
     #[allow(unused_comparisons)]
     while i > 0 {
         let (res, carry) = num1[j-1].overflowing_add(num2[i-1]);
-
-        if i == 1 {
-            // println!("MODULAR ADD: last value, added {} + {} and got {} with carry {}.", num1[j-1], num2[i-1], res, carry);
-        }
-        
-        // println!("MODULAR ADD: added {} and {}, got: {} with carry: {}.", num1[j-1], num2[i-1], res, carry);
 
         num1[j-1] = res;
         if carry && i > 0{
@@ -72,15 +62,7 @@ pub fn modular_add_vec(num1: &mut Vec<u8>, num2: Vec<u8>) {
 
         i -= 1;
         j -= 1;
-        // global_carry = carry;
-
-        // println!("MODULAR ADD: updated numbers:\nnum1: {:?}\nnum2: {:?}", num1, num2);
     }
-
-    // if global_carry {
-    //     let res = num1[0].wrapping_add(num2[0]);
-    //     num1[0] = res;
-    // }
 }
 
 /*  Performs bit a bit XOR between two vectors of the same size. */
