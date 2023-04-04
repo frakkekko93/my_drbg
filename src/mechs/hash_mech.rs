@@ -187,6 +187,9 @@ where
         this.hash_df(&mut res, seed_material, seedlen/8);
         this.c.append(&mut res);
 
+        println!("DRBG-NEW: value of V: {}", hex::encode(&this.v));
+        println!("DRBG-NEW: value of C: {}", hex::encode(&this.c));
+
         // Return instance (step 5-6)
         Some(this)
     }
@@ -246,6 +249,9 @@ where
         // Updating the reseed counter (step 6)
         self.count += 1;
 
+        println!("DRBG-GENERATE: value of V: {}", hex::encode(&self.v));
+        println!("DRBG-GENERATE: value of C: {}", hex::encode(&self.c));
+
         0
     }
 
@@ -287,6 +293,9 @@ where
 
         // Re-init reseed counter (step 5).
         self.count = 1;
+
+        println!("DRBG-RESEED: value of V: {}", hex::encode(&self.v));
+        println!("DRBG-RESEED: value of C: {}", hex::encode(&self.c));
 
         0
     }

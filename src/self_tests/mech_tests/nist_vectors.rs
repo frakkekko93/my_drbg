@@ -14,7 +14,10 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
         entropy: String,
         nonce: String,
         pers: Option<String>,
-        add: [Option<String>; 2],
+        entropy_reseed: String,
+        add_in_reseed: Option<String>,
+        add_in_gen: Option<String>,
+        add_in_gen2: Option<String>,
         expected: String,
     }
 
@@ -22,20 +25,18 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
 
     if T::drbg_name() == "Hash-DRBG" {
         if fun_id == "Sha 256" {
-            //tests = serde_json::from_str(include_str!("fixtures/hash_nist_vectors_sha256.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/hash/sha_256/HASH_DRBG_SHA256_pr_false.json")).unwrap();
         }
         else {
-            // tests = serde_json::from_str(include_str!("fixtures/hash_nist_vectors_sha512.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/hash/sha_512/HASH_DRBG_SHA512_pr_false.json")).unwrap();
         }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         if fun_id == "Sha 256" {
-            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/sha_256/hmac_nist_vectors_sha256_no_reseed.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/sha_256/HMAC_DRBG_SHA256_pr_false.json")).unwrap();
         }
         else {
-            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/sha_512/hmac_nist_vectors_sha512_no_reseed.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/sha_512/HMAC_DRBG_SHA512_pr_false.json")).unwrap();
         }
     }
     else {
@@ -79,9 +80,15 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
         let expected = hex::decode(&test.expected).unwrap();
         let mut result = Vec::new();
         let full_len = expected.len();
-        let add0 = test.add[0].as_ref().map(|v| hex::decode(&v).unwrap());
-        let add1 = test.add[1].as_ref().map(|v| hex::decode(&v).unwrap());
+        let ent_reseed = hex::decode(&test.entropy_reseed).unwrap();
+        let add_reseed = test.add_in_reseed.as_ref().map(|v| hex::decode(&v).unwrap());
+        let add0 = test.add_in_gen.as_ref().map(|v| hex::decode(&v).unwrap());
+        let add1 = test.add_in_gen2.as_ref().map(|v| hex::decode(&v).unwrap());
 
+        drbg.reseed(&ent_reseed, match add_reseed {
+                                    Some(ref add) => Some(add.as_ref()),
+                                    None => None,
+                                });
         drbg.generate(&mut result, full_len,
                                match add0 {
                                    Some(ref add0) => Some(add0.as_ref()),
@@ -104,9 +111,11 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
         //     );
         //     return 1;
         // }
-        if check_res(result, expected, test.name, AL_NAME.to_string(), 
+        if check_res(result.clone(), expected.clone(), test.name, AL_NAME.to_string(), 
             "failed nist vector generation.".to_string(),
             "completed nist vector generation.".to_string()) != 0 {
+            
+            println!("NIST-VECTORS: expected:\n{}\n\ngot:\n{}", hex::encode(&expected), hex::encode(&result));
             return 1;
         }
     }
