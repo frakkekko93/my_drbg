@@ -18,10 +18,10 @@ pub fn modular_add(num: &mut Vec<u8>, rhs: u8) {
         }
     }
 
-    if carry {
-        res= num[0].wrapping_add(1);
-        num[0] = res;
-    }        
+    // if carry {
+    //     res= num[0].wrapping_add(1);
+    //     num[0] = res;
+    // }        
 }
 
 /*  This function performs a modular addition between two numbers represented as byte vectors.
@@ -31,24 +31,40 @@ pub fn modular_add_vec(num1: &mut Vec<u8>, num2: Vec<u8>) {
         return;
     }
 
+    println!("MODULAR ADD: received num1: \n{:?}", num1);
+    println!("MODULAR ADD: received num1: \n{:?}", num2);
+
     let len1 = num1.len();
     let len2 = num2.len();
-    let mut global_carry= false;
+    // let mut global_carry= false;
     
     if len2 > len1 {
         return;
     }
 
-    let mut i = len2-1;
-    let mut j = len1-1;
+    let mut i = len2;
+    let mut j = len1;
+    #[allow(unused_comparisons)]
     while i > 0 {
-        let (res, carry) = num1[j].overflowing_add(num2[i]);
-        num1[j] = res;
+        let (res, carry) = num1[j-1].overflowing_add(num2[i-1]);
 
-        if carry {
+        if i == 1 {
+            // println!("MODULAR ADD: last value, added {} + {} and got {} with carry {}.", num1[j-1], num2[i-1], res, carry);
+        }
+        
+        // println!("MODULAR ADD: added {} and {}, got: {} with carry: {}.", num1[j-1], num2[i-1], res, carry);
+
+        num1[j-1] = res;
+        if carry && i > 0{
             let mut num1_copy = num1[..j-1].to_vec();
             let mut num1_rem = num1[j-1..].to_vec();
+
+            if i==2 {
+                println!("MODULAR ADD: second to last value, got carry, adding to:\n{:?}", num1_copy);
+            }
+
             modular_add(&mut num1_copy, 1);
+
             num1.clear();
             num1.append(&mut num1_copy);
             num1.append(&mut num1_rem);
@@ -56,13 +72,15 @@ pub fn modular_add_vec(num1: &mut Vec<u8>, num2: Vec<u8>) {
 
         i -= 1;
         j -= 1;
-        global_carry = carry;
+        // global_carry = carry;
+
+        // println!("MODULAR ADD: updated numbers:\nnum1: {:?}\nnum2: {:?}", num1, num2);
     }
 
-    if global_carry {
-        let res = num1[0].wrapping_add(num2[0]);
-        num1[0] = res;
-    }
+    // if global_carry {
+    //     let res = num1[0].wrapping_add(num2[0]);
+    //     num1[0] = res;
+    // }
 }
 
 /*  Performs bit a bit XOR between two vectors of the same size. */

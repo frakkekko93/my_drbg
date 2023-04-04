@@ -8,7 +8,7 @@ use super::utility::*;
 
 
 /*  The life of each generated seed of this DRBG. */
-const SEED_LIFE: usize = 1000;
+const SEED_LIFE: usize = 255;
 
 /*  Implementation of the Hash-DRBG mechanism. This mechanism can be instantiated only using Sha256 or Sha512
     (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
@@ -59,17 +59,28 @@ where
 
         // Initial setup (step 1-2-3)
         let mut counter: u8 = 0x01;
-        let string_bytes = num_bytes.to_string();
+        let num_bits_return = num_bytes*8;
+        let string_bytes = &mut num_bits_return.to_be_bytes()[3..];
+        string_bytes[0] = counter;
+
+        // println!("DRBG-DF: used initial counter: {:?}", counter);
+        // println!("DRBG-DF: used num-blocks: {:?}", hex::encode(&string_bytes));
+        // println!("DRBG-DF: used input: {:?}", hex::encode(&input));
 
         // Generating hash_len byted at a time (step 4)
         let mut i: usize = 0;
         while i < num_bytes {
             // Hashing the input data and appending the hash to the output vector (step 4.1)
-            self.hash_fun.update(counter.to_string());
+            // self.hash_fun.update(counter.to_string());
             self.hash_fun.update(&string_bytes);
             self.hash_fun.update(&input);
             let hash = self.hash_fun.finalize_reset().to_vec();
             let hash_len = hash.len();
+
+            // println!("DRBG-DF: used string counter: {:?}", hex::encode(&string_bytes));
+            // println!("DRBG-DF: used input counter: {:?}", hex::encode(&input));
+
+
             for j in 0..hash_len {
                 // The requested number of bytes has beem reached (step 5)
                 if j+i >= num_bytes {
@@ -83,6 +94,7 @@ where
 
             // Updating the counter (step 4.2)
             counter = counter.add(0x01);
+            string_bytes[0] = counter;
         }
     }
 
@@ -230,27 +242,40 @@ where
         self.hashgen(result, req_bytes);
 
         // Updating V (step 4-5)
+        println!("DRBG-GENERATE: value of V before generate: {}", hex::encode(&self.v));
         let mut seed_material = self.v.clone();
         seed_material.insert(0, 0x03);
         self.hash_fun.update(seed_material);
         let w = self.hash_fun.finalize_reset().to_vec();
 
-        // V = (V+w+C) mod 2^seedlen
+        println!("DRBG-GENERATE: value of w: {}", hex::encode(&w));
+        println!("DRBG-GENERATE: value of C: {}", hex::encode(&self.c));
+
+        // V = (V+w+C+counter) mod 2^seedlen
         let mut v_clone = self.v.clone();
         modular_add_vec(&mut v_clone, w);
         self.v.clear();
         self.v.append(&mut v_clone);
+
+        println!("DRBG-GENERATE: value of V+w: {}", hex::encode(&self.v));        
 
         let mut v_clone = self.v.clone();
         modular_add_vec(&mut v_clone, self.c.clone());
         self.v.clear();
         self.v.append(&mut v_clone);
 
+        println!("DRBG-GENERATE: value of V+w+C: {}", hex::encode(&self.v));
+        
+        let mut v_clone = self.v.clone();
+        modular_add(&mut v_clone, self.count.try_into().unwrap());
+        self.v.clear();
+        self.v.append(&mut v_clone);
+
         // Updating the reseed counter (step 6)
         self.count += 1;
 
-        println!("DRBG-GENERATE: value of V: {}", hex::encode(&self.v));
-        println!("DRBG-GENERATE: value of C: {}", hex::encode(&self.c));
+        println!("DRBG-GENERATE: value of V after generate: {}", hex::encode(&self.v));
+        println!("DRBG-GENERATE: counter: {}", self.count);
 
         0
     }
