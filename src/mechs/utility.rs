@@ -49,10 +49,6 @@ pub fn modular_add_vec(num1: &mut Vec<u8>, num2: Vec<u8>) {
             let mut num1_copy = num1[..j-1].to_vec();
             let mut num1_rem = num1[j-1..].to_vec();
 
-            if i==2 {
-                println!("MODULAR ADD: second to last value, got carry, adding to:\n{:?}", num1_copy);
-            }
-
             modular_add(&mut num1_copy, 1);
 
             num1.clear();

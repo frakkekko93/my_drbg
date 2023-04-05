@@ -25,32 +25,29 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usi
 
     if T::drbg_name() == "Hash-DRBG" {
         if fun_id == "Sha 256" {
-            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/hash/sha_256/HASH_DRBG_SHA256_pr_false.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA256_pr_false.json")).unwrap();
         }
         else {
-            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/hash/sha_512/HASH_DRBG_SHA512_pr_false.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA512_pr_false.json")).unwrap();
         }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         if fun_id == "Sha 256" {
-            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/sha_256/HMAC_DRBG_SHA256_pr_false.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/no_prr/HMAC_DRBG_SHA256_pr_false.json")).unwrap();
         }
         else {
-            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/sha_512/HMAC_DRBG_SHA512_pr_false.json")).unwrap();
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/hmac/no_prr/HMAC_DRBG_SHA512_pr_false.json")).unwrap();
         }
     }
     else {
         if fun_id == "AES 128" {
-            //tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_nist_vectors_aes128.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/ctr/no_prr/CTR_DRBG_NO_DF_AES128_pr_false.json")).unwrap();
         }
         else if fun_id == "AES 192" {
-            // tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_nist_vectors_aes192.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/ctr/no_prr/CTR_DRBG_NO_DF_AES192_pr_false.json")).unwrap();
         }
         else {
-            // tests = serde_json::from_str(include_str!("fixtures/ctr_no_df_nist_vectors_aes256.json")).unwrap();
-            return 0;
+            tests = serde_json::from_str(include_str!("fixtures/nist_vectors/ctr/no_prr/CTR_DRBG_NO_DF_AES256_pr_false.json")).unwrap();
         }
     }
 
