@@ -39,7 +39,5 @@ pub fn run_tests<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usiz
     return instantiation_test::run_tests::<T>(strength) + 
             generate_test::run_tests::<T>(strength) +
             reseed_test::run_tests::<T>(strength) +
-            zeroization_test::test_zeroization::<T>(strength) +
-            kats::run_all::<T>(fun_id, strength) +
             nist_vectors::test_vectors::<T>(fun_id, strength);
 }

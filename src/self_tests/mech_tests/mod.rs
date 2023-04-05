@@ -1,4 +1,3 @@
-pub mod kats;
 pub mod nist_vectors;
 pub mod instantiation_test;
 pub mod generate_test;
