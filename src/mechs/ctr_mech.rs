@@ -141,6 +141,10 @@ where
         let key_len: usize;
         let block_len: usize = 128;
 
+        //println!("CTR-NEW: received entropy: {}", hex::encode(&entropy));
+        //println!("CTR-NEW: received nonce: {}", hex::encode(&_nonce));
+        //println!("CTR-NEW: received pers: {}", hex::encode(&pers));
+
         // Runtime check on the use of any unallowed hash function and according parameter setup.
         let this_id = TypeId::of::<D>();
         let aes128_id = TypeId::of::<aes::Aes128>();
@@ -218,6 +222,9 @@ where
         xor_vecs(&mut seed_material, &new_pers);
         this.update(&seed_material);
 
+        //println!("CTR-NEW: value of K: {}", hex::encode(&this.k));
+        //println!("CTR-NEW: value of V: {}", hex::encode(&this.v));
+
         // Returning a reference to this instance (step 8)
         Some(this)
     }
@@ -238,6 +245,10 @@ where
         if self.count >= SEED_LIFE{
             return 2;
         }
+
+        //println!("CTR-GEN: value of K before gen: {}", hex::encode(&self.k));
+        //println!("CTR-GEN: value of V before gen: {}", hex::encode(&self.v));
+        //println!("CTR-GEN: add-in is None?: {}", add.is_none());
 
         // Restricting add-in to be of seedlen bits and eventually using 0^seedlen if add is None (step 2)
         let mut new_add_in = Vec::<u8>::new();
@@ -263,6 +274,10 @@ where
                 }
 
                 self.update(&new_add_in);
+
+                //println!("CTR-GEN: update internal state using add: {}", hex::encode(&new_add_in));
+                //println!("CTR-GEN: V is now: {}", hex::encode(&self.v));
+                //println!("CTR-GEN: K is now: {}", hex::encode(&self.k));
             }
         }
 
@@ -274,6 +289,10 @@ where
             if CTR_LEN < self.blocklen {
                 let mid_point = self.blocklen/8 - CTR_LEN/8;
                 
+                //println!("CTR-GEN: V is now: {:?}", self.v);
+                //println!("CTR-GEN: midpoint is: {}", mid_point);
+                //println!("CTR-GEN: incrementing: {:?}", self.v[mid_point..].to_vec());
+
                 // Increment the rigth-most CTR_LEN/8 bytes of V (step 4.1.1)
                 let mut right_v = self.v[mid_point..].to_vec();
                 modular_add(&mut right_v, 0x01);
@@ -290,7 +309,7 @@ where
             else {
                 // Increment V (step 4.1 alternative)
                 let mut v_clone = self.v.to_vec();
-                (&mut v_clone, 0x01);
+                modular_add(&mut v_clone, 0x01);
 
                 // Update V
                 self.v.clone_from_slice(&v_clone);
@@ -316,6 +335,11 @@ where
         // Incrementing reseed counter (step 7)
         self.count += 1;
 
+        //println!("CTR-GEN: used add-in: {}", hex::encode(&new_add_in));
+        //println!("CTR-GEN: value of K after gen: {}", hex::encode(&self.k));
+        //println!("CTR-GEN: value of V after gen: {}", hex::encode(&self.v));
+        //println!("CTR-GEN: value of count after gen: {}", self.count);
+
         0
     }
 
@@ -325,6 +349,9 @@ where
         if self.zeroized {
             return 1;
         }
+
+        //println!("CTR-RES: value of K before res: {}", hex::encode(&self.k));
+        //println!("CTR-RES: value of V before res: {}", hex::encode(&self.v));
 
         // Taking exactly seedlen bits from the AI that has been passed (step 1,2).
         // If an empty add is received we will use 0^seedlen as additional input.
@@ -366,8 +393,15 @@ where
         xor_vecs(&mut seed_material, &new_add_in);
         self.update(&seed_material);
 
+        //println!("CTR-RES: used entropy: {}", hex::encode(&new_entropy));
+        //println!("CTR-RES: used add-in: {}", hex::encode(&new_add_in));
+
         // Resetting the reseed counter (step 5)
         self.count = 1;
+
+        //println!("CTR-RES: value of K after res: {}", hex::encode(&self.k));
+        //println!("CTR-RES: value of V after res: {}", hex::encode(&self.v));
+        //println!("CTR-RES: value of count after res: {}", self.count);
 
         0
     }

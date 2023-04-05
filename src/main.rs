@@ -1,12 +1,16 @@
 extern crate my_drbg;
 #[allow(unused_imports)]
 use my_drbg::demos::*;
-// use my_drbg::mechs::gen_mech::DRBG_Mechanism_Functions;
+use my_drbg::mechs::ctr_mech::CtrDrbgMech;
 use my_drbg::mechs::hash_mech::HashDrbgMech;
+use my_drbg::mechs::hmac_mech::HmacDrbgMech;
+// use my_drbg::mechs::gen_mech::DRBG_Mechanism_Functions;
+// use my_drbg::mechs::hash_mech::HashDrbgMech;
 use my_drbg::self_tests; 
 use my_drbg::demos::utility::get_input;
 use rand::Rng;
 use sha2::*;
+use aes::*;
 // use my_drbg::mechs::utility::*;
 
 // Simulates the start-up of a potential fips provider by calling the self test functions.
@@ -62,5 +66,11 @@ fn main(){
     // run_demo();
     // gen_vecs();
 
-    self_tests::mech_tests::nist_vectors::test_vectors::<HashDrbgMech<Sha512>>("Sha 512", 256);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<CtrDrbgMech<Aes128>>("AES 128", 128);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<CtrDrbgMech<Aes192>>("AES 192", 192);
+    self_tests::mech_tests::nist_vectors::test_vectors::<CtrDrbgMech<Aes256>>("AES 256", 256);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<HashDrbgMech<Sha256>>("Sha 256", 256);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<HashDrbgMech<Sha512>>("Sha 512", 256);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<HmacDrbgMech<Sha256>>("Sha 256", 256);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<HmacDrbgMech<Sha512>>("Sha 512", 256);
 }
