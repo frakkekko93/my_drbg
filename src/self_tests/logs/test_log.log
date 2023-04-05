@@ -21,7 +21,6 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
-TEST FAILED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: failed generation without prr.
 TEST PASSED (MECH-TESTS::nist_vectors) - 0: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 1: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 2: completed nist vector generation.
@@ -302,7 +301,6 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
-TEST FAILED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: failed generation without prr.
 TEST PASSED (MECH-TESTS::nist_vectors) - 0: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 1: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 2: completed nist vector generation.
@@ -583,10 +581,6 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
-TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
-TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_prr_ss256: completed generation using prr.
-TEST PASSED (MECH-TESTS::kats) - ps_noadd_noprr_ss256: completed generation without prr.
-TEST PASSED (MECH-TESTS::kats) - ps_add_noprr_ss256: completed double generation without prr.
 TEST PASSED (MECH-TESTS::nist_vectors) - 0: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 1: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 2: completed nist vector generation.
@@ -867,10 +861,6 @@ TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroization: zeroization succe
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_generate: failed to generate with zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_zeroized_reseed: failed to reseed zeroized DRBG, as expected.
 TEST PASSED (MECH-TESTS::zeroization_test) - test_double_zeroization: failed to zeroize DRBG twice, as expected.
-TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_noprr_ss256: completed generation without prr.
-TEST PASSED (MECH-TESTS::kats) - no_ps_noadd_prr_ss256: completed generation using prr.
-TEST PASSED (MECH-TESTS::kats) - ps_noadd_noprr_ss256: completed generation without prr.
-TEST PASSED (MECH-TESTS::kats) - ps_add_noprr_ss256: completed double generation without prr.
 TEST PASSED (MECH-TESTS::nist_vectors) - 0: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 1: completed nist vector generation.
 TEST PASSED (MECH-TESTS::nist_vectors) - 2: completed nist vector generation.
