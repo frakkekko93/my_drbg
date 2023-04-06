@@ -1,21 +1,15 @@
 use std::any::TypeId;
 
+use crate::mechs::ctr_mech::CtrDrbgMech;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::mechs::hash_mech::HashDrbgMech;
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::self_tests::{self, formats};
 use crate::self_tests::drbg_tests;
+use crate::drbgs::drbg_conf::*;
+use aes::{Aes128, Aes192};
 use rand::Rng;
-use sha2::Sha512;
-
-/*  Configuration of the DRBG.
-    
-    This DRBG can be instantiated using anyone of the mechanisms defined in the 'mechs' module. These mechanisms support 
-    a maximum of 256 bits of security strength (MAX_SEC_STR).
-    The DRBG is configured to generate a maximum of 2048 bits per-request (MAX_PRB). This option may actually be changed but be 
-    aware of the limits imposed in tables 2 and 3 of NIST SP 800-90A. */
-const MAX_SEC_STR: usize = 256;
-const MAX_PRB: usize = 2048;
+use sha2::{Sha512, Sha256};
 
 /*  This is the general structure of the DRBG. We have:
         - internal_state: an handle to the state of the underlying mechanism
@@ -151,6 +145,13 @@ pub trait DRBG_Functions{
             - 1: some test falied, error state set
     */
     fn run_self_tests(&mut self) -> usize;
+
+    /*  Function used to run self-tests on a specific DRBG mechanism if this is the first time it is instantiated.
+        
+        Return values:
+            - 0: test passed (or not needed)
+            - 1: test(s) failed, see test_log for more info */
+    fn mech_is_tested() -> usize;
 }
 
 /*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
@@ -163,6 +164,11 @@ where
         // Checking the validity of the security strength (step 1).
         if req_sec_str > MAX_SEC_STR{
             return Err(1);
+        }
+
+        // Eventually running self-tests the requested mechanism has never been instantiated
+        if Self::mech_is_tested() != 0{
+            return Err(4);
         }
 
         // Extracting the eventual personalization string.
@@ -464,6 +470,92 @@ where
             self.error_state = true;
             self.uninstantiate();
             return 1;
+        }
+
+        0
+    }
+
+    fn mech_is_tested() -> usize {
+        let this_id = TypeId::of::<T>();
+        let drbg_name = T::drbg_name();
+        let mut log_message = "\n*** STARTING ".to_string();
+        log_message.push_str(&drbg_name);
+        let mut tests_needed = false;
+        let mut req_str: usize = 256;
+
+        unsafe {
+            if drbg_name == "Hash-DRBG" {
+                if this_id == TypeId::of::<HashDrbgMech<Sha256>>() {
+                    if FIRST_USE_HASH_SHA_256 {
+                        FIRST_USE_HASH_SHA_256 = false;
+                        log_message.push_str(" Sha 256");
+                        tests_needed = true;
+                    }
+                }
+                else {
+                    if FIRST_USE_HASH_SHA_512 {
+                        FIRST_USE_HASH_SHA_512 = false;
+                        log_message.push_str(" Sha 512");
+                        tests_needed = true;
+                    }
+                }
+            }
+            else if drbg_name == "HMAC-DRBG" {
+                if this_id == TypeId::of::<HmacDrbgMech<Sha256>>() {
+                    if FIRST_USE_HMAC_SHA_256 {
+                        FIRST_USE_HMAC_SHA_256 = false;
+                        log_message.push_str(" Sha 256");
+                        tests_needed = true;
+                    }
+                }
+                else {
+                    if FIRST_USE_HMAC_SHA_512 {
+                        FIRST_USE_HMAC_SHA_512 = false;
+                        log_message.push_str(" Sha 512");
+                        tests_needed = true;
+                    }
+                }
+            }
+            else {
+                if this_id == TypeId::of::<CtrDrbgMech<Aes128>>() {
+                    if FIRST_USE_CTR_NO_DF_AES_128 {
+                        FIRST_USE_CTR_NO_DF_AES_128 = false;
+                        log_message.push_str(" AES 128 (no DF)");
+                        tests_needed = true;
+                        req_str = 128;
+                    }
+                }
+                else if this_id == TypeId::of::<CtrDrbgMech<Aes192>>() {
+                    if FIRST_USE_CTR_NO_DF_AES_192 {
+                        FIRST_USE_CTR_NO_DF_AES_192 = false;
+                        log_message.push_str(" AES 192 (no DF)");
+                        tests_needed = true;
+                        req_str = 192;
+                    }
+                }
+                else {
+                    if FIRST_USE_CTR_NO_DF_AES_256 {
+                        FIRST_USE_CTR_NO_DF_AES_256 = false;
+                        log_message.push_str(" AES 256 (no DF)");
+                        tests_needed = true;
+                    }
+                }
+            }
+        }
+
+        log_message.push_str(" self-tests for first time use ***\n");
+
+        if tests_needed {
+            formats::write_to_log(log_message);
+
+            // Running tests
+            let res = drbg_tests::run_all::run_tests::<T>(req_str) +
+            self_tests::mech_tests::run_all::run_tests::<T>(req_str);
+
+            // If tests have failed we set the error state and uninstantiate the DRBG.
+            if res != 0 {
+                return 1;
+            }
         }
 
         0
