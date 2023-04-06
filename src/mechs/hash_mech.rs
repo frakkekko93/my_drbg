@@ -142,11 +142,6 @@ where
 {
     /*  Function defined in section 10.1.2 of the SP. */
     fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
-
-        // println!("\nHASH-NEW: used entropy: {}", hex::encode(&entropy));
-        // println!("HASH-NEW: used nonce: {}", hex::encode(&nonce));
-        // println!("HASH-NEW: used pers: {}", hex::encode(&pers));
-
         // Runtime check on the use of any unallowed hash function.
         let seedlen;
         let this_id = TypeId::of::<D>();
@@ -196,8 +191,6 @@ where
         this.hash_df(&mut res, seed_material, seedlen/8);
         this.c.append(&mut res);
 
-        // println!("HASH-NEW: value of V: {}", hex::encode(&this.v));
-        // println!("HASH-NEW: value of C: {}", hex::encode(&this.c));
         // Return instance (step 5-6)
         Some(this)
     }
@@ -262,17 +255,11 @@ where
         // Updating the reseed counter (step 6)
         self.count += 1;
 
-        // println!("\nHASH-GEN: value of V after gen: {}", hex::encode(&self.v));
-        // println!("HASH-GEN: value of C after gen: {}", hex::encode(&self.c));
-        // println!("HASH-GEN: value of count after gen: {}", self.count);
-
         0
     }
 
     /*  Function defined in section 10.1.1.3 of the SP. */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
-        // println!("\nHASH-RES: used entropy: {}", hex::encode(&entropy));
-        
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
             return 1;
@@ -309,10 +296,6 @@ where
 
         // Re-init reseed counter (step 5).
         self.count = 1;
-
-        // println!("HASH-RES: value of V after res: {}", hex::encode(&self.v));
-        // println!("HASH-RES: value of C after res: {}", hex::encode(&self.c));
-        // println!("HASH-RES: value of count after res: {}", self.count);
 
         0
     }

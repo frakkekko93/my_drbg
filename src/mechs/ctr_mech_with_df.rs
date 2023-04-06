@@ -29,7 +29,7 @@ const CTR_LEN: usize = 16;
     - seedlen: length of the parameters used by this mechanism (=> blocklen + keylen)
     - blocklen: length of the input/output blocks of the block cipher
     - keylen: length of the key of the blockcipher */
-pub struct CtrDrbgMech<D: 'static>
+pub struct CtrDrbgMech_DF<D: 'static>
 where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,
     D::BlockSize: ArrayLength<u8>,
@@ -45,7 +45,7 @@ where
 }
 
 /*  Implementing functions that are specific of the HMAC-DRBG mechanism. */
-impl<D> CtrDrbgMech<D>
+impl<D> CtrDrbgMech_DF<D>
 where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,
     D::BlockSize: ArrayLength<u8>,
@@ -129,7 +129,7 @@ where
 }
 
 /*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait (see 'gen_mech'). */
-impl<D> DRBG_Mechanism_Functions for CtrDrbgMech<D>
+impl<D> DRBG_Mechanism_Functions for CtrDrbgMech_DF<D>
 where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,
     D::BlockSize: ArrayLength<u8>,
@@ -165,7 +165,9 @@ where
         else {return None;}
         seed_len = block_len + key_len;
         
-        // Entropy parameter must be present and of seedlen bits.
+        /*  TODO: no requests are imposed on the length of the received entropy input (apart from the obviuos
+                  ones). Entropy, nonce and pers must all be passed to the DF for the derivation of the 
+                  seed material to be used for instantiation. */
         let mut new_entropy = Vec::<u8>::new();
         if entropy.len() >= seed_len/8 {
             new_entropy.append(&mut entropy[..seed_len/8].to_vec());
@@ -239,7 +241,9 @@ where
             return 2;
         }
 
-        // Restricting add-in to be of seedlen bits and eventually using 0^seedlen if add is None (step 2)
+        /*  TODO: no requests are imposed on the length of the received add-in input (apart from the obviuos
+                  ones). It must be passed to the DF for the derivation of the input to be used for
+                  generation. */
         let mut new_add_in = Vec::<u8>::new();
         match add {
             None => {
@@ -326,8 +330,9 @@ where
             return 1;
         }
 
-        // Taking exactly seedlen bits from the AI that has been passed (step 1,2).
-        // If an empty add is received we will use 0^seedlen as additional input.
+        /*  TODO: no requests are imposed on the length of the received add-in input (apart from the obviuos
+                  ones). It must be passed to the DF for the derivation of the seed material to be used for
+                  reseeding. */
         let mut new_add_in = Vec::<u8>::new();
         match add {
             None => {
@@ -352,7 +357,9 @@ where
             }
         }
 
-        // Entropy parameter must be present and of seedlen bits.
+        /*  TODO: no requests are imposed on the length of the received entropy input (apart from the obviuos
+                  ones). It must be passed to the DF for the derivation of the seed material to be used for
+                  reseeding. */
         let mut new_entropy = Vec::<u8>::new();
         if entropy.len() >= self.seedlen/8 {
             new_entropy.append(&mut entropy[..self.seedlen/8].to_vec());
