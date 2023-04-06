@@ -1,9 +1,8 @@
 extern crate my_drbg;
 #[allow(unused_imports)]
-use my_drbg::demos::*;
-use my_drbg::mechs;
-use my_drbg::self_tests; 
-use my_drbg::demos::utility::get_input;
+use my_drbg::demos::{utility::get_input, run_demo};
+#[allow(unused_imports)]
+use my_drbg::{mechs::*, self_tests};
 use rand::Rng;
 #[allow(unused_imports)]
 use sha2::*;
@@ -60,13 +59,13 @@ fn gen_vecs() {
 #[allow(unused_assignments)]
 fn main(){  
     // fips_sim();
-    // run_demo();
+    run_demo();
     // gen_vecs();
 
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes128>>("AES 128", 128);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes192>>("AES 192", 192);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes256>>("AES 256", 256);
-    self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hash_mech::HashDrbgMech<Sha256>>("Sha 256", 256);
+    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hash_mech::HashDrbgMech<Sha256>>("Sha 256", 256);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hash_mech::HashDrbgMech<Sha512>>("Sha 512", 256);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hmac_mech::HmacDrbgMech<Sha256>>("Sha 256", 256);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hmac_mech::HmacDrbgMech<Sha512>>("Sha 512", 256);

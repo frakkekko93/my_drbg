@@ -187,7 +187,7 @@ where
         // Acquiring the entropy input according to mechanisms' specifics (step 6).
         let mut entropy= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {
-            DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
+            DRBG::<T>::get_entropy_input(&mut entropy, MAX_SEC_STR/8);
         }
         else {
             DRBG::<T>::get_entropy_input(&mut entropy, 48);
@@ -196,7 +196,7 @@ where
         // Acquiring the nonce for mechanisms that are different from CTR-DRBG withouth derivation function (step 8).
         let mut nonce= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {      
-            DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
+            DRBG::<T>::get_entropy_input(&mut nonce, MAX_SEC_STR/16);
         }
         
         // Trying to allocate the DRBG's internal state (step 9).
