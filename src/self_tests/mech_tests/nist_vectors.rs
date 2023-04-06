@@ -8,47 +8,47 @@ const AL_NAME: &str = "MECH-TESTS::nist_vectors";
 /*  This test is designed to perform KATs over some predefined vectors taken directly from NIST. */
 #[allow(const_item_mutation)]
 pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, strength: usize) -> usize{
-    let (_prr_file, no_prr_file) = get_files::<T>(fun_id);
+    let (prr_file, no_prr_file) = get_files::<T>(fun_id);
 
-    return test_vectors_no_prr::<T>(no_prr_file, strength);/* +
-            test_vectors_prr::<T>(prr_file, strength);*/
+    return test_vectors_no_prr::<T>(no_prr_file, strength) +
+            test_vectors_prr::<T>(prr_file, strength);
 }
 
 fn get_files<T: DRBG_Mechanism_Functions>(fun_id: &str) -> (&str, &str) {
-    let prr_file= "";
+    let prr_file;
     let no_prr_file;
     if T::drbg_name() == "Hash-DRBG" {
         if fun_id == "Sha 256" {
             no_prr_file = include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA256_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA256_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA512_pr_true.json");
         }
         else {
             no_prr_file = include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA512_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA512_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA512_pr_true.json");
         }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         if fun_id == "Sha 256" {
             no_prr_file = include_str!("fixtures/nist_vectors/hmac/no_prr/HMAC_DRBG_SHA256_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA256_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA256_pr_true.json");
         }
         else {
             no_prr_file = include_str!("fixtures/nist_vectors/hmac/no_prr/HMAC_DRBG_SHA512_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA512_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA512_pr_true.json");
         }
     }
     else {
         if fun_id == "AES 128" {
             no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES128_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/ctr/prr/CTR_DRBG_AES128_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES128_pr_true.json");
         }
         else if fun_id == "AES 192" {
             no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES192_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/ctr/prr/CTR_DRBG_AES192_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES192_pr_true.json");
         }
         else {
             no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES256_pr_false.json");
-            // prr_file = include_str!("fixtures/nist_vectors/ctr/prr/CTR_DRBG_AES256_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES256_pr_true.json");
         }
     }
 
@@ -84,7 +84,7 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
         match res{
             None => {
                 write_to_log(format_message(true, AL_NAME.to_string(),
-                                    "test_vectors".to_string(), 
+                                    "test_vectors_prr".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
                 );
@@ -123,8 +123,8 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
             let mut message = "nist vector ".to_string();
             message.push_str(&test.name);
             message.push_str(" failed unexpectedly.");
-            write_to_log(format_message(false, AL_NAME.to_string(),
-                                                            "test_vectors".to_string(), 
+            write_to_log(format_message(true, AL_NAME.to_string(),
+                                                            "test_vectors_prr".to_string(), 
                                                             message)
             );
             return 1;
@@ -132,7 +132,7 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
     }
 
     write_to_log(format_message(false, AL_NAME.to_string(),
-                                                            "test_vectors".to_string(), 
+                                                            "test_vectors_prr".to_string(), 
                                                             "all nist vectors have passed.".to_string())
     );
 
@@ -167,7 +167,7 @@ fn test_vectors_no_prr<T: DRBG_Mechanism_Functions>(no_prr_file: &str, mut stren
         match res{
             None => {
                 write_to_log(format_message(true, AL_NAME.to_string(),
-                                    "test_vectors".to_string(), 
+                                    "test_vectors_no_prr".to_string(), 
                                     "failed to instantiate DRBG.".to_string()
                                 )
                 );
@@ -206,8 +206,8 @@ fn test_vectors_no_prr<T: DRBG_Mechanism_Functions>(no_prr_file: &str, mut stren
             let mut message = "nist vector ".to_string();
             message.push_str(&test.name);
             message.push_str(" failed unexpectedly.");
-            write_to_log(format_message(false, AL_NAME.to_string(),
-                                                            "test_vectors".to_string(), 
+            write_to_log(format_message(true, AL_NAME.to_string(),
+                                                            "test_vectors_no_prr".to_string(), 
                                                             message)
             );
             return 1;
@@ -215,7 +215,7 @@ fn test_vectors_no_prr<T: DRBG_Mechanism_Functions>(no_prr_file: &str, mut stren
     }
 
     write_to_log(format_message(false, AL_NAME.to_string(),
-                                                            "test_vectors".to_string(), 
+                                                            "test_vectors_no_prr".to_string(), 
                                                             "all nist vectors have passed.".to_string())
     );
 
