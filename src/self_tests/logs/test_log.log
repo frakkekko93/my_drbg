@@ -18,7 +18,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -55,7 +55,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -92,7 +92,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -129,7 +129,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -165,7 +165,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -201,7 +201,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
@@ -237,7 +237,7 @@ TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed 
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: nist vector 0 failed unexpectedly.
+TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.

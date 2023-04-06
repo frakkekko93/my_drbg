@@ -20,7 +20,7 @@ fn get_files<T: DRBG_Mechanism_Functions>(fun_id: &str) -> (&str, &str) {
     if T::drbg_name() == "Hash-DRBG" {
         if fun_id == "Sha 256" {
             no_prr_file = include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA256_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA512_pr_true.json");
+            prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA256_pr_true.json");
         }
         else {
             no_prr_file = include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA512_pr_false.json");
@@ -66,7 +66,7 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
         add_in_gen: Option<String>,
         entropy_pr: String,
         add_in_gen2: Option<String>,
-        entropy_pr2: Option<String>,
+        entropy_pr2: String,
         expected: String,
     }
 
@@ -99,7 +99,7 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
         let mut result = Vec::new();
         let full_len = expected.len();
         let ent_pr = hex::decode(&test.entropy_pr).unwrap();
-        let ent_pr2 = hex::decode(&test.entropy_pr).unwrap();
+        let ent_pr2 = hex::decode(&test.entropy_pr2).unwrap();
         let add0 = test.add_in_gen.as_ref().map(|v| hex::decode(&v).unwrap());
         let add1 = test.add_in_gen2.as_ref().map(|v| hex::decode(&v).unwrap());
 
@@ -113,11 +113,7 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
                                     Some(ref add) => Some(add.as_ref()),
                                     None => None,
                                 });
-        drbg.generate(&mut result, full_len,
-                               match add1 {
-                                   Some(ref add1) => Some(add1.as_ref()),
-                                   None => None,
-                               });
+        drbg.generate(&mut result, full_len, None);
         
         if result != expected {
             let mut message = "nist vector ".to_string();
