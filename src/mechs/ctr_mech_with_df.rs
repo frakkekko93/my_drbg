@@ -347,7 +347,7 @@ where
         Some(this)
     }
 
-    /*  This function is implemented following the algorithm described at 10.2.1.5.1 for a CTR-DRBG that doesn't use a df. */
+    /*  This function is implemented following the algorithm described at 10.2.1.5.2 for a CTR-DRBG that uses a df. */
     fn generate(&mut self, result: &mut Vec<u8>, req_bytes: usize, add: Option<&[u8]>) -> usize {
         // Eventually deleting data in result
         if !result.is_empty() {
@@ -364,9 +364,7 @@ where
             return 2;
         }
 
-        /*  TODO: no requests are imposed on the length of the received add-in input (apart from the obviuos
-                  ones). It must be passed to the DF for the derivation of the input to be used for
-                  generation. */
+        /*  Extracting the actual additional input and eventually updating the internal state (step 2) */
         let mut new_add_in = Vec::<u8>::new();
         match add {
             None => {
@@ -375,18 +373,15 @@ where
                 }
             }
             Some(add_in) => {
-                if add_in.len() < self.seedlen/8 {
-                    new_add_in.append(&mut add_in.to_vec());
-        
-                    for _i in 0..self.seedlen/8-add_in.len() {
-                        new_add_in.push(0x00);
+                let res_df = self.block_cipher_df(add_in.to_vec(), self.seedlen/8);
+
+                match res_df {
+                    None => {
+                        return 3;
                     }
-                }
-                else if add_in.len() == self.seedlen/8 {
-                    new_add_in.append(&mut add_in.to_vec());
-                }
-                else {
-                    new_add_in.append(&mut add_in[..self.seedlen/8].to_vec());
+                    Some(inst) => {
+                        new_add_in = inst;
+                    }
                 }
 
                 self.update(&new_add_in);
@@ -415,7 +410,7 @@ where
                 self.v.clone_from(&v_clone);
             }
             else {
-                // Increment V (step 4.1 alternative)
+                // Increment V (step 4.1.2 alternative)
                 let mut v_clone = self.v.to_vec();
                 modular_add(&mut v_clone, 0x01);
 
