@@ -29,6 +29,8 @@ const CTR_LEN: usize = 16;
     - seedlen: length of the parameters used by this mechanism (=> blocklen + keylen)
     - blocklen: length of the input/output blocks of the block cipher
     - keylen: length of the key of the blockcipher */
+
+#[allow(non_camel_case_types)]
 pub struct CtrDrbgMech_DF<D: 'static>
 where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,
@@ -50,7 +52,135 @@ where
     D: BlockCipher + BlockEncrypt + BlockDecrypt + KeyInit,
     D::BlockSize: ArrayLength<u8>,
     D::KeySize: ArrayLength<u8>,
-{
+{   
+    /*  This function is used to produce an output block by encrypting input data as a chain of input blocks.
+        (see NIST SP 800-90A, section 10.3.3)
+        
+        Parameters:
+            - data: the input data to be encrypted
+            
+        Outputs:
+            - output_block: the returned encrypted block. */
+    fn bcc(&self, key: &GenericArray::<u8, D::KeySize>, data: &Vec<u8> ) -> Option<GenericArray::<u8, D::BlockSize>>{
+        // Initializing the first chaining value to a 0 vector (step 1)
+        let mut chaining_value = GenericArray::<u8, D::BlockSize>::default();
+        chaining_value.fill(0);
+        let test_block = chaining_value.clone();
+
+        // Number of blocks to be processed (step 2)
+        let n = data.len()*8 / self.blocklen;
+        let cipher = D::new(key);
+
+        // Processing data block by block (step 3,4)
+        for i in 0..n {
+            // XORing the chaining value with the n-th block of the received data (step 4.1)
+            xor_vecs(&mut chaining_value.to_vec(), &data[0+self.blocklen*i..self.blocklen*(i+1)].to_vec());
+
+            // Encrypting the chaining value (step 4.2)
+            let mut block = chaining_value.clone();
+            cipher.encrypt_block(&mut block);
+            chaining_value.clone_from_slice(block.as_slice());
+        }
+
+        // Input data is too short and no block could be encrypted
+        if test_block == chaining_value {
+            None
+        }
+        else {
+            // Returning the chaining value as an output block (step 5,6)
+            Some(chaining_value)
+        }
+    }
+
+    /*  This function is used by a CTR-DRBG to derive the seed material used for each operation it is supposed to do.
+        (see NIST SP 800-90A, section 10.3.3) 
+        
+        Parameters:
+            - input: the input data to be used by the derivation function
+            - num_bytes: the nnumber of bytes to be produced by the derivation function
+        
+        Return values:
+            - output_bytes: eventual bytes produced by the DF (None if error happened) */
+    fn block_cipher_df(&mut self, input: Vec<u8>, num_bytes: usize) -> Option<Vec<u8>>{
+        const MAX_BITS: usize = 512;
+
+        // Requested too many bits (step 1)
+        if num_bytes > MAX_BITS/8 {return None;}
+
+        // Initializing variables for the DF (steps 2,3,4,5).
+        let l = &input.len().to_be_bytes()[3..];
+        let n = &num_bytes.to_be_bytes()[3..];
+        let mut s = Vec::<u8>::new();
+        s.append(&mut l.to_vec());
+        s.append(&mut n.to_vec());
+        s.append(&mut input.clone());
+        s.push(0x80);
+        while s.len() < self.blocklen {
+            s.push(0x00);
+        }
+
+        // Steps 6-7-8
+        let mut temp = Vec::<u8>::new();
+        let mut k = GenericArray::<u8, D::KeySize>::default();
+        let mut counter:u8 = 0x00;
+        let mut i: usize =0;
+        while i < self.keylen/8 {
+            k[i]= counter;
+            counter += 1;
+            i += 1;
+        }
+
+        // Generating bits using the data derived before (step 9)
+        let mut i: u32 = 0;
+        let mut iv = Vec::<u8>::new();
+        while temp.len() < (self.keylen + self.blocklen)/8 {
+            // Inizialization of the IV (step 9.1)
+            iv.clear();
+            iv.append(&mut i.to_be_bytes()[3..].to_vec());
+            while iv.len() < self.blocklen {
+                iv.push(0x00);
+            }
+
+            // Encrypting the IV using the BCC function (step 9.2)
+            iv.append(&mut s.clone());
+            let res_bcc = self.bcc(&k,&iv);
+            let out_block;
+            match res_bcc {
+                None => {
+                    panic!("CTR-DRBG: the DF failed in generating seed material.");
+                }
+                Some(inst) => {
+                    out_block = inst;
+                }
+            }
+            temp.append(&mut out_block.to_vec());
+
+            // Incrementing the counter (step 9.3)
+            i += 1;
+        }
+
+        // Saving temp bytes (steps 10-11)
+        let k = GenericArray::<u8, D::KeySize>::from_slice(&temp[..self.keylen/8]);
+        let mut x = temp[self.keylen/8..].to_vec();
+
+        // Clearing temp and starting a block_encrypt cicle (steps 12-13)
+        let mut temp = Vec::<u8>::new();
+        let cipher = D::new(k);
+        while temp.len() < num_bytes {
+            // Encrypting x and updating its value (step 13.1)
+            let mut x_copy = GenericArray::<u8, D::BlockSize>::default();
+            x_copy.clone_from_slice(&x);
+            cipher.encrypt_block(&mut x_copy);
+            x.clone_from(&x_copy.to_vec());
+
+            // Appending the new value of x to temp (step 13.2)
+            temp.append(&mut x.to_vec());
+        }
+
+        // Returning the exact number of requested bytes (steps 14-15)
+        Some(temp.clone()[..num_bytes].to_vec())
+    }
+
     /*  This function is used to update the internal state of the CTR-DRBG.
         (see NIST SP 800-90A, section 10.2.1.2)
         
@@ -135,8 +265,8 @@ where
     D::BlockSize: ArrayLength<u8>,
     D::KeySize: ArrayLength<u8>,
 {   
-    /*  This function is implemented following the algorithm described at 10.2.1.3.2 for a CTR-DRBG that doesn't use a df. */
-    fn new(entropy: &[u8], _nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
+    /*  This function is implemented following the algorithm described at 10.2.1.3.2 for a CTR-DRBG that uses a df. */
+    fn new(entropy: &[u8], nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
         let seed_len: usize;
         let key_len: usize;
         let block_len: usize = 128;
@@ -164,36 +294,19 @@ where
         }
         else {return None;}
         seed_len = block_len + key_len;
-        
-        /*  TODO: no requests are imposed on the length of the received entropy input (apart from the obviuos
-                  ones). Entropy, nonce and pers must all be passed to the DF for the derivation of the 
-                  seed material to be used for instantiation. */
-        let mut new_entropy = Vec::<u8>::new();
-        if entropy.len() >= seed_len/8 {
-            new_entropy.append(&mut entropy[..seed_len/8].to_vec());
-        }
-        else {
-            return None;
-        }
 
-        // Taking exactly seedlen bits from the PS that has been passed (step 1,2).
-        // If an empty pers is received we will use 0^seedlen as pers.
-        let mut new_pers = Vec::<u8>::new();
-        if pers.len() < seed_len/8 {
-            new_pers.append(&mut pers.to_vec());
+        // Entropy input is too short.
+        if entropy.len() < seed_len/8 {return None;}
 
-            for _i in 0..seed_len/8-pers.len() {
-                new_pers.push(0x00);
-            }
-        }
-        else if pers.len() == seed_len/8 {
-            new_pers.append(&mut pers.to_vec());
-        }
-        else {
-            new_pers.append(&mut pers[..seed_len/8].to_vec());
-        }
+        // Nonce is too short.
+        if nonce.len() < seed_len/16 {return None;}
 
-        // Setting initial values for the internal state (step 4,5,7).
+        // Initializing seed material (step 1)
+        let mut seed_material = entropy.clone().to_vec();
+        seed_material.append(&mut nonce.to_vec());
+        seed_material.append(&mut pers.to_vec());
+
+        // Setting initial values for the internal state (step 3,4,6).
         let mut k = GenericArray::<u8, D::KeySize>::default();
         let mut v = GenericArray::<u8, D::BlockSize>::default();
 
@@ -215,12 +328,22 @@ where
             keylen: key_len,
         };
 
-        // Updating the internal state using the entropy and given personalization string (step 3,6)
-        let mut seed_material = new_entropy.clone();
-        xor_vecs(&mut seed_material, &new_pers);
+        // Deriving the actual seedlen seed from the DF (step 2)
+        let res_seed = this.block_cipher_df(seed_material, seed_len/8);
+        match res_seed {
+            None => {
+                // Derivation function failed unexpectedly
+                return None;
+            }
+            Some(inst) => {
+                seed_material = inst;
+            }
+        }
+
+        // Updating the internal state using the newly derived seed (step 5)
         this.update(&seed_material);
 
-        // Returning a reference to this instance (step 8)
+        // Returning a reference to this instance (step 7)
         Some(this)
     }
 
@@ -323,57 +446,45 @@ where
         0
     }
 
-    /*  This function is implemented following the algorithm described at 10.2.1.4.1 for a CTR-DRBG that doesn't use a df. */
+    /*  This function is implemented following the algorithm described at 10.2.1.4.2 for a CTR-DRBG that uses a df. */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize {
         // Nothing to be done if zeroized (ERROR_FLAG returned to the application).
         if self.zeroized {
             return 1;
         }
 
-        /*  TODO: no requests are imposed on the length of the received add-in input (apart from the obviuos
-                  ones). It must be passed to the DF for the derivation of the seed material to be used for
-                  reseeding. */
-        let mut new_add_in = Vec::<u8>::new();
-        match add {
-            None => {
-                for _i in 0..self.seedlen/8 {
-                    new_add_in.push(0x00);
-                }
-            }
-            Some(add_in) => {
-                if add_in.len() < self.seedlen/8 {
-                    new_add_in.append(&mut add_in.to_vec());
-        
-                    for _i in 0..self.seedlen/8-add_in.len() {
-                        new_add_in.push(0x00);
-                    }
-                }
-                else if add_in.len() == self.seedlen/8 {
-                    new_add_in.append(&mut add_in.to_vec());
-                }
-                else {
-                    new_add_in.append(&mut add_in[..self.seedlen/8].to_vec());
-                }
-            }
-        }
-
-        /*  TODO: no requests are imposed on the length of the received entropy input (apart from the obviuos
-                  ones). It must be passed to the DF for the derivation of the seed material to be used for
-                  reseeding. */
-        let mut new_entropy = Vec::<u8>::new();
-        if entropy.len() >= self.seedlen/8 {
-            new_entropy.append(&mut entropy[..self.seedlen/8].to_vec());
-        }
-        else {
+        // Entropy input is too short.
+        if entropy.len() < self.seedlen/8 {
             return 2;
         }
 
-        // Updating the internal state using the entropy and given additional input (step 3,4)
-        let mut seed_material = new_entropy.to_vec();
-        xor_vecs(&mut seed_material, &new_add_in);
+        // Deriving seed material from input received (step 1)
+        let mut seed_material = entropy.to_vec();
+        match add {
+            None => {
+
+            }
+            Some(add_in) => {
+                seed_material.append(&mut add_in.to_vec());
+            }
+        }    
+
+        // Deriving the actual seedlen seed from the DF (step 2)
+        let res_seed = self.block_cipher_df(seed_material, self.seedlen/8);
+        match res_seed {
+            None => {
+                // Derivation function failed unexpectedly
+                return 3;
+            }
+            Some(inst) => {
+                seed_material = inst;
+            }
+        }
+
+        // Updating the internal state using the derived seed (step 3)
         self.update(&seed_material);
 
-        // Resetting the reseed counter (step 5)
+        // Resetting the reseed counter (step 4)
         self.count = 1;
 
         0
@@ -415,7 +526,7 @@ where
     }
 
     fn drbg_name() -> String {
-        return "CTR-DRBG".to_string();
+        return "CTR-DRBG-DF".to_string();
     }
 
     fn seed_life() -> usize {
