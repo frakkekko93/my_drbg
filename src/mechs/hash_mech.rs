@@ -36,7 +36,7 @@ where
     sec_str: usize,
 }
 
-/*  Implementing functions that are specific of the HMAC-DRBG mechanism. */
+/*  Implementing functions that are specific of the Hash-DRBG mechanism. */
 impl<D> HashDrbgMech<D>
 where
     D: Update + FixedOutput + BlockInput + Reset + Clone + Default,
