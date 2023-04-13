@@ -63,7 +63,7 @@ where
         let test_block = chaining_value.clone();
 
         // Number of blocks to be processed (step 2)
-        let n = data.len()*8 / self.blocklen;
+        let n = data.len() / (self.blocklen/8);
         let cipher = D::new(key);
 
         // Processing data block by block (step 3,4)
@@ -110,7 +110,7 @@ where
         s.append(&mut n.to_vec());
         s.append(&mut input.clone());
         s.push(0x80);
-        while s.len() < self.blocklen {
+        while s.len() < self.blocklen/8 {
             s.push(0x00);
         }
 
@@ -131,8 +131,8 @@ where
         while temp.len() < (self.keylen + self.blocklen)/8 {
             // Inizialization of the IV (step 9.1)
             iv.clear();
-            iv.append(&mut i.to_be_bytes()[3..].to_vec());
-            while iv.len() < self.blocklen {
+            iv.append(&mut i.to_be_bytes().to_vec());
+            while iv.len() < self.blocklen/8 {
                 iv.push(0x00);
             }
 
@@ -142,7 +142,7 @@ where
             let out_block;
             match res_bcc {
                 None => {
-                    panic!("CTR-DRBG: the DF failed in generating seed material.");
+                    return None;
                 }
                 Some(inst) => {
                     out_block = inst;
@@ -316,7 +316,7 @@ where
         let mut this = Self{
             k,
             v,
-            count: 1,
+            count: 1,       // step 6
             zeroized: false,
             seedlen: seed_len,
             blocklen: block_len,
@@ -451,9 +451,7 @@ where
         // Deriving seed material from input received (step 1)
         let mut seed_material = entropy.to_vec();
         match add {
-            None => {
-
-            }
+            None => {}
             Some(add_in) => {
                 seed_material.append(&mut add_in.to_vec());
             }
