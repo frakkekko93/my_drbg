@@ -1,4 +1,5 @@
 use crate::mechs::ctr_mech::CtrDrbgMech;
+use crate::mechs::ctr_mech_with_df::CtrDrbgMech_DF;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::mechs::hash_mech::HashDrbgMech;
 use crate::mechs::hmac_mech::HmacDrbgMech;
@@ -34,12 +35,22 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>(strength: usize) -> usize {
                 test_entropy_too_short::<T>(strength) +
                 test_nonce_too_short::<T>(strength);
     }
-    else {
+    else if T::drbg_name() == "CTR-DRBG" {
         return norm_op::<T>(strength) +
                 test_fun_not_approved::<CtrDrbgMech<TdesEde2>>("3DES-EDE2", strength) + 
                 test_fun_not_approved::<CtrDrbgMech<TdesEde3>>("3DES-EDE3", strength) + 
                 test_fun_not_approved::<CtrDrbgMech<TdesEee2>>("3DES-EEE2", strength) +
                 test_fun_not_approved::<CtrDrbgMech<TdesEee3>>("3DES-EEE3", strength) +
+                test_empty_entropy::<T>(strength) +
+                test_empty_nonce::<T>(strength) +
+                test_entropy_too_short::<T>(strength);
+    }
+    else {
+        return norm_op::<T>(strength) +
+                test_fun_not_approved::<CtrDrbgMech_DF<TdesEde2>>("3DES-EDE2", strength) + 
+                test_fun_not_approved::<CtrDrbgMech_DF<TdesEde3>>("3DES-EDE3", strength) + 
+                test_fun_not_approved::<CtrDrbgMech_DF<TdesEee2>>("3DES-EEE2", strength) +
+                test_fun_not_approved::<CtrDrbgMech_DF<TdesEee3>>("3DES-EEE3", strength) +
                 test_empty_entropy::<T>(strength) +
                 test_empty_nonce::<T>(strength) +
                 test_entropy_too_short::<T>(strength);
@@ -51,10 +62,10 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>(strength: usize) -> usize {
 fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     if check_res(res.is_none(), false, 
@@ -72,10 +83,10 @@ fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
 fn test_fun_not_approved<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else {
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut test_name = "test_fun_not_approved::".to_string();
@@ -105,10 +116,10 @@ fn test_fun_not_approved<T: DRBG_Mechanism_Functions>(fun_id: &str, mut strength
 fn test_empty_entropy<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize {
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new("".as_bytes(), "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new("".as_bytes(), "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else {
-        res = T::new("".as_bytes(), &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new("".as_bytes(), &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     if check_res(res.is_none(), true, 
@@ -126,10 +137,10 @@ fn test_empty_entropy<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize
 fn test_empty_nonce<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize {
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else {
-        res = T::new(&ENTROPY, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
 
     if T::drbg_name() != "CTR-DRBG" {
@@ -159,10 +170,10 @@ fn test_empty_nonce<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize {
 fn test_entropy_too_short<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_TOO_SHORT, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_TOO_SHORT, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else {
-        res = T::new(&ENTROPY_TOO_SHORT, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_TOO_SHORT, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     if check_res(res.is_none(), true, 
@@ -179,7 +190,7 @@ fn test_entropy_too_short<T: DRBG_Mechanism_Functions>(mut strength: usize) -> u
 /*  Testing that entropy too short is refused by HMAC and Hash mechanisms. */
 #[allow(const_item_mutation)]
 fn test_nonce_too_short<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
-    let res = T::new(&ENTROPY, &NONCE_TOO_SHORT, &PERS_256[..strength/8], &mut strength);
+    let res = T::new(&ENTROPY, &NONCE_TOO_SHORT, &PERS_256[..strength], &mut strength);
 
     if check_res(res.is_none(), true, 
             "test_entropy_too_short".to_string(), 

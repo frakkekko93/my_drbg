@@ -17,10 +17,10 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>(strength: usize) -> usize{
 fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -39,10 +39,10 @@ fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
             }
     }
 
-    let mut bits = Vec::<u8>::new();
-    let res = drbg.generate(&mut bits, MAX_BYTES, Some(&ADD_IN_256[..strength/8]));
+    let mut bytes = Vec::<u8>::new();
+    let res = drbg.generate(&mut bytes, MAX_BYTES, Some(&ADD_IN_256[..strength]));
 
-    if check_res(res == 0 && bits.len() == MAX_BYTES, true, 
+    if check_res(res == 0 && bytes.len() == MAX_BYTES, true, 
             "norm_op".to_string(), 
             AL_NAME.to_string(), 
             "normal generation with DRBG mechanism failed.".to_string(), 
@@ -57,10 +57,10 @@ fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
 fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -89,8 +89,8 @@ fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -
         return 1;
     }
 
-    let mut bits = Vec::<u8>::new();
-    res = drbg.generate(&mut bits, MAX_BYTES, Some(&ADD_IN_256[..strength/8]));
+    let mut bytes = Vec::<u8>::new();
+    res = drbg.generate(&mut bytes, MAX_BYTES, Some(&ADD_IN_256[..strength]));
 
     if check_res(res, 1, 
             "generate_on_invalid_state".to_string(), 
@@ -107,10 +107,10 @@ fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -
 fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -129,11 +129,11 @@ fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>(mut strength: usize) ->
             }
     }
 
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
     let mut res;
 
     while drbg.count() < T::seed_life() {
-        res = drbg.generate(&mut bits, MIN_BYTES, Some(&ADD_IN_256[..strength/8]));
+        res = drbg.generate(&mut bytes, MIN_BYTES, Some(&ADD_IN_256[..strength]));
 
         if res != 0 {
             write_to_log(format_message(true, AL_NAME.to_string(),
@@ -145,10 +145,10 @@ fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>(mut strength: usize) ->
             return 1;
         }
 
-        bits.clear();
+        bytes.clear();
     }
 
-    res = drbg.generate(&mut bits, MIN_BYTES, Some(&ADD_IN_256[..strength/8]));
+    res = drbg.generate(&mut bytes, MIN_BYTES, Some(&ADD_IN_256[..strength]));
 
     if check_res(res, 2, 
             "generate_on_seed_expired".to_string(), 

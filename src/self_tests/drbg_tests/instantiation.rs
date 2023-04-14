@@ -12,7 +12,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usiz
 
 /*  Testing that any security strength that is <=MAX_STR is actually accepted by the DRBG. */
 fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
-    let res = DRBG::<T>::new(strength, Some(&PERS_256[..strength/8]));
+    let res = DRBG::<T>::new(strength, Some(&PERS_256[..strength]));
     let mut drbg = None;
 
     match res{
@@ -34,7 +34,7 @@ fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
 
 /*  Testing that not supported security strengths are actually rejected by the DRBG. */
 fn test_ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
-    let res = DRBG::<T>::new(strength+64, None);
+    let res = DRBG::<T>::new(strength+8, None);
     let mut err= 0;
     let mut drbg = None;
 
@@ -47,7 +47,7 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize)
         }
     }
 
-    if (T::drbg_name() == "CTR-DRBG" || T::drbg_name() == "CTR-DRBG-DF") && strength < 256{
+    if (T::drbg_name() == "CTR-DRBG" || T::drbg_name() == "CTR-DRBG-DF") && strength < 32{
         if check_res((err, true), (3, drbg.is_none()), 
         "test_ss_not_supported".to_string(), 
         "DRBG_TESTS::instantiation_test".to_string(), 

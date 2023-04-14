@@ -17,7 +17,7 @@ pub fn run_tests<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usiz
 fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
     let res = DRBG::<T>::new(strength, None);
     let mut drbg;
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
 
     match res{
         Err(_) => {
@@ -33,7 +33,7 @@ fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
         }
     }
 
-    let res = drbg.generate(&mut bits, MAX_BITS, strength, true, Some(&ADD_IN_256[..strength/8]));
+    let res = drbg.generate(&mut bytes, MAX_BYTES, strength, true, Some(&ADD_IN_256[..strength]));
 
     return check_res(res, 0, 
         "norm_op".to_string(), 
@@ -46,8 +46,8 @@ fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
 fn non_empty_out_vec<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
     let res = DRBG::<T>::new(strength, None);
     let mut drbg;
-    let mut bits = Vec::<u8>::new();
-    bits.push(0x00);
+    let mut bytes = Vec::<u8>::new();
+    bytes.push(0x00);
 
     match res{
         Err(_) => {
@@ -64,9 +64,9 @@ fn non_empty_out_vec<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> 
     }
 
     // Making the generate fail for security strength not supported.
-    drbg.generate(&mut bits, MAX_BITS, strength+64, false, None);
+    drbg.generate(&mut bytes, MAX_BYTES, strength+64, false, None);
 
-    return check_res(bits.is_empty(), true, 
+    return check_res(bytes.is_empty(), true, 
         "non_empty_out_vec".to_string(), 
         "DRBG_TESTS::generate_test".to_string(), 
         "initially non-empty out vector was not cleared before use.".to_string(), 
@@ -77,7 +77,7 @@ fn non_empty_out_vec<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> 
 fn int_state_not_valid<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
     let res = DRBG::<T>::new(strength, None);
     let mut drbg;
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
 
     match res{
         Err(_) => {
@@ -94,7 +94,7 @@ fn int_state_not_valid<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -
     }
 
     drbg.uninstantiate();
-    let res = drbg.generate(&mut bits, MAX_BITS, strength, false, None);
+    let res = drbg.generate(&mut bytes, MAX_BYTES, strength, false, None);
 
     return check_res(res, 1, 
         "int_state_not_valid".to_string(), 
@@ -103,11 +103,11 @@ fn int_state_not_valid<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -
         "generate on invalid empty state failed as expected.".to_string());
 }
 
-/*  Verifying that a request of too many pseudo-random bits is actually refused. */
+/*  Verifying that a request of too many pseudo-random bytes is actually refused. */
 fn req_too_many_bytes<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
     let res = DRBG::<T>::new(strength, None);
     let mut drbg;
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
 
     match res{
         Err(_) => {
@@ -123,7 +123,7 @@ fn req_too_many_bytes<T: DRBG_Mechanism_Functions + 'static>(strength: usize) ->
         }
     }
 
-    let res = drbg.generate(&mut bits, NS_BITS, strength, false, None);
+    let res = drbg.generate(&mut bytes, NS_BYTES, strength, false, None);
 
     return check_res(res, 2, 
         "req_too_many_bytes".to_string(), 
@@ -136,7 +136,7 @@ fn req_too_many_bytes<T: DRBG_Mechanism_Functions + 'static>(strength: usize) ->
 fn ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
     let res = DRBG::<T>::new(strength, None);
     let mut drbg;
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
 
     match res{
         Err(_) => {
@@ -152,7 +152,7 @@ fn ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> u
         }
     }
 
-    let res = drbg.generate(&mut bits, MAX_BITS, strength+64, false, None);
+    let res = drbg.generate(&mut bytes, MAX_BYTES, strength+8, false, None);
 
     return check_res(res, 3, 
         "ss_not_supported".to_string(), 
@@ -165,7 +165,7 @@ fn ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> u
 fn add_in_too_long<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
     let res = DRBG::<T>::new(strength, None);
     let mut drbg;
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
 
     match res{
         Err(_) => {
@@ -181,7 +181,7 @@ fn add_in_too_long<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> us
         }
     }
 
-    let res = drbg.generate(&mut bits, MAX_BITS, strength, false, Some(&ADD_IN_TOO_LONG));
+    let res = drbg.generate(&mut bytes, MAX_BYTES, strength, false, Some(&ADD_IN_TOO_LONG));
 
     return check_res(res, 4, 
         "add_in_too_long".to_string(), 

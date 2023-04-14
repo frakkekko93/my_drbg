@@ -29,7 +29,7 @@ fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
         }
     }
 
-    let res = drbg.reseed(Some(&ADD_IN_256[..strength/8]));
+    let res = drbg.reseed(Some(&ADD_IN_256[..strength]));
 
     return check_res(res, 0, 
         "norm_op".to_string(), 

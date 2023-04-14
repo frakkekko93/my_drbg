@@ -25,19 +25,18 @@ pub fn get_input() -> usize {
     }
 }
 
-/*  Utility function that instantiates the desired DRBG with the desired strength and ps. Enventually returns an
-    error if instantiation fails. */
+/*  Utility function that instantiates the desired DRBG with the desired strength and ps */
 pub fn inst_drbg<T: DRBG_Mechanism_Functions + 'static>(sec_str: usize, need_ps: usize) -> Result<DRBG<T>, usize> {
     if need_ps == 1 {
         let ps: [u8; 32];
         ps = rand::thread_rng().gen();
         let actual_pers;
         
-        if sec_str > 256 {
+        if sec_str > 32 {
             actual_pers = ps.as_slice();
         }
         else{
-            actual_pers = &ps[0..sec_str/8];
+            actual_pers = &ps[0..sec_str];
         }
         
         println!("-------------------------------------------------------------------------------------");
@@ -50,11 +49,12 @@ pub fn inst_drbg<T: DRBG_Mechanism_Functions + 'static>(sec_str: usize, need_ps:
     }
 }
 
+/*  Utility function that generates bytes using the passed DRBG */
 pub fn generate<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
-    print!("> How many bits do you want to generate? (max {}): ", drbg.get_max_pbr());
-    let num_bits = get_input();
+    print!("> How many bytes do you want to generate? (max {} bytes): ", drbg.get_max_pbr());
+    let num_bytes = get_input();
 
-    print!("> Which security strength is required for these bits? (supported <={}): ", drbg.get_sec_str());
+    print!("> Which security strength is required for these bytes? (supported <={}): ", drbg.get_sec_str());
     let sec_str = get_input();
 
     print!("> Is prediction resistance required for this generation? (1=yes, 2=no, DEFAULT=no): ");
@@ -74,36 +74,37 @@ pub fn generate<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> us
     }
 
     print!("-------------------------------------------------------------------------------------");
-    let mut bits = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::new();
     let res;
     let mut actual_add_in = Vec::<u8>::new();
     match add {
         1 => {
             let add_in: [u8; 32];
             add_in = rand::thread_rng().gen();
-            add_in[0..sec_str/8].clone_into(& mut actual_add_in);
+            add_in[0..sec_str].clone_into(& mut actual_add_in);
 
             println!("\nUsed add-in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
 
-            res = drbg.generate(&mut bits, num_bits, sec_str, flag_prr, Some(actual_add_in.as_slice()));
+            res = drbg.generate(&mut bytes, num_bytes, sec_str, flag_prr, Some(actual_add_in.as_slice()));
         }
         _ => {
-            res = drbg.generate(&mut bits, num_bits, sec_str, flag_prr, None);
+            res = drbg.generate(&mut bytes, num_bytes, sec_str, flag_prr, None);
         }
     }
 
     match res {
-        0 => {print!("\nHere are the bits you requested:\n\n{}, len: {} bits.\n", hex::encode(&bits), bits.len() * 8);}
+        0 => {print!("\nHere are the bytes you requested:\n\n{}, len: {} bytes.\n", hex::encode(&bytes), bytes.len());}
         1 => {println!("\nGeneration failed with error {}: internal state is not valid.", res);}
-        2 => {println!("\nGeneration failed with error {}: you requested too many bits in one go.", res);}
+        2 => {println!("\nGeneration failed with error {}: you requested too many bytes in one go.", res);}
         3 => {println!("\nGeneration failed with error {}: you requested a security strength that is not supported by this instance.", res);}
-        4 => {println!("\nGeneration failed with error {}: the additional input provided is too long ({} bits).", res, actual_add_in.len());}
+        4 => {println!("\nGeneration failed with error {}: the additional input provided is too long ({} bytes).", res, actual_add_in.len());}
         _ => {println!("\nGeneration failed with error {}: internal state generation failed unexpectedly.", res);}
     }
 
     1
 }
 
+/*  Utility function that reseeds the desired DRBG */
 pub fn reseed<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let sec_str = drbg.get_sec_str();
 
@@ -116,7 +117,7 @@ pub fn reseed<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usiz
         1 => {
             let add_in: [u8; 32];
             add_in = rand::thread_rng().gen();
-            add_in[0..sec_str/8].clone_into(& mut actual_add_in);
+            add_in[0..sec_str].clone_into(& mut actual_add_in);
 
             println!("\nUsed add-in: {}, len: {}", hex::encode(&actual_add_in), actual_add_in.len());
 
@@ -130,13 +131,14 @@ pub fn reseed<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usiz
     match res {
         0 => {println!("\nDRBG succesfully reseeded.");}
         1 => {println!("\nReseeding failed with error {}: internal state is not valid.", res);}
-        2 => {println!("\nReseeding failed with error {}: additional input is too long ({} bits).", res, actual_add_in.len()*8);}
+        2 => {println!("\nReseeding failed with error {}: additional input is too long ({} bytes).", res, actual_add_in.len());}
         _ => {println!("\nReseeding failed with error {}: reseeding of the internal HMAC failed unexpectedly.", res);}
     }
 
     1
 }
 
+/*  Utility function that uninstantiates the desired DRBG */
 pub fn uninstantiate<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let res = drbg.uninstantiate();
 
@@ -148,6 +150,7 @@ pub fn uninstantiate<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) 
     1
 }
 
+/*  Utility function that runs on demand self-tests on the desired DRBG */
 pub fn run_on_demand_drbg<T: DRBG_Mechanism_Functions + 'static>(drbg: &mut DRBG<T>) -> usize {
     let res = drbg.run_self_tests();
 

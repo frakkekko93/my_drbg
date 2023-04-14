@@ -17,10 +17,10 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>(strength: usize) -> usize{
 fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -39,7 +39,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
             }
     }
 
-    let res = drbg.reseed(&ENTROPY_CTR, Some(&ADD_IN_256[..strength/8]));
+    let res = drbg.reseed(&ENTROPY_CTR, Some(&ADD_IN_256[..strength]));
 
     if check_res(res, 0, 
             "norm_op".to_string(), 
@@ -56,10 +56,10 @@ fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
 fn test_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -88,7 +88,7 @@ fn test_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize
         return 1;
     }
 
-    res = drbg.reseed(&ENTROPY, Some(&ADD_IN_256[..strength/8]));
+    res = drbg.reseed(&ENTROPY, Some(&ADD_IN_256[..strength]));
 
     if check_res(res, 1, 
             "reseed_fail".to_string(), 
@@ -105,10 +105,10 @@ fn test_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize
 fn test_entropy_too_short<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;

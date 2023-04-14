@@ -11,7 +11,7 @@ const SEED_LIFE: usize = 1000;
     (see FIPS 140-3 IG section D.R). Since both hashing algorithms support a security strength of 256 bits
     (see NIST SP 800-57pt1r5), this mechanism offers a security strength of max 256 bits.
 
-    - k,v: internal state secret value that are used for he generation of pseudorandombits
+    - k,v: internal state secret value that are used for he generation of pseudorandom bytes
     - count: the reseed counter
     - reseed_interval: the maximum number of generate requests that can be served between reseedings
     - zeroized: boolean flag indicating whether the particular instance has been zeroized 
@@ -109,11 +109,11 @@ where
         }
 
         // Security strength not supported
-        if *req_str > 256 {return None}
-        *req_str = 256;
+        if *req_str > 32 {return None}
+        *req_str = 32;
 
         // Entropy and nonce parameters must be present and of sufficient lengths.
-        if entropy.len() < *req_str/8 || nonce.len() < *req_str/16 {
+        if entropy.len() < *req_str || nonce.len() < *req_str/2 {
             return None
         }
 
@@ -201,7 +201,7 @@ where
         }
 
         // Entropy and nonce parameters must be present.
-        if entropy.len() < self.sec_str/8 {
+        if entropy.len() < self.sec_str {
             return 2;
         }
 

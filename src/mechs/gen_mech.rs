@@ -29,7 +29,7 @@ pub trait DRBG_Mechanism_Functions: {
     /*  Generates a vector of pseudorandom bytes.
         This function is called by DRBG_Functions::generate envelope. This envelope is responsible for checking
         the validity of all parameters passed to this function.
-        On success, this function returns 0 and the number of pseudo-random bits requested.
+        On success, this function returns 0 and the number of pseudo-random bytes requested.
         On failure, this function returns an error flag >0 and a null vector.
 
         Parameters:

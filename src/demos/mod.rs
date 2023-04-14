@@ -19,7 +19,7 @@ fn try_run_demo<T: DRBG_Mechanism_Functions + 'static>(str: usize, need_ps: usiz
                             Err(err) => {
                                 match err {
                                     1 => {println!("\nInstantiation failed with error {}: inappropriate security strength.", err);}
-                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bytes).", err);}
                                     4 => {println!("\nInstantiation failed with error {}: self-tests on first time run failed.", err);}
                                     _ => {println!("\nInstantiation failed with error {}: instantiation of the internal mechanism failed.", err);}
                                 }
@@ -33,21 +33,20 @@ fn try_run_demo<T: DRBG_Mechanism_Functions + 'static>(str: usize, need_ps: usiz
                         return drbg_demo(&mut drbg);                        
 }
 
+/*  Main function running the demo environment and handling user choices. */
 pub fn run_demo() {
     let mut scelta_drbg;
     let mut user_choice: usize = 1;
 
     print!("\n/****************************************************************************");
     println!("****************************************************************************\\");
-    println!("Welcome to a demo of this DRBG implementation. This DRBG uses all three of the mechanisms that are prescribed in NIST SP 800-90a (HMAC-DRBG, Hash-DRBG");
-    println!("and CTR-DRBG). The goal of this demo is to show the capabilities of these implementations. The DRBGs that are used in this crate are supposed to have");
-    println!("access to a direct entropy source that provides FULL-ENTROPY bits. This means that each DRBG can always be reseeded using fresh entropy and");
-    println!("you can request prediction resistance at any time during bit generation. The DRBGs are also designed to have a reseed counter that allows for a");
+    println!("Welcome to a demo of this DRBG implementation. This DRBG uses all four of the mechanisms that are prescribed in NIST SP 800-90a (HMAC-DRBG, Hash-DRBG");
+    println!("and CTR-DRBG with and without DF). The goal of this demo is to show the capabilities of these implementations. The DRBGs that are used in this crate are");
+    println!("supposed to haveaccess to a direct entropy source that provides fresh entropy bytes. This means that each DRBG can always be reseeded using fresh entropy");
+    println!("and you can request prediction resistance at any time during bit generation. The DRBGs are also designed to have a reseed counter that allows for a");
     println!("limited number of consecutive generations without accessing the entropy source for fresh entropy. Once this limit has been reached, the DRBG will");
     println!("handle the reseeding by itself and you will be able to continue using the active instance.");
-    println!("Each DRBG implemented here supports a security strength in the interval [128, 256]. It is suggested to request strengths that are multiples of");
-    println!("8 bits as everything is handled in the form of bytes and eventually truncated (e.g.: sec_str=135 is equivalent to sec_str=128). Same goes for bit generation,");
-    println!("no padding bits are used for requested lenghts that are not multiples of 8.");
+    println!("Each DRBG implemented here supports a security strength in the interval [16, 32] bytes.");
     print!("\\****************************************************************************");
     println!("****************************************************************************/");
     println!("\nThe first step to test this design is to choose which mechanism you would like to use.");
@@ -71,7 +70,7 @@ pub fn run_demo() {
             return;
         }
 
-        print!("> Which security strength do you need? (must be 128 <= sec_str <= 256): ");
+        print!("> Which security strength do you need? (must be 16 <= sec_str <= 32 bytes): ");
 
         let strength = get_input();
 
@@ -84,8 +83,8 @@ pub fn run_demo() {
             1 => {
                 println!("-------------------------------------------------------------------------------------");
                 println!("Which mechanism would you like to use?:");
-                println!("\t1- HMAC-DRBG with Sha 256 (supports a security strength of 256)");
-                println!("\t2- HMAC-DRBG with Sha 512 (supports a security strength of 256)");
+                println!("\t1- HMAC-DRBG with Sha 256 (supports a security strength of 32 bytes)");
+                println!("\t2- HMAC-DRBG with Sha 512 (supports a security strength of 32 bytes)");
                 println!("\tAnything else - Interrupt the demo");
                 print!("\nYour choice: ");
 
@@ -108,8 +107,8 @@ pub fn run_demo() {
             2 => {
                 println!("-------------------------------------------------------------------------------------");
                 println!("Which mechanism would you like to use?:");
-                println!("\t1- Hash-DRBG with Sha 256 (supports a security strength of 256)");
-                println!("\t2- Hash-DRBG with Sha 512 (supports a security strength of 256)");
+                println!("\t1- Hash-DRBG with Sha 256 (supports a security strength of 32 bytes)");
+                println!("\t2- Hash-DRBG with Sha 512 (supports a security strength of 32 bytes)");
                 println!("\tAnything else - Interrupt the demo");
                 print!("\nYour choice: ");
 
@@ -131,9 +130,9 @@ pub fn run_demo() {
             3 => {
                 println!("-------------------------------------------------------------------------------------");
                 println!("Which mechanism would you like to use?:");
-                println!("\t1- CTR-DRBG (no df) with AES 128 (supports a security strength of 128)");
-                println!("\t2- CTR-DRBG (no df) with AES 192 (supports a security strength of 192)");
-                println!("\t3- CTR-DRBG (no df) with AES 256 (supports a security strength of 256)");
+                println!("\t1- CTR-DRBG (no df) with AES 128 (supports a security strength of 16 bytes)");
+                println!("\t2- CTR-DRBG (no df) with AES 192 (supports a security strength of 24 bytes)");
+                println!("\t3- CTR-DRBG (no df) with AES 256 (supports a security strength of 32 bytes)");
                 print!("\nYour choice: ");
 
                 let mech = get_input();
@@ -157,9 +156,9 @@ pub fn run_demo() {
             4 => {
                 println!("-------------------------------------------------------------------------------------");
                 println!("Which mechanism would you like to use?:");
-                println!("\t1- CTR-DRBG (df) with AES 128 (supports a security strength of 128)");
-                println!("\t2- CTR-DRBG (df) with AES 192 (supports a security strength of 192)");
-                println!("\t3- CTR-DRBG (df) with AES 256 (supports a security strength of 256)");
+                println!("\t1- CTR-DRBG (df) with AES 128 (supports a security strength of 16 bytes)");
+                println!("\t2- CTR-DRBG (df) with AES 192 (supports a security strength of 24 bytes)");
+                println!("\t3- CTR-DRBG (df) with AES 256 (supports a security strength of 32 bytes)");
                 print!("\nYour choice: ");
 
                 let mech = get_input();

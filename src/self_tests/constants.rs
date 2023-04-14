@@ -1,9 +1,7 @@
-/*  Number of bits/bytes to be generated per request during testing. */
-pub const MIN_BITS: usize = 8;
-pub const MAX_BITS: usize = 1024;
-pub const NS_BITS: usize = 2056;
-pub const MIN_BYTES: usize = MIN_BITS/8;
-pub const MAX_BYTES: usize = MAX_BITS/8;
+/*  Number of bytes to be generated per request during testing. */
+pub const MIN_BYTES: usize = 1;
+pub const MAX_BYTES: usize = 256;
+pub const NS_BYTES: usize = 2048;
 
 /*  Entropy constants */
 pub const ENTROPY: [u8; 32] = 

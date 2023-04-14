@@ -11,10 +11,10 @@ const AL_NAME: &str = "MECH-TESTS::zeroization_test";
 pub fn test_zeroization<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize {
     let res;
     if T::drbg_name() == "CTR-DRBG" {
-        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength/8], &mut strength);
+        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;

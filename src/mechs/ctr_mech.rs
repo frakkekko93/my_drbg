@@ -10,8 +10,8 @@ use aes::cipher::{
 /*  The life of each generated seed of this DRBG. */
 const SEED_LIFE: usize = 1000;
 
-/*  The length of the counter used by the block cipher in bits. */
-const CTR_LEN: usize = 16;
+/*  The length of the counter used by the block cipher in bytes. */
+const CTR_LEN: usize = 2;
 
 /*  Implementation of the CTR-DRBG mechanisms without the use of a DF as specified in section 10.2.1 of NIST SP 800-90A.
     According to NIST SP 800-57 AES 128/192/256 support security strengths of respectively 128/192/256 bits. Thus, since this
@@ -50,10 +50,10 @@ where
         (see NIST SP 800-90A, section 10.2.1.2)
         
         Parameters:
-            - provided_data: the data to be used for the update (exaclty seedlen bits) */
+            - provided_data: the data to be used for the update (exaclty seedlen bytes) */
     fn update(&mut self, provided_data: &Vec<u8>) {
         // Provided data must not be empty and must be seedlen long
-        if provided_data.is_empty() || provided_data.len() != self.seedlen/8 {
+        if provided_data.is_empty() || provided_data.len() != self.seedlen {
             return;
         }
 
@@ -66,13 +66,13 @@ where
         while i < self.seedlen {
             // Appropriately increment the counter based on his size (step 2.1)
             if CTR_LEN < self.blocklen {
-                let mid_point = self.blocklen/8 - CTR_LEN/8;
+                let mid_point = self.blocklen - CTR_LEN;
                 
-                // Increment the rigth-most CTR_LEN/8 bytes of V (step 2.1.1)
+                // Increment the rigth-most CTR_LEN bytes of V (step 2.1.1)
                 let mut right_v = self.v[mid_point..].to_vec();
                 modular_add(&mut right_v, 0x01);
 
-                // Creating a clone of V with the incremented right-most CTR_LEN/8 bytes
+                // Creating a clone of V with the incremented right-most CTR_LEN bytes
                 let mut v_clone = GenericArray::<u8, D::BlockSize>::default();
                 let (left, right) = v_clone.split_at_mut(mid_point);
                 left.clone_from_slice(&self.v[..mid_point]);
@@ -101,17 +101,17 @@ where
             i += self.blocklen;
         }
 
-        // Taking only seedlen bits (step 3)
-        temp.resize(self.seedlen/8, 0x00);
+        // Taking only seedlen bytes (step 3)
+        temp.resize(self.seedlen, 0x00);
 
         // Performing temp XOR provided_data (step 4)
         xor_vecs(&mut temp, provided_data);
 
         // Update K (step 5)
-        self.k.clone_from_slice(&temp[..self.keylen/8]);
+        self.k.clone_from_slice(&temp[..self.keylen]);
 
         // Update V (step 6)
-        self.v.clone_from_slice(&temp[self.keylen/8..]);
+        self.v.clone_from_slice(&temp[self.keylen..]);
     }
 
     /*  Retrieves and instance of the hmac primitive that uses self.k as a key.
@@ -134,7 +134,7 @@ where
     fn new(entropy: &[u8], _nonce: &[u8], pers: &[u8], req_str: &mut usize) -> Option<Self> {
         let seed_len: usize;
         let key_len: usize;
-        let block_len: usize = 128;
+        let block_len: usize = 16;
 
         // Runtime check on the use of any unallowed hash function and according parameter setup.
         let this_id = TypeId::of::<D>();
@@ -143,47 +143,47 @@ where
         let aes256_id = TypeId::of::<aes::Aes256>();
 
         if this_id == aes128_id {
-            if *req_str > 128 {return None}
-            key_len = 128;
-            *req_str = 128;
+            if *req_str > 16 {return None}
+            key_len = 16;
+            *req_str = 16;
         }
         else if this_id == aes192_id {
-            if *req_str > 192 {return None}
-            key_len = 192;
-            *req_str = 192;
+            if *req_str > 24 {return None}
+            key_len = 24;
+            *req_str = 24;
         }
         else if this_id == aes256_id {
-            if *req_str > 256 {return None}
-            key_len = 256;
-            *req_str = 256;
+            if *req_str > 32 {return None}
+            key_len = 32;
+            *req_str = 32;
         }
         else {return None;}
         seed_len = block_len + key_len;
         
-        // Entropy parameter must be present and of seedlen bits.
+        // Entropy parameter must be present and of seedlen bytes.
         let mut new_entropy = Vec::<u8>::new();
-        if entropy.len() >= seed_len/8 {
-            new_entropy.append(&mut entropy[..seed_len/8].to_vec());
+        if entropy.len() >= seed_len {
+            new_entropy.append(&mut entropy[..seed_len].to_vec());
         }
         else {
             return None;
         }
 
-        // Taking exactly seedlen bits from the PS that has been passed (step 1,2).
+        // Taking exactly seedlen bytes from the PS that has been passed (step 1,2).
         // If an empty pers is received we will use 0^seedlen as pers.
         let mut new_pers = Vec::<u8>::new();
-        if pers.len() < seed_len/8 {
+        if pers.len() < seed_len {
             new_pers.append(&mut pers.to_vec());
 
-            for _i in 0..seed_len/8-pers.len() {
+            for _i in 0..seed_len-pers.len() {
                 new_pers.push(0x00);
             }
         }
-        else if pers.len() == seed_len/8 {
+        else if pers.len() == seed_len {
             new_pers.append(&mut pers.to_vec());
         }
         else {
-            new_pers.append(&mut pers[..seed_len/8].to_vec());
+            new_pers.append(&mut pers[..seed_len].to_vec());
         }
 
         // Setting initial values for the internal state (step 4,5,7).
@@ -234,46 +234,46 @@ where
             return 2;
         }
 
-        // Restricting add-in to be of seedlen bits and eventually using 0^seedlen if add is None (step 2)
+        // Restricting add-in to be of seedlen bytes and eventually using 0^seedlen if add is None (step 2)
         let mut new_add_in = Vec::<u8>::new();
         match add {
             None => {
-                for _i in 0..self.seedlen/8 {
+                for _i in 0..self.seedlen {
                     new_add_in.push(0x00);
                 }
             }
             Some(add_in) => {
-                if add_in.len() < self.seedlen/8 {
+                if add_in.len() < self.seedlen {
                     new_add_in.append(&mut add_in.to_vec());
         
-                    for _i in 0..self.seedlen/8-add_in.len() {
+                    for _i in 0..self.seedlen-add_in.len() {
                         new_add_in.push(0x00);
                     }
                 }
-                else if add_in.len() == self.seedlen/8 {
+                else if add_in.len() == self.seedlen {
                     new_add_in.append(&mut add_in.to_vec());
                 }
                 else {
-                    new_add_in.append(&mut add_in[..self.seedlen/8].to_vec());
+                    new_add_in.append(&mut add_in[..self.seedlen].to_vec());
                 }
 
                 self.update(&new_add_in);
             }
         }
 
-        // Generating blocklen bits at a time using the underlying block cipher (step 3,4).
+        // Generating blocklen bytes at a time using the underlying block cipher (step 3,4).
         let cipher = self.block_cipher();
         let mut i: usize = 0;
         while i < req_bytes {
             // Appropriately increment the counter based on his size (step 4.1)
             if CTR_LEN < self.blocklen {
-                let mid_point = self.blocklen/8 - CTR_LEN/8;
+                let mid_point = self.blocklen - CTR_LEN;
 
-                // Increment the rigth-most CTR_LEN/8 bytes of V (step 4.1.1)
+                // Increment the rigth-most CTR_LEN bytes of V (step 4.1.1)
                 let mut right_v = self.v[mid_point..].to_vec();
                 modular_add(&mut right_v, 0x01);
 
-                // Creating a clone of V with the incremented right-most CTR_LEN/8 bytes
+                // Creating a clone of V with the incremented right-most CTR_LEN bytes
                 let mut v_clone = GenericArray::<u8, D::BlockSize>::default();
                 let (left, right) = v_clone.split_at_mut(mid_point);
                 left.clone_from_slice(&self.v[..mid_point]);
@@ -299,7 +299,7 @@ where
             result.append(&mut block.to_vec());
 
             // Increment counter
-            i += self.blocklen/8;
+            i += self.blocklen;
         }
 
         // Taking only req_bytes (step 5)
@@ -321,36 +321,36 @@ where
             return 1;
         }
 
-        // Taking exactly seedlen bits from the AI that has been passed (step 1,2).
+        // Taking exactly seedlen bytes from the AI that has been passed (step 1,2).
         // If an empty add is received we will use 0^seedlen as additional input.
         let mut new_add_in = Vec::<u8>::new();
         match add {
             None => {
-                for _i in 0..self.seedlen/8 {
+                for _i in 0..self.seedlen {
                     new_add_in.push(0x00);
                 }
             }
             Some(add_in) => {
-                if add_in.len() < self.seedlen/8 {
+                if add_in.len() < self.seedlen {
                     new_add_in.append(&mut add_in.to_vec());
         
-                    for _i in 0..self.seedlen/8-add_in.len() {
+                    for _i in 0..self.seedlen-add_in.len() {
                         new_add_in.push(0x00);
                     }
                 }
-                else if add_in.len() == self.seedlen/8 {
+                else if add_in.len() == self.seedlen {
                     new_add_in.append(&mut add_in.to_vec());
                 }
                 else {
-                    new_add_in.append(&mut add_in[..self.seedlen/8].to_vec());
+                    new_add_in.append(&mut add_in[..self.seedlen].to_vec());
                 }
             }
         }
 
-        // Entropy parameter must be present and of seedlen bits.
+        // Entropy parameter must be present and of seedlen bytes.
         let mut new_entropy = Vec::<u8>::new();
-        if entropy.len() >= self.seedlen/8 {
-            new_entropy.append(&mut entropy[..self.seedlen/8].to_vec());
+        if entropy.len() >= self.seedlen {
+            new_entropy.append(&mut entropy[..self.seedlen].to_vec());
         }
         else {
             return 2;
