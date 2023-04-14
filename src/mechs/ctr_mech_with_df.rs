@@ -67,13 +67,16 @@ where
         let cipher = D::new(key);
 
         // Processing data block by block (step 3,4)
-        for i in 0..n {
+        for i in 1..n+1 {
             // XORing the chaining value with the n-th block of the received data (step 4.1)
-            xor_vecs(&mut chaining_value.to_vec(), &data[0+(self.blocklen/8)*i..(self.blocklen/8)*(i+1)-1].to_vec());
+            let mut chain_clone = chaining_value.to_vec();
+            xor_vecs(&mut chain_clone, &data[0+(self.blocklen/8)*(i-1)..(self.blocklen/8)*(i)].to_vec());
+            chaining_value.clone_from_slice(&chain_clone);
 
             // Encrypting the chaining value (step 4.2)
             let mut block = chaining_value.clone();
             cipher.encrypt_block(&mut block);
+
             chaining_value.clone_from_slice(block.as_slice());
         }
 
@@ -103,14 +106,15 @@ where
         if num_bytes > MAX_BITS/8 {return None;}
 
         // Initializing variables for the DF (steps 2,3,4,5).
-        let l = &input.len().to_be_bytes()[3..];
-        let n = &num_bytes.to_be_bytes()[3..];
+        let l = &input.len().to_be_bytes()[4..];
+        let n = &num_bytes.to_be_bytes()[4..];
         let mut s = Vec::<u8>::new();
         s.append(&mut l.to_vec());
         s.append(&mut n.to_vec());
         s.append(&mut input.clone());
         s.push(0x80);
-        while s.len() < self.blocklen/8 {
+
+        while (s.len() % (self.blocklen/8)) > 0 {
             s.push(0x00);
         }
 
@@ -129,7 +133,6 @@ where
         let mut i: u32 = 0;
         let mut iv = Vec::<u8>::new();
         while temp.len() < (self.keylen + self.blocklen)/8 {
-            // Inizialization of the IV (step 9.1)
             iv.clear();
             iv.append(&mut i.to_be_bytes().to_vec());
             while iv.len() < self.blocklen/8 {
@@ -138,6 +141,7 @@ where
 
             // Encrypting the IV using the BCC function (step 9.2)
             iv.append(&mut s.clone());
+
             let res_bcc = self.bcc(&k,&iv);
             let out_block;
             match res_bcc {

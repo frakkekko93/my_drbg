@@ -204,10 +204,6 @@ where
         if T::drbg_name() != "CTR-DRBG" {      
             DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
         }
-        
-        println!("\nDRBG-NEW: used entropy: {}, len: {}.", hex::encode(&entropy), entropy.len());
-        println!("\nDRBG-NEW: used nonce: {}, len: {}.", hex::encode(&nonce), nonce.len());
-        println!("\nDRBG-NEW: used pers: {}, len: {}.", hex::encode(&actual_pers), actual_pers.len());
 
         // Trying to allocate the DRBG's internal state (step 9).
         let drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &actual_pers.as_slice(), &mut req_sec_str);
@@ -264,9 +260,6 @@ where
         else {
             DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
         }
-
-        println!("\nDRBG-RES: used entropy: {}, len: {}.", hex::encode(&entropy_input), entropy_input.len());
-        println!("\nDRBG-RES: used add-in: {}, len: {}.", hex::encode(&actual_add_in), actual_add_in.len());
 
         // Reseeding the internal state (step 6).
         let res;
@@ -348,15 +341,10 @@ where
                 working_state.reseed(&entropy_input, None);
             }
 
-            println!("\nDRBG-GEN: used entropy for res: {}, len: {}.", hex::encode(&entropy_input), entropy_input.len());
-            println!("\nDRBG-GEN: used add-in for res: {}, len: {}.", hex::encode(&actual_add_in), actual_add_in.len());
-
             // Generating the requested bits (step 8, prr).
             gen_res = working_state.generate(bits, req_bits/8, None);
         }
         else {
-
-            println!("\nDRBG-GEN: used add-in for gen: {}, len: {}.", hex::encode(&actual_add_in), actual_add_in.len());
 
             // Generating the requested bits (step 8, no prr).
             if actual_add_in.len() != 0 {

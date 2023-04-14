@@ -37,7 +37,7 @@ fn get_files<T: DRBG_Mechanism_Functions>(fun_id: &str) -> (&str, &str) {
             prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA512_pr_true.json");
         }
     }
-    else {
+    else if T::drbg_name() == "CTR-DRBG" {
         if fun_id == "AES 128" {
             no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES128_pr_false.json");
             prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES128_pr_true.json");
@@ -49,6 +49,20 @@ fn get_files<T: DRBG_Mechanism_Functions>(fun_id: &str) -> (&str, &str) {
         else {
             no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES256_pr_false.json");
             prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES256_pr_true.json");
+        }
+    }
+    else {
+        if fun_id == "AES 128" {
+            no_prr_file = include_str!("fixtures/nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES128_pr_false.json");
+            prr_file = include_str!("fixtures/nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES128_pr_true.json");
+        }
+        else if fun_id == "AES 192" {
+            no_prr_file = include_str!("fixtures/nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES192_pr_false.json");
+            prr_file = include_str!("fixtures/nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES192_pr_true.json");
+        }
+        else {
+            no_prr_file = include_str!("fixtures/nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES256_pr_false.json");
+            prr_file = include_str!("fixtures/nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES256_pr_true.json");
         }
     }
 
