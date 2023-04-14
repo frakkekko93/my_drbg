@@ -2,8 +2,10 @@ use crate::mechs::{hash_mech::HashDrbgMech, hmac_mech::HmacDrbgMech, ctr_mech::C
 use super::{drbg_tests, mech_tests, formats};
 use sha2::*;
 use aes::*;
+use crate::drbgs::drbg_conf::*;
 
 pub fn run_all() -> usize {
+    unsafe { OVERALL_TEST_RUN = true };
 
     let mut log_message = "\n*** STARTING Hash-DRBG Sha-256 self-tests ***\n".to_string();
     formats::write_to_log(log_message);
@@ -65,5 +67,6 @@ pub fn run_all() -> usize {
     res_ctr_df +=  mech_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes256>>(256) +
                             drbg_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes256>>(256);
 
+    unsafe { OVERALL_TEST_RUN = false };
     return res_hash + res_hmac + res_ctr + res_ctr_df;         
 }

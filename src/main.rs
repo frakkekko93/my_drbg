@@ -1,21 +1,17 @@
 extern crate my_drbg;
-#[allow(unused_imports)]
-use my_drbg::demos::{utility::get_input, run_demo};
-use my_drbg::mechs;
-#[allow(unused_imports)]
-use my_drbg::{mechs::*, self_tests};
-use rand::Rng;
+
 #[allow(unused_imports)]
 use sha2::*;
 #[allow(unused_imports)]
 use aes::*;
+use rand::Rng;
 
 // Simulates the start-up of a potential fips provider by calling the self test functions.
 #[allow(dead_code)]
 fn fips_sim(){
     println!("\n\n*** Simulating the start-up of FIPS provider / on-call test of DRBG. ***\n");
 
-    let res = self_tests::run_tests::run_all();
+    let res = my_drbg::self_tests::run_tests::run_all();
 
     if res != 0 {
         println!("MAIN: {res} tests have failed, see the log for more details.");
@@ -29,7 +25,7 @@ fn fips_sim(){
 fn gen_vecs() {
     print!("MAIN: how many bytes do you need?: ");
 
-    let byte_num = get_input();
+    let byte_num = my_drbg::demos::utility::get_input();
 
     //Bytes are generated at a CHUNK_DIM-wide chunk ratio (CHUNK_DIM*8 bits at a time).
     const CHUNK_DIM: usize = 8;
@@ -60,22 +56,17 @@ fn gen_vecs() {
 #[allow(unused_assignments)]
 fn main(){  
     // fips_sim();
-    // run_demo();
+    my_drbg::demos::run_demo();
     // gen_vecs();
 
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes128>>("AES 128", 128);
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes192>>("AES 192", 192);
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes256>>("AES 256", 256);
-    
-    self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech_with_df::CtrDrbgMech_DF<Aes128>>("AES 128", 128);
-    self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech_with_df::CtrDrbgMech_DF<Aes192>>("AES 192", 192);
-    self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech_with_df::CtrDrbgMech_DF<Aes256>>("AES 256", 256);
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hash_mech::HashDrbgMech<Sha256>>("Sha 256", 256);
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hash_mech::HashDrbgMech<Sha512>>("Sha 512", 256);
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hmac_mech::HmacDrbgMech<Sha256>>("Sha 256", 256);
-    // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hmac_mech::HmacDrbgMech<Sha512>>("Sha 512", 256);
-
-    // for i in 0..128 {
-    //     println!("{} % {} = {}", i, 16, i%16);
-    // }
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::ctr_mech::CtrDrbgMech<Aes128>>("AES 128", 128);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::ctr_mech::CtrDrbgMech<Aes192>>("AES 192", 192);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::ctr_mech::CtrDrbgMech<Aes256>>("AES 256", 256);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::ctr_mech_with_df::CtrDrbgMech_DF<Aes128>>("AES 128", 128);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::ctr_mech_with_df::CtrDrbgMech_DF<Aes192>>("AES 192", 192);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::ctr_mech_with_df::CtrDrbgMech_DF<Aes256>>("AES 256", 256);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::hash_mech::HashDrbgMech<Sha256>>("Sha 256", 256);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::hash_mech::HashDrbgMech<Sha512>>("Sha 512", 256);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::hmac_mech::HmacDrbgMech<Sha256>>("Sha 256", 256);
+    // my_drbg::self_tests::mech_tests::nist_vectors::test_vectors::<my_drbg::mechs::hmac_mech::HmacDrbgMech<Sha512>>("Sha 512", 256);
 }

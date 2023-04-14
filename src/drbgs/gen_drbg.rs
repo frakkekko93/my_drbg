@@ -152,7 +152,7 @@ pub trait DRBG_Functions{
         Return values:
             - 0: test passed (or not needed)
             - 1: test(s) failed, see test_log for more info */
-    fn mech_is_tested() -> usize;
+    fn first_time_testing() -> usize;
 }
 
 /*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
@@ -168,9 +168,9 @@ where
         }
 
         // Eventually running self-tests the requested mechanism has never been instantiated
-        // if Self::mech_is_tested() != 0{
-        //     return Err(4);
-        // }
+        if Self::first_time_testing() != 0{
+            return Err(4);
+        }
 
         // Extracting the eventual personalization string.
         let mut actual_pers = Vec::<u8>::new();
@@ -437,7 +437,7 @@ where
 
     fn run_self_tests(&mut self) -> usize {
         let this_id = TypeId::of::<T>();
-
+        
         // Building the log message based on the mechanism that is being tested.
         let mut log_message = "\n*** STARTING ".to_string();
         log_message.push_str(T::drbg_name().as_str());
@@ -481,7 +481,7 @@ where
         0
     }
 
-    fn mech_is_tested() -> usize {
+    fn first_time_testing() -> usize {
         let this_id = TypeId::of::<T>();
         let drbg_name = T::drbg_name();
         let mut log_message = "\n*** STARTING ".to_string();
@@ -490,85 +490,87 @@ where
         let mut req_str: usize = 256;
 
         unsafe {
-            if drbg_name == "Hash-DRBG" {
-                if this_id == TypeId::of::<HashDrbgMech<Sha256>>() {
-                    if FIRST_USE_HASH_SHA_256 {
-                        FIRST_USE_HASH_SHA_256 = false;
-                        log_message.push_str(" Sha 256");
-                        tests_needed = true;
+            if OVERALL_TEST_RUN != true {
+                if drbg_name == "Hash-DRBG" {
+                    if this_id == TypeId::of::<HashDrbgMech<Sha256>>() {
+                        if FIRST_USE_HASH_SHA_256 {
+                            FIRST_USE_HASH_SHA_256 = false;
+                            log_message.push_str(" Sha 256");
+                            tests_needed = true;
+                        }
+                    }
+                    else {
+                        if FIRST_USE_HASH_SHA_512 {
+                            FIRST_USE_HASH_SHA_512 = false;
+                            log_message.push_str(" Sha 512");
+                            tests_needed = true;
+                        }
+                    }
+                }
+                else if drbg_name == "HMAC-DRBG" {
+                    if this_id == TypeId::of::<HmacDrbgMech<Sha256>>() {
+                        if FIRST_USE_HMAC_SHA_256 {
+                            FIRST_USE_HMAC_SHA_256 = false;
+                            log_message.push_str(" Sha 256");
+                            tests_needed = true;
+                        }
+                    }
+                    else {
+                        if FIRST_USE_HMAC_SHA_512 {
+                            FIRST_USE_HMAC_SHA_512 = false;
+                            log_message.push_str(" Sha 512");
+                            tests_needed = true;
+                        }
+                    }
+                }
+                else if drbg_name == "CTR-DRBG" {
+                    if this_id == TypeId::of::<CtrDrbgMech<Aes128>>() {
+                        if FIRST_USE_CTR_NO_DF_AES_128 {
+                            FIRST_USE_CTR_NO_DF_AES_128 = false;
+                            log_message.push_str(" AES 128 (no DF)");
+                            tests_needed = true;
+                            req_str = 128;
+                        }
+                    }
+                    else if this_id == TypeId::of::<CtrDrbgMech<Aes192>>() {
+                        if FIRST_USE_CTR_NO_DF_AES_192 {
+                            FIRST_USE_CTR_NO_DF_AES_192 = false;
+                            log_message.push_str(" AES 192 (no DF)");
+                            tests_needed = true;
+                            req_str = 192;
+                        }
+                    }
+                    else {
+                        if FIRST_USE_CTR_NO_DF_AES_256 {
+                            FIRST_USE_CTR_NO_DF_AES_256 = false;
+                            log_message.push_str(" AES 256 (no DF)");
+                            tests_needed = true;
+                        }
                     }
                 }
                 else {
-                    if FIRST_USE_HASH_SHA_512 {
-                        FIRST_USE_HASH_SHA_512 = false;
-                        log_message.push_str(" Sha 512");
-                        tests_needed = true;
+                    if this_id == TypeId::of::<CtrDrbgMech_DF<Aes128>>() {
+                        if FIRST_USE_CTR_DF_AES_128 {
+                            FIRST_USE_CTR_DF_AES_128 = false;
+                            log_message.push_str(" AES 128 (DF)");
+                            tests_needed = true;
+                            req_str = 128;
+                        }
                     }
-                }
-            }
-            else if drbg_name == "HMAC-DRBG" {
-                if this_id == TypeId::of::<HmacDrbgMech<Sha256>>() {
-                    if FIRST_USE_HMAC_SHA_256 {
-                        FIRST_USE_HMAC_SHA_256 = false;
-                        log_message.push_str(" Sha 256");
-                        tests_needed = true;
+                    else if this_id == TypeId::of::<CtrDrbgMech_DF<Aes192>>() {
+                        if FIRST_USE_CTR_DF_AES_192 {
+                            FIRST_USE_CTR_DF_AES_192 = false;
+                            log_message.push_str(" AES 192 (DF)");
+                            tests_needed = true;
+                            req_str = 192;
+                        }
                     }
-                }
-                else {
-                    if FIRST_USE_HMAC_SHA_512 {
-                        FIRST_USE_HMAC_SHA_512 = false;
-                        log_message.push_str(" Sha 512");
-                        tests_needed = true;
-                    }
-                }
-            }
-            else if drbg_name == "CTR-DRBG" {
-                if this_id == TypeId::of::<CtrDrbgMech<Aes128>>() {
-                    if FIRST_USE_CTR_NO_DF_AES_128 {
-                        FIRST_USE_CTR_NO_DF_AES_128 = false;
-                        log_message.push_str(" AES 128 (no DF)");
-                        tests_needed = true;
-                        req_str = 128;
-                    }
-                }
-                else if this_id == TypeId::of::<CtrDrbgMech<Aes192>>() {
-                    if FIRST_USE_CTR_NO_DF_AES_192 {
-                        FIRST_USE_CTR_NO_DF_AES_192 = false;
-                        log_message.push_str(" AES 192 (no DF)");
-                        tests_needed = true;
-                        req_str = 192;
-                    }
-                }
-                else {
-                    if FIRST_USE_CTR_NO_DF_AES_256 {
-                        FIRST_USE_CTR_NO_DF_AES_256 = false;
-                        log_message.push_str(" AES 256 (no DF)");
-                        tests_needed = true;
-                    }
-                }
-            }
-            else {
-                if this_id == TypeId::of::<CtrDrbgMech_DF<Aes128>>() {
-                    if FIRST_USE_CTR_DF_AES_128 {
-                        FIRST_USE_CTR_DF_AES_128 = false;
-                        log_message.push_str(" AES 128 (DF)");
-                        tests_needed = true;
-                        req_str = 128;
-                    }
-                }
-                else if this_id == TypeId::of::<CtrDrbgMech_DF<Aes192>>() {
-                    if FIRST_USE_CTR_DF_AES_192 {
-                        FIRST_USE_CTR_DF_AES_192 = false;
-                        log_message.push_str(" AES 192 (DF)");
-                        tests_needed = true;
-                        req_str = 192;
-                    }
-                }
-                else {
-                    if FIRST_USE_CTR_DF_AES_256 {
-                        FIRST_USE_CTR_DF_AES_256 = false;
-                        log_message.push_str(" AES 256 (DF)");
-                        tests_needed = true;
+                    else {
+                        if FIRST_USE_CTR_DF_AES_256 {
+                            FIRST_USE_CTR_DF_AES_256 = false;
+                            log_message.push_str(" AES 256 (DF)");
+                            tests_needed = true;
+                        }
                     }
                 }
             }

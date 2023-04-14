@@ -19,3 +19,6 @@ pub static mut FIRST_USE_CTR_NO_DF_AES_256: bool = true;    // true => first tim
 pub static mut FIRST_USE_CTR_DF_AES_128: bool = true;       // true => first time the CTR-DRBG (DF) with AES-128 has been instantiated
 pub static mut FIRST_USE_CTR_DF_AES_192: bool = true;       // true => first time the CTR-DRBG (DF) with AES-192 has been instantiated
 pub static mut FIRST_USE_CTR_DF_AES_256: bool = true;       // true => first time the CTR-DRBG (DF) with AES-256 has been instantiated
+
+/*  This constant is set when overall self-tests are run over all available algorithms to avoid running tests twice. */
+pub static mut OVERALL_TEST_RUN: bool = false;
