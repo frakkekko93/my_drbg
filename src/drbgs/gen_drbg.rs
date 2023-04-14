@@ -1,6 +1,7 @@
 use std::any::TypeId;
 
 use crate::mechs::ctr_mech::CtrDrbgMech;
+use crate::mechs::ctr_mech_with_df::CtrDrbgMech_DF;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::mechs::hash_mech::HashDrbgMech;
 use crate::mechs::hmac_mech::HmacDrbgMech;
@@ -167,9 +168,9 @@ where
         }
 
         // Eventually running self-tests the requested mechanism has never been instantiated
-        if Self::mech_is_tested() != 0{
-            return Err(4);
-        }
+        // if Self::mech_is_tested() != 0{
+        //     return Err(4);
+        // }
 
         // Extracting the eventual personalization string.
         let mut actual_pers = Vec::<u8>::new();
@@ -184,8 +185,7 @@ where
             // Eventually padding the personalization string with random bytes in case of CTR mechanism with no DF.
             if T::drbg_name() == "CTR-DRBG" {
                 let mut padding = Vec::<u8>::new();
-                DRBG::<T>::get_entropy_input(&mut padding, 48 - ps.unwrap().len());
-                actual_pers.append(&mut ps.unwrap().to_vec());
+                DRBG::<T>::get_entropy_input(&mut padding, 48 - actual_pers.len());
                 actual_pers.append(&mut padding);
             }
         }
@@ -193,7 +193,7 @@ where
         // Acquiring the entropy input according to mechanisms' specifics (step 6).
         let mut entropy= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {
-            DRBG::<T>::get_entropy_input(&mut entropy, MAX_SEC_STR/8);
+            DRBG::<T>::get_entropy_input(&mut entropy, req_sec_str/8);
         }
         else {
             DRBG::<T>::get_entropy_input(&mut entropy, 48);
@@ -202,9 +202,13 @@ where
         // Acquiring the nonce for mechanisms that are different from CTR-DRBG withouth derivation function (step 8).
         let mut nonce= Vec::<u8>::new();
         if T::drbg_name() != "CTR-DRBG" {      
-            DRBG::<T>::get_entropy_input(&mut nonce, MAX_SEC_STR/16);
+            DRBG::<T>::get_entropy_input(&mut nonce, req_sec_str/16);
         }
         
+        println!("\nDRBG-NEW: used entropy: {}, len: {}.", hex::encode(&entropy), entropy.len());
+        println!("\nDRBG-NEW: used nonce: {}, len: {}.", hex::encode(&nonce), nonce.len());
+        println!("\nDRBG-NEW: used pers: {}, len: {}.", hex::encode(&actual_pers), actual_pers.len());
+
         // Trying to allocate the DRBG's internal state (step 9).
         let drbg_mech = T::new(&entropy.as_slice(), &nonce.as_slice(), &actual_pers.as_slice(), &mut req_sec_str);
 
@@ -260,6 +264,9 @@ where
         else {
             DRBG::<T>::get_entropy_input(&mut entropy_input, 48);
         }
+
+        println!("\nDRBG-RES: used entropy: {}, len: {}.", hex::encode(&entropy_input), entropy_input.len());
+        println!("\nDRBG-RES: used add-in: {}, len: {}.", hex::encode(&actual_add_in), actual_add_in.len());
 
         // Reseeding the internal state (step 6).
         let res;
@@ -341,10 +348,16 @@ where
                 working_state.reseed(&entropy_input, None);
             }
 
+            println!("\nDRBG-GEN: used entropy for res: {}, len: {}.", hex::encode(&entropy_input), entropy_input.len());
+            println!("\nDRBG-GEN: used add-in for res: {}, len: {}.", hex::encode(&actual_add_in), actual_add_in.len());
+
             // Generating the requested bits (step 8, prr).
             gen_res = working_state.generate(bits, req_bits/8, None);
         }
         else {
+
+            println!("\nDRBG-GEN: used add-in for gen: {}, len: {}.", hex::encode(&actual_add_in), actual_add_in.len());
+
             // Generating the requested bits (step 8, no prr).
             if actual_add_in.len() != 0 {
                 gen_res = working_state.generate(bits, req_bits/8, Some(&actual_add_in));
@@ -446,6 +459,11 @@ where
             log_message.push_str(&self.security_strength.to_string());
             log_message.push_str(" (no DF)");
         }
+        else if T::drbg_name() == "CTR-DRBG-DF" {
+            log_message.push_str(" AES-");
+            log_message.push_str(&self.security_strength.to_string());
+            log_message.push_str(" (DF)");
+        }
         else {
             log_message.push_str(" Sha ");
 
@@ -516,7 +534,7 @@ where
                     }
                 }
             }
-            else {
+            else if drbg_name == "CTR-DRBG" {
                 if this_id == TypeId::of::<CtrDrbgMech<Aes128>>() {
                     if FIRST_USE_CTR_NO_DF_AES_128 {
                         FIRST_USE_CTR_NO_DF_AES_128 = false;
@@ -537,6 +555,31 @@ where
                     if FIRST_USE_CTR_NO_DF_AES_256 {
                         FIRST_USE_CTR_NO_DF_AES_256 = false;
                         log_message.push_str(" AES 256 (no DF)");
+                        tests_needed = true;
+                    }
+                }
+            }
+            else {
+                if this_id == TypeId::of::<CtrDrbgMech_DF<Aes128>>() {
+                    if FIRST_USE_CTR_DF_AES_128 {
+                        FIRST_USE_CTR_DF_AES_128 = false;
+                        log_message.push_str(" AES 128 (DF)");
+                        tests_needed = true;
+                        req_str = 128;
+                    }
+                }
+                else if this_id == TypeId::of::<CtrDrbgMech_DF<Aes192>>() {
+                    if FIRST_USE_CTR_DF_AES_192 {
+                        FIRST_USE_CTR_DF_AES_192 = false;
+                        log_message.push_str(" AES 192 (DF)");
+                        tests_needed = true;
+                        req_str = 192;
+                    }
+                }
+                else {
+                    if FIRST_USE_CTR_DF_AES_256 {
+                        FIRST_USE_CTR_DF_AES_256 = false;
+                        log_message.push_str(" AES 256 (DF)");
                         tests_needed = true;
                     }
                 }

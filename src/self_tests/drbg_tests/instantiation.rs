@@ -47,7 +47,7 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize)
         }
     }
 
-    if T::drbg_name() == "CTR-DRBG" && strength < 256{
+    if (T::drbg_name() == "CTR-DRBG" || T::drbg_name() == "CTR-DRBG-DF") && strength < 256{
         if check_res((err, true), (3, drbg.is_none()), 
         "test_ss_not_supported".to_string(), 
         "DRBG_TESTS::instantiation_test".to_string(), 

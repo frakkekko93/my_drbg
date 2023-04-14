@@ -13,6 +13,9 @@ pub static mut FIRST_USE_HASH_SHA_256: bool = true;         // true => first tim
 pub static mut FIRST_USE_HASH_SHA_512: bool = true;         // true => first time the HASH-DRBG with Sha-512 has been instantiated
 pub static mut FIRST_USE_HMAC_SHA_256: bool = true;         // true => first time the HMAC-DRBG with Sha-256 has been instantiated
 pub static mut FIRST_USE_HMAC_SHA_512: bool = true;         // true => first time the HMAC-DRBG with Sha-512 has been instantiated
-pub static mut FIRST_USE_CTR_NO_DF_AES_128: bool = true;    // true => first time the CTR-DRBG with AES-128 has been instantiated
-pub static mut FIRST_USE_CTR_NO_DF_AES_192: bool = true;    // true => first time the CTR-DRBG with AES-192 has been instantiated
-pub static mut FIRST_USE_CTR_NO_DF_AES_256: bool = true;    // true => first time the CTR-DRBG with AES-256 has been instantiated
+pub static mut FIRST_USE_CTR_NO_DF_AES_128: bool = true;    // true => first time the CTR-DRBG (no DF) with AES-128 has been instantiated
+pub static mut FIRST_USE_CTR_NO_DF_AES_192: bool = true;    // true => first time the CTR-DRBG (no DF) with AES-192 has been instantiated
+pub static mut FIRST_USE_CTR_NO_DF_AES_256: bool = true;    // true => first time the CTR-DRBG (no DF) with AES-256 has been instantiated
+pub static mut FIRST_USE_CTR_DF_AES_128: bool = true;       // true => first time the CTR-DRBG (DF) with AES-128 has been instantiated
+pub static mut FIRST_USE_CTR_DF_AES_192: bool = true;       // true => first time the CTR-DRBG (DF) with AES-192 has been instantiated
+pub static mut FIRST_USE_CTR_DF_AES_256: bool = true;       // true => first time the CTR-DRBG (DF) with AES-256 has been instantiated

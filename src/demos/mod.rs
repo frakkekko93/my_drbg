@@ -1,10 +1,11 @@
 pub mod drbg_demo;
 pub mod utility;
 
-use crate::mechs::ctr_mech::CtrDrbgMech;
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::mechs::hash_mech::HashDrbgMech;
+use crate::mechs::ctr_mech::CtrDrbgMech;
+use crate::mechs::ctr_mech_with_df::CtrDrbgMech_DF;
 use crate::demos::{utility::*, drbg_demo::*};
 use aes::{Aes128, Aes192, Aes256};
 use sha2::*;
@@ -19,6 +20,7 @@ fn try_run_demo<T: DRBG_Mechanism_Functions + 'static>(str: usize, need_ps: usiz
                                 match err {
                                     1 => {println!("\nInstantiation failed with error {}: inappropriate security strength.", err);}
                                     2 => {println!("\nInstantiation failed with error {}: personalization string is too long (max sec_str bits).", err);}
+                                    4 => {println!("\nInstantiation failed with error {}: self-tests on first time run failed.", err);}
                                     _ => {println!("\nInstantiation failed with error {}: instantiation of the internal mechanism failed.", err);}
                                 }
 
@@ -55,7 +57,8 @@ pub fn run_demo() {
         println!("Choose between the following:");
         println!("\t1- Instantiate HMAC-DRBG");
         println!("\t2- Instantiate Hash-DRBG");
-        println!("\t3- Instantiate CTR-DRBG");
+        println!("\t3- Instantiate CTR-DRBG without DF");
+        println!("\t4- Instantiate CTR-DRBG with DF");
         println!("\tAnything else - Interrupt the demo");
         print!("\nYour choice: ");
 
@@ -144,6 +147,32 @@ pub fn run_demo() {
                     }
                     3 => {
                         user_choice = try_run_demo::<CtrDrbgMech<Aes256>>(strength, need_ps);
+                    }
+                    _ => {
+                        println!("\n\nThanks for testing my drbg!");
+                        return;
+                    }
+                }
+            }
+            4 => {
+                println!("-------------------------------------------------------------------------------------");
+                println!("Which mechanism would you like to use?:");
+                println!("\t1- CTR-DRBG (df) with AES 128 (supports a security strength of 128)");
+                println!("\t2- CTR-DRBG (df) with AES 192 (supports a security strength of 192)");
+                println!("\t3- CTR-DRBG (df) with AES 256 (supports a security strength of 256)");
+                print!("\nYour choice: ");
+
+                let mech = get_input();
+
+                match mech {
+                    1 => {
+                        user_choice = try_run_demo::<CtrDrbgMech_DF<Aes128>>(strength, need_ps);
+                    }
+                    2 => {
+                        user_choice = try_run_demo::<CtrDrbgMech_DF<Aes192>>(strength, need_ps);
+                    }
+                    3 => {
+                        user_choice = try_run_demo::<CtrDrbgMech_DF<Aes256>>(strength, need_ps);
                     }
                     _ => {
                         println!("\n\nThanks for testing my drbg!");

@@ -1,160 +1,12 @@
 
-*** STARTING Hash-DRBG Sha-256 self-tests ***
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-
-*** STARTING Hash-DRBG Sha-512 self-tests ***
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-
-*** STARTING HMAC-DRBG Sha-256 self-tests ***
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-
-*** STARTING HMAC-DRBG Sha-512 self-tests ***
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-
-*** STARTING CTR-DRBG AES-128 (no DF) self-tests ***
+*** STARTING CTR-DRBG AES-128 (DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
+TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
@@ -164,12 +16,12 @@ TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechan
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
+TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: failed to instantiate DRBG.
+TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: failed to instantiate DRBG.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
+TEST PASSED (DRBG_TESTS::reseed_test) - norm_op: success on reseed normal operation.
 TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
 TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
@@ -183,14 +35,14 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** STARTING CTR-DRBG AES-192 (no DF) self-tests ***
+*** STARTING CTR-DRBG AES-192 (DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
+TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
@@ -200,12 +52,12 @@ TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechan
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
+TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: failed to instantiate DRBG.
+TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: failed to instantiate DRBG.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
+TEST PASSED (DRBG_TESTS::reseed_test) - norm_op: success on reseed normal operation.
 TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
 TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
@@ -219,68 +71,15 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** STARTING CTR-DRBG AES-256 (no DF) self-tests ***
+*** STARTING CTR-DRBG AES-256 (DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-
-*** STARTING HMAC-DRBG Sha 256 on-demand self-tests ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
 TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
@@ -289,14 +88,12 @@ TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechan
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
 TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
 TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING HMAC-DRBG Sha 512 on-demand self-tests ***
+TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: failed to instantiate DRBG.
+TEST FAILED (MECH-TESTS::nist_vectors) - test_vectors_prr: failed to instantiate DRBG.
 TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
 TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
+TEST PASSED (DRBG_TESTS::reseed_test) - norm_op: success on reseed normal operation.
 TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
 TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
 TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
@@ -309,460 +106,3 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING Hash-DRBG Sha 256 on-demand self-tests ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING Hash-DRBG Sha 512 on-demand self-tests ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING CTR-DRBG AES-128 (no DF) on-demand self-tests ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING CTR-DRBG AES-192 (no DF) on-demand self-tests ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING CTR-DRBG AES-256 (no DF) on-demand self-tests ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING HMAC-DRBG Sha 256 self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING HMAC-DRBG Sha 512 self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING Hash-DRBG Sha 256 self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING Hash-DRBG Sha 512 self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/224: failed to instantiate DRBG mechanism using Sha 512/224 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 512/256: failed to instantiate DRBG mechanism using Sha 512/256 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with nonce too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING CTR-DRBG AES 128 (no DF) self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING CTR-DRBG AES 192 (no DF) self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.
-
-*** STARTING CTR-DRBG AES 256 (no DF) self-tests for first time use ***
-TEST PASSED (DRBG_TESTS::instantiation_test) - norm_op: succeeded to instantiate DRBG using a supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - test_ss_not_supported: failed to instantiate DRBG using not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::instantiation_test) - ps_is_too_long: failed to instantiate DRBG using not supported personalization string as expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: success on reseed normal operation.
-TEST PASSED (DRBG_TESTS::reseed_test) - internal_state_not_valid: reseed of empty internal state failed es expected.
-TEST PASSED (DRBG_TESTS::reseed_test) - add_in_too_long: reseed on additional input too long failed es expected.
-TEST PASSED (DRBG_TESTS::generate_test) - norm_op: success on generate normal operation.
-TEST PASSED (DRBG_TESTS::generate_test) - non_empty_out_vec: initially non-empty out vector cleared before use as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - int_state_not_valid: generate on invalid empty state failed as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - req_too_many_bytes: refused to generate too many bytes as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - ss_not_supported: refused to generate bytes on not supported security strength as expected.
-TEST PASSED (DRBG_TESTS::generate_test) - add_in_too_long: refused to generate bytes on on additional input too long as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid internal state failed as expected.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
-TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE2: failed to instantiate DRBG mechanism using 3DES-EEE2 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EEE3: failed to instantiate DRBG mechanism using 3DES-EEE3 as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_entropy: instantiation with empty entropy of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::instantiation_test) - test_empty_nonce: instantiation with empty nonce of DRBG mechanism succeeded, as expected (empty nonce allowed with CTR with no DF).
-TEST PASSED (MECH-TESTS::instantiation_test) - test_entropy_too_short: instantiation with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - norm_op: normal generation with DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: zeroization to make generate fail has succeeded.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_invalid_state: generate using zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::generate_test) - generate_on_seed_expired: generate on seed expired failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - norm_op: normal reseeding of DRBG mechanism succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: zeroization to make reseed fail has succeeded.
-TEST PASSED (MECH-TESTS::reseed_test) - reseed_fail: reseeding of zeroized DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::reseed_test) - test_entropy_too_short: reseeding with entropy too short of DRBG mechanism failed, as expected.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_no_prr: all nist vectors have passed.
-TEST PASSED (MECH-TESTS::nist_vectors) - test_vectors_prr: all nist vectors have passed.

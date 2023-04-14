@@ -69,7 +69,7 @@ where
         // Processing data block by block (step 3,4)
         for i in 0..n {
             // XORing the chaining value with the n-th block of the received data (step 4.1)
-            xor_vecs(&mut chaining_value.to_vec(), &data[0+self.blocklen*i..self.blocklen*(i+1)].to_vec());
+            xor_vecs(&mut chaining_value.to_vec(), &data[0+(self.blocklen/8)*i..(self.blocklen/8)*(i+1)-1].to_vec());
 
             // Encrypting the chaining value (step 4.2)
             let mut block = chaining_value.clone();
@@ -156,7 +156,7 @@ where
 
         // Saving temp bytes (steps 10-11)
         let k = GenericArray::<u8, D::KeySize>::from_slice(&temp[..self.keylen/8]);
-        let mut x = temp[self.keylen/8..].to_vec();
+        let mut x = temp[self.keylen/8..self.keylen/8+self.blocklen/8].to_vec();
 
         // Clearing temp and starting a block_encrypt cicle (steps 12-13)
         let mut temp = Vec::<u8>::new();
@@ -291,10 +291,10 @@ where
         seed_len = block_len + key_len;
 
         // Entropy input is too short.
-        if entropy.len() < seed_len/8 {return None;}
+        if entropy.len() < *req_str/8 {return None;}
 
         // Nonce is too short.
-        if nonce.len() < seed_len/16 {return None;}
+        if nonce.len() < *req_str/16 {return None;}
 
         // Initializing seed material (step 1)
         let mut seed_material = entropy.clone().to_vec();
@@ -444,7 +444,7 @@ where
         }
 
         // Entropy input is too short.
-        if entropy.len() < self.seedlen/8 {
+        if entropy.len() < self.blocklen/8 {
             return 2;
         }
 

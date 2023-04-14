@@ -32,7 +32,7 @@ fn norm_op<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize {
     let res = drbg.reseed(Some(&ADD_IN_256[..strength/8]));
 
     return check_res(res, 0, 
-        "add_in_too_long".to_string(), 
+        "norm_op".to_string(), 
         "DRBG_TESTS::reseed_test".to_string(), 
         "reseed normal operation failed.".to_string(), 
         "success on reseed normal operation.".to_string());

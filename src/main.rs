@@ -1,6 +1,7 @@
 extern crate my_drbg;
 #[allow(unused_imports)]
 use my_drbg::demos::{utility::get_input, run_demo};
+use my_drbg::{self_tests::{formats, mech_tests, drbg_tests}, mechs::ctr_mech_with_df::CtrDrbgMech_DF};
 #[allow(unused_imports)]
 use my_drbg::{mechs::*, self_tests};
 use rand::Rng;
@@ -59,7 +60,7 @@ fn gen_vecs() {
 #[allow(unused_assignments)]
 fn main(){  
     // fips_sim();
-    run_demo();
+    // run_demo();
     // gen_vecs();
 
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::ctr_mech::CtrDrbgMech<Aes128>>("AES 128", 128);
@@ -69,4 +70,24 @@ fn main(){
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hash_mech::HashDrbgMech<Sha512>>("Sha 512", 256);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hmac_mech::HmacDrbgMech<Sha256>>("Sha 256", 256);
     // self_tests::mech_tests::nist_vectors::test_vectors::<mechs::hmac_mech::HmacDrbgMech<Sha512>>("Sha 512", 256);
+
+    let mut log_message = "\n*** STARTING CTR-DRBG AES-128 (DF) self-tests ***\n".to_string();
+    formats::write_to_log(log_message);
+
+    let mut res_ctr_df =  mech_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes128>>(128) +
+                            drbg_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes128>>(128);
+
+    log_message = "\n*** STARTING CTR-DRBG AES-192 (DF) self-tests ***\n".to_string();
+    formats::write_to_log(log_message);
+
+    res_ctr_df +=  mech_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes192>>(192) +
+                            drbg_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes192>>(192);                
+
+    log_message = "\n*** STARTING CTR-DRBG AES-256 (DF) self-tests ***\n".to_string();
+    formats::write_to_log(log_message);
+
+    res_ctr_df +=  mech_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes256>>(256) +
+                            drbg_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes256>>(256);
+
+    assert_eq!(0, res_ctr_df);
 }
