@@ -73,7 +73,17 @@ pub fn write_to_log(message: String) {
         }
     }
 
-    match file.write_all(message.as_bytes()) {
+    // Adding timestamp to first logging entry
+    let mut actual_mes = message.clone();
+    let time = chrono::offset::Local::now().to_string();
+    let mut day_hour = time[..19].to_string();
+    day_hour.insert_str(day_hour.len(), ": ");
+    
+    if message.contains("*** STARTING") {
+        actual_mes.insert_str(5, &day_hour);
+    }
+
+    match file.write_all(actual_mes.as_bytes()) {
         Err(err) => {
             panic!("Couldn't write to log file! (err: {})", err);
         }
