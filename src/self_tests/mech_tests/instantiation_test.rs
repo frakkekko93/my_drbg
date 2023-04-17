@@ -53,7 +53,8 @@ pub fn run_tests<T: DRBG_Mechanism_Functions>(strength: usize) -> usize {
                 test_fun_not_approved::<CtrDrbgMech_DF<TdesEee3>>("3DES-EEE3", strength) +
                 test_empty_entropy::<T>(strength) +
                 test_empty_nonce::<T>(strength) +
-                test_entropy_too_short::<T>(strength);
+                test_entropy_too_short::<T>(strength) +
+                test_nonce_too_short::<T>(strength);
     }
 }
 
@@ -193,7 +194,7 @@ fn test_nonce_too_short<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usi
     let res = T::new(&ENTROPY, &NONCE_TOO_SHORT, &PERS_256[..strength], &mut strength);
 
     if check_res(res.is_none(), true, 
-            "test_entropy_too_short".to_string(), 
+            "test_nonce_too_short".to_string(), 
             AL_NAME.to_string(), 
             "instantiation with nonce too short of DRBG mechanism succeeded.".to_string(), 
             "instantiation with nonce too short of DRBG mechanism failed, as expected.".to_string()) != 0{

@@ -1,4 +1,4 @@
-use crate::drbgs::gen_drbg::{DRBG, DRBG_Functions};
+use crate::drbg::gen_drbg::{DRBG, DRBG_Functions};
 use crate::mechs::gen_mech::DRBG_Mechanism_Functions;
 use crate::demos::utility::*;
 

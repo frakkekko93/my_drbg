@@ -14,7 +14,7 @@ pub fn test_zeroization<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usi
         res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
+        res = T::new(&ENTROPY[..strength], &NONCE[..strength/2], &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -59,7 +59,7 @@ pub fn test_zeroization<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usi
         res = drbg.reseed(&ENTROPY_CTR, None);
     }
     else{
-        res = drbg.reseed(&ENTROPY, None);
+        res = drbg.reseed(&ENTROPY[..strength], None);
     }
     
     if check_res(res, 1, 

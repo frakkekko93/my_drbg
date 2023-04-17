@@ -1,3 +1,7 @@
+/*  This module defines general purpose functions that are used by some of the DRBG mechanisms that are defined
+    in this crate. To avoid code reuse, we separated this module from the actual code of the aformentioned mechanisms.
+*/
+
 /*  Performs a modular addition between a vector of bytes and a single byte. */
 pub fn modular_add(num: &mut Vec<u8>, rhs: u8) {
     if num.is_empty() {

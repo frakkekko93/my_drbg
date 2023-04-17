@@ -4,7 +4,9 @@
     The functions defined in such trait serve as envelops to the ones defined here. Those evelopes check the validity
     of the parameters that the functions of this trait receive from external applications. Other parameters (such as
     entropy inputs, nonces, and others) are directly derived by the function envelopes according to the needs of the
-    specific mechanism. */
+    specific mechanism.
+*/
+
 #[allow(non_camel_case_types)]
 pub trait DRBG_Mechanism_Functions: {
     /*  Allocates a new instance of the DRBG mechanism using the passed entropy, nonce and personalization string.
@@ -58,6 +60,7 @@ pub trait DRBG_Mechanism_Functions: {
             - 0: SUCCESS, instantiation successfully reseeded
             - 1: ERROR, instantiation cannot be reseeded
             - 2: ERROR, the passed entropy is too short to be used
+            - 3: ERROR, (CTR-DRGB with DF) the DF function failed unexpectedly
     */
     fn reseed(&mut self, entropy: &[u8], add: Option<&[u8]>) -> usize;
 

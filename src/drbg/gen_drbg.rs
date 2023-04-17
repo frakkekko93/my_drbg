@@ -7,7 +7,7 @@ use crate::mechs::hash_mech::HashDrbgMech;
 use crate::mechs::hmac_mech::HmacDrbgMech;
 use crate::self_tests::{self, formats};
 use crate::self_tests::drbg_tests;
-use crate::drbgs::drbg_conf::*;
+use crate::drbg::drbg_conf::*;
 use aes::{Aes128, Aes192};
 use rand::Rng;
 use sha2::{Sha512, Sha256};

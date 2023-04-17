@@ -5,8 +5,6 @@ use digest::{BlockInput, FixedOutput, Reset, Update, Digest};
 use generic_array::ArrayLength;
 use super::utility::*;
 
-
-
 /*  The life of each generated seed of this DRBG. */
 const SEED_LIFE: usize = 255;
 

@@ -20,7 +20,7 @@ fn norm_op<T: DRBG_Mechanism_Functions>(mut strength: usize) -> usize{
         res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
+        res = T::new(&ENTROPY[..strength], &NONCE[..strength/2], &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -60,7 +60,7 @@ fn generate_on_invalid_state<T: DRBG_Mechanism_Functions>(mut strength: usize) -
         res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
+        res = T::new(&ENTROPY[..strength], &NONCE[..strength/2], &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
@@ -110,7 +110,7 @@ fn generate_on_seed_expired<T: DRBG_Mechanism_Functions>(mut strength: usize) ->
         res = T::new(&ENTROPY_CTR, "".as_bytes(), &PERS_256[..strength], &mut strength);
     }
     else{
-        res = T::new(&ENTROPY, &NONCE, &PERS_256[..strength], &mut strength);
+        res = T::new(&ENTROPY[..strength], &NONCE[..strength/2], &PERS_256[..strength], &mut strength);
     }
 
     let mut drbg;
