@@ -11,7 +11,7 @@ use aes::cipher::{
 const SEED_LIFE: usize = 1000;
 
 /*  The length of the counter used by the block cipher in bytes. */
-const CTR_LEN: usize = 2;
+const CTR_LEN: usize = 4;
 
 /*  Implementation of the CTR-DRBG mechanisms using a DF as specified in section 10.2 of NIST SP 800-90A.
     According to NIST SP 800-57 AES 128/192/256 support security strengths of respectively 128/192/256 bits. Thus, since this
