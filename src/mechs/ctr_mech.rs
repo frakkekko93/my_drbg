@@ -121,6 +121,16 @@ where
     fn block_cipher(&self) -> D {
         D::new(&self.k)
     }
+
+    /*  Takes a vector in input and adjusts it to be exactly seedlen bytes long. If a shorter (or empty) vector is received
+        0's padding is added. */
+    fn to_be_len(vec: &[u8], len: usize) -> Vec<u8>{
+        let mut res_vec = vec.clone().to_vec();
+
+        res_vec.resize(len, 0x00);
+
+        res_vec
+    }
 }
 
 /*  Implementing common DRBG mechanism functions taken from the DRBG_Mechanism_Functions trait (see 'gen_mech'). */
@@ -171,20 +181,7 @@ where
 
         // Taking exactly seedlen bytes from the PS that has been passed (step 1,2).
         // If an empty pers is received we will use 0^seedlen as pers.
-        let mut new_pers = Vec::<u8>::new();
-        if pers.len() < seed_len {
-            new_pers.append(&mut pers.to_vec());
-
-            for _i in 0..seed_len-pers.len() {
-                new_pers.push(0x00);
-            }
-        }
-        else if pers.len() == seed_len {
-            new_pers.append(&mut pers.to_vec());
-        }
-        else {
-            new_pers.append(&mut pers[..seed_len].to_vec());
-        }
+        let new_pers = CtrDrbgMech::<D>::to_be_len(pers, seed_len);
 
         // Setting initial values for the internal state (step 4,5,7).
         let mut k = GenericArray::<u8, D::KeySize>::default();
@@ -243,19 +240,7 @@ where
                 }
             }
             Some(add_in) => {
-                if add_in.len() < self.seedlen {
-                    new_add_in.append(&mut add_in.to_vec());
-        
-                    for _i in 0..self.seedlen-add_in.len() {
-                        new_add_in.push(0x00);
-                    }
-                }
-                else if add_in.len() == self.seedlen {
-                    new_add_in.append(&mut add_in.to_vec());
-                }
-                else {
-                    new_add_in.append(&mut add_in[..self.seedlen].to_vec());
-                }
+                new_add_in = CtrDrbgMech::<D>::to_be_len(add_in, self.seedlen);
 
                 self.update(&new_add_in);
             }
@@ -331,19 +316,7 @@ where
                 }
             }
             Some(add_in) => {
-                if add_in.len() < self.seedlen {
-                    new_add_in.append(&mut add_in.to_vec());
-        
-                    for _i in 0..self.seedlen-add_in.len() {
-                        new_add_in.push(0x00);
-                    }
-                }
-                else if add_in.len() == self.seedlen {
-                    new_add_in.append(&mut add_in.to_vec());
-                }
-                else {
-                    new_add_in.append(&mut add_in[..self.seedlen].to_vec());
-                }
+                new_add_in = CtrDrbgMech::<D>::to_be_len(add_in, self.seedlen);
             }
         }
 
