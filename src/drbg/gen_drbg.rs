@@ -109,6 +109,22 @@ pub trait DRBG_Functions{
     */
     fn get_entropy_input(vec: &mut Vec<u8>, bytes: usize);
 
+    /*  This function runs on-demand self-tests through a particular instance that is already in use. If self-tests fail an
+        error state is set and that particular instance is zeorized and can no longer be used.
+        
+        Return values:
+            - 0: all tests passed, no error state set
+            - 1: some test falied, error state set
+    */
+    fn run_self_tests(&mut self) -> usize;
+
+    /*  Function used to run self-tests on a specific DRBG mechanism if this is the first time it is instantiated.
+        
+        Return values:
+            - 0: test passed (or not needed)
+            - 1: test(s) failed, see test_log for more info */
+    fn first_time_testing() -> usize;
+
     /*  FROM HERE WE HAVE UTILITY FUNCTIONS THAT ARE NOT SPECIFICALLY TIED TO THE SP REQUIREMENTS. */
 
     /*  Utility function that returns the supported security strength of the DRBG.
@@ -137,22 +153,6 @@ pub trait DRBG_Functions{
         Return values:
             - the seed life used by the DRBG instance. */
     fn get_max_pbr(&self) -> usize;
-
-    /*  This function runs on-demand self-tests through a particular instance that is already in use. If self-tests fail an
-        error state is set and that particular instance is zeorized and can no longer be used.
-        
-        Return values:
-            - 0: all tests passed, no error state set
-            - 1: some test falied, error state set
-    */
-    fn run_self_tests(&mut self) -> usize;
-
-    /*  Function used to run self-tests on a specific DRBG mechanism if this is the first time it is instantiated.
-        
-        Return values:
-            - 0: test passed (or not needed)
-            - 1: test(s) failed, see test_log for more info */
-    fn first_time_testing() -> usize;
 }
 
 /*  This is the implementation of the generic DRBG_Functions trait for a DRBG using one of the mechanisms defined in the 'mechs' module. */
