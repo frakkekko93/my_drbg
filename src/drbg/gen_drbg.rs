@@ -220,6 +220,11 @@ where
     }
 
     fn reseed(&mut self, add: Option<&[u8]>) -> usize{
+        // DRBG is in error state
+        if self.error_state {
+            return 1;
+        }
+
         // Retrieving the actual internal state if available and valid (step 1).
         let working_state;
         match self.internal_state.as_mut(){
@@ -417,7 +422,7 @@ where
 
     fn get_count(&self) -> usize{
         // Internal state already gone.
-        if self.internal_state.is_none(){
+        if self.error_state || self.internal_state.is_none(){
             return 0;
         }
 
@@ -441,6 +446,11 @@ where
     }
 
     fn run_self_tests(&mut self) -> usize {
+        // DRBG is in error state
+        if self.error_state {
+            return 1;
+        }
+        
         let this_id = TypeId::of::<T>();
         
         // Building the log message based on the mechanism that is being tested.
