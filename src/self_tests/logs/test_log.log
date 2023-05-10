@@ -1,5 +1,5 @@
 
-*** 2023-05-06 11:22:17: STARTING Hash-DRBG Sha-256 self-tests ***
+*** 2023-05-10 14:47:22: STARTING Hash-DRBG Sha-256 self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
@@ -36,7 +36,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:18: STARTING Hash-DRBG Sha-512 self-tests ***
+*** 2023-05-10 14:47:22: STARTING Hash-DRBG Sha-512 self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
@@ -73,7 +73,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:18: STARTING HMAC-DRBG Sha-256 self-tests ***
+*** 2023-05-10 14:47:22: STARTING HMAC-DRBG Sha-256 self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
@@ -110,7 +110,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:18: STARTING HMAC-DRBG Sha-512 self-tests ***
+*** 2023-05-10 14:47:23: STARTING HMAC-DRBG Sha-512 self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 224: failed to instantiate DRBG mechanism using Sha 224 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::Sha 384: failed to instantiate DRBG mechanism using Sha 384 as expected.
@@ -147,7 +147,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:19: STARTING CTR-DRBG AES-128 (no DF) self-tests ***
+*** 2023-05-10 14:47:24: STARTING CTR-DRBG AES-128 (no DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
@@ -183,7 +183,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:19: STARTING CTR-DRBG AES-192 (no DF) self-tests ***
+*** 2023-05-10 14:47:24: STARTING CTR-DRBG AES-192 (no DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
@@ -219,7 +219,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:20: STARTING CTR-DRBG AES-256 (no DF) self-tests ***
+*** 2023-05-10 14:47:24: STARTING CTR-DRBG AES-256 (no DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
@@ -255,7 +255,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:20: STARTING CTR-DRBG AES-128 (DF) self-tests ***
+*** 2023-05-10 14:47:24: STARTING CTR-DRBG AES-128 (DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
@@ -292,7 +292,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:20: STARTING CTR-DRBG AES-192 (DF) self-tests ***
+*** 2023-05-10 14:47:25: STARTING CTR-DRBG AES-192 (DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.
@@ -329,7 +329,7 @@ TEST PASSED (DRBG_TESTS::uninstantiate_test) - norm_op: reseeding on invalid int
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: success on uninstantiate normal operation.
 TEST PASSED (DRBG_TESTS::uninstantiate_test) - double_uninst: uninstantiate on invalid internal state failed as expected.
 
-*** 2023-05-06 11:22:21: STARTING CTR-DRBG AES-256 (DF) self-tests ***
+*** 2023-05-10 14:47:26: STARTING CTR-DRBG AES-256 (DF) self-tests ***
 TEST PASSED (MECH-TESTS::instantiation_test) - norm_op: normal instantiation of DRBG mechanism succeeded.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE2: failed to instantiate DRBG mechanism using 3DES-EDE2 as expected.
 TEST PASSED (MECH-TESTS::instantiation_test) - test_fun_not_approved::3DES-EDE3: failed to instantiate DRBG mechanism using 3DES-EDE3 as expected.

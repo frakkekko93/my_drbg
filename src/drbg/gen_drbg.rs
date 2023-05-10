@@ -379,7 +379,12 @@ where
     }
 
     fn get_entropy_input(result: &mut Vec<u8>, bytes: usize){
-        //Bytes are generated at a CHUNK_DIM-wide chunk ratio (CHUNK_DIM bytes at a time).
+        // Eventually deleting result contents.
+        if !result.is_empty() {
+            result.clear();
+        }
+
+        // Bytes are generated at a CHUNK_DIM-wide chunk ratio (CHUNK_DIM bytes at a time).
         const CHUNK_DIM: usize = 16;
         let mut chunk: [u8; CHUNK_DIM] = [0; CHUNK_DIM];
 
