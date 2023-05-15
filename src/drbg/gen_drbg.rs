@@ -118,13 +118,6 @@ pub trait DRBG_Functions{
     */
     fn run_self_tests(&mut self) -> usize;
 
-    /*  Function used to run self-tests on a specific DRBG mechanism if this is the first time it is instantiated.
-        
-        Return values:
-            - 0: test passed (or not needed)
-            - 1: test(s) failed, see test_log for more info */
-    fn first_time_testing() -> usize;
-
     /*  FROM HERE WE HAVE UTILITY FUNCTIONS THAT ARE NOT SPECIFICALLY TIED TO THE SP REQUIREMENTS. */
 
     /*  Utility function that returns the supported security strength of the DRBG.
@@ -169,6 +162,7 @@ where
 
         // Eventually running self-tests the requested mechanism has never been instantiated
         if Self::first_time_testing() != 0{
+            Self::reset_first_time();
             return Err(4);
         }
 
@@ -495,7 +489,17 @@ where
 
         0
     }
+}
 
+impl<T> DRBG<T>
+where
+    T: DRBG_Mechanism_Functions + 'static
+{
+    /*  Function used to run self-tests on a specific DRBG mechanism if this is the first time it is instantiated.
+        
+        Return values:
+            - 0: test passed (or not needed)
+            - 1: test(s) failed, see test_log for more info */
     fn first_time_testing() -> usize {
         let this_id = TypeId::of::<T>();
         let drbg_name = T::drbg_name();
@@ -607,5 +611,53 @@ where
         }
 
         0
+    }
+
+    fn reset_first_time() {
+        let this_id = TypeId::of::<T>();
+        let drbg_name = T::drbg_name();
+
+        unsafe {
+            if OVERALL_TEST_RUN != true {
+                if drbg_name == "Hash-DRBG" {
+                    if this_id == TypeId::of::<HashDrbgMech<Sha256>>() {
+                        FIRST_USE_HASH_SHA_256 = true;
+                    }
+                    else {
+                        FIRST_USE_HASH_SHA_512 = true;
+                    }
+                }
+                else if drbg_name == "HMAC-DRBG" {
+                    if this_id == TypeId::of::<HmacDrbgMech<Sha256>>() {
+                        FIRST_USE_HMAC_SHA_256 = true;
+                    }
+                    else {
+                        FIRST_USE_HMAC_SHA_512 = true;
+                    }
+                }
+                else if drbg_name == "CTR-DRBG" {
+                    if this_id == TypeId::of::<CtrDrbgMech<Aes128>>() {
+                        FIRST_USE_CTR_NO_DF_AES_128 = true;
+                    }
+                    else if this_id == TypeId::of::<CtrDrbgMech<Aes192>>() {
+                        FIRST_USE_CTR_NO_DF_AES_192 = true;
+                    }
+                    else {
+                        FIRST_USE_CTR_NO_DF_AES_256 = true;
+                    }
+                }
+                else {
+                    if this_id == TypeId::of::<CtrDrbgMech_DF<Aes128>>() {
+                        FIRST_USE_CTR_DF_AES_128 = true;
+                    }
+                    else if this_id == TypeId::of::<CtrDrbgMech_DF<Aes192>>() {
+                        FIRST_USE_CTR_DF_AES_192 = true;
+                    }
+                    else {
+                        FIRST_USE_CTR_DF_AES_256 = true;
+                    }
+                }
+            }
+        }
     }
 }
