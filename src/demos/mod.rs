@@ -42,7 +42,7 @@ pub fn run_demo() {
     println!("****************************************************************************\\");
     println!("Welcome to a demo of this DRBG implementation. This DRBG uses all four of the mechanisms that are prescribed in NIST SP 800-90a (HMAC-DRBG, Hash-DRBG");
     println!("and CTR-DRBG with and without DF). The goal of this demo is to show the capabilities of these implementations. The DRBGs that are used in this crate are");
-    println!("supposed to haveaccess to a direct entropy source that provides fresh entropy bytes. This means that each DRBG can always be reseeded using fresh entropy");
+    println!("supposed to have access to a direct entropy source that provides fresh entropy bytes. This means that each DRBG can always be reseeded using fresh entropy");
     println!("and you can request prediction resistance at any time during bit generation. The DRBGs are also designed to have a reseed counter that allows for a");
     println!("limited number of consecutive generations without accessing the entropy source for fresh entropy. Once this limit has been reached, the DRBG will");
     println!("handle the reseeding by itself and you will be able to continue using the active instance.");

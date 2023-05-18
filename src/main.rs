@@ -1,5 +1,5 @@
-extern crate my_drbg;
+extern crate rust_nist_drbg;
 
 fn main(){  
-    my_drbg::demos::run_demo();
+    rust_nist_drbg::demos::run_demo();
 }

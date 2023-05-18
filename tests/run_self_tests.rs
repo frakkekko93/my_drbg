@@ -1,4 +1,4 @@
-use my_drbg::self_tests;
+use rust_nist_drbg::self_tests;
 
 #[test]
 fn self_tests () {
