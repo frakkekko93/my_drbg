@@ -14,55 +14,57 @@ pub fn test_vectors<T: DRBG_Mechanism_Functions>(fun_id: &str, strength: usize) 
             test_vectors_prr::<T>(prr_file, strength);
 }
 
+/*  This is a utility function whose purpose is to select the rigth nist_vectors file for the DRBG
+    mechanism that is being tested. */
 fn get_files<T: DRBG_Mechanism_Functions>(fun_id: &str) -> (&str, &str) {
     let prr_file;
     let no_prr_file;
     if T::drbg_name() == "Hash-DRBG" {
         if fun_id == "Sha 256" {
-            no_prr_file = include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA256_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA256_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/hash/no_prr/HASH_DRBG_SHA256_pr_false.json");
+            prr_file = include_str!("nist_vectors/hash/prr/HASH_DRBG_SHA256_pr_true.json");
         }
         else {
-            no_prr_file = include_str!("fixtures/nist_vectors/hash/no_prr/HASH_DRBG_SHA512_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/hash/prr/HASH_DRBG_SHA512_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/hash/no_prr/HASH_DRBG_SHA512_pr_false.json");
+            prr_file = include_str!("nist_vectors/hash/prr/HASH_DRBG_SHA512_pr_true.json");
         }
     }
     else if T::drbg_name() == "HMAC-DRBG"{
         if fun_id == "Sha 256" {
-            no_prr_file = include_str!("fixtures/nist_vectors/hmac/no_prr/HMAC_DRBG_SHA256_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA256_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/hmac/no_prr/HMAC_DRBG_SHA256_pr_false.json");
+            prr_file = include_str!("nist_vectors/hmac/prr/HMAC_DRBG_SHA256_pr_true.json");
         }
         else {
-            no_prr_file = include_str!("fixtures/nist_vectors/hmac/no_prr/HMAC_DRBG_SHA512_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/hmac/prr/HMAC_DRBG_SHA512_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/hmac/no_prr/HMAC_DRBG_SHA512_pr_false.json");
+            prr_file = include_str!("nist_vectors/hmac/prr/HMAC_DRBG_SHA512_pr_true.json");
         }
     }
     else if T::drbg_name() == "CTR-DRBG" {
         if fun_id == "AES 128" {
-            no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES128_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES128_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES128_pr_false.json");
+            prr_file = include_str!("nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES128_pr_true.json");
         }
         else if fun_id == "AES 192" {
-            no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES192_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES192_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES192_pr_false.json");
+            prr_file = include_str!("nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES192_pr_true.json");
         }
         else {
-            no_prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES256_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES256_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/ctr_no_df/no_prr/CTR_DRBG_NO_DF_AES256_pr_false.json");
+            prr_file = include_str!("nist_vectors/ctr_no_df/prr/CTR_DRBG_NO_DF_AES256_pr_true.json");
         }
     }
     else {
         if fun_id == "AES 128" {
-            no_prr_file = include_str!("fixtures/nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES128_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES128_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES128_pr_false.json");
+            prr_file = include_str!("nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES128_pr_true.json");
         }
         else if fun_id == "AES 192" {
-            no_prr_file = include_str!("fixtures/nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES192_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES192_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES192_pr_false.json");
+            prr_file = include_str!("nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES192_pr_true.json");
         }
         else {
-            no_prr_file = include_str!("fixtures/nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES256_pr_false.json");
-            prr_file = include_str!("fixtures/nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES256_pr_true.json");
+            no_prr_file = include_str!("nist_vectors/ctr_df/no_prr/CTR_DRBG_DF_AES256_pr_false.json");
+            prr_file = include_str!("nist_vectors/ctr_df/prr/CTR_DRBG_DF_AES256_pr_true.json");
         }
     }
 
@@ -71,6 +73,7 @@ fn get_files<T: DRBG_Mechanism_Functions>(fun_id: &str) -> (&str, &str) {
 
 #[allow(dead_code)]
 fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: usize) -> usize{
+    /*  General structure of a prr NIST vector test. */
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -84,8 +87,10 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
         expected: String,
     }
 
+    /*  Retrieving prr test vectors from file. */
     let tests: Vec<Fixture> = serde_json::from_str(prr_file).unwrap();
 
+    /*  Verifying each vector. */
     for test in tests {
         let res = T::new(
             &hex::decode(&test.entropy).unwrap(),
@@ -150,6 +155,7 @@ fn test_vectors_prr<T: DRBG_Mechanism_Functions>(prr_file: &str, mut strength: u
 }
 
 fn test_vectors_no_prr<T: DRBG_Mechanism_Functions>(no_prr_file: &str, mut strength: usize) -> usize{
+    /*  General structure of a no_prr NIST vector test. */
     #[derive(Deserialize, Debug)]
     struct Fixture {
         name: String,
@@ -163,8 +169,10 @@ fn test_vectors_no_prr<T: DRBG_Mechanism_Functions>(no_prr_file: &str, mut stren
         expected: String,
     }
 
+    /*  Retrieving no_prr test vectors from file. */
     let tests: Vec<Fixture> = serde_json::from_str(no_prr_file).unwrap();
 
+    /*  Verifying each vector. */
     for test in tests {
         let res = T::new(
             &hex::decode(&test.entropy).unwrap(),
