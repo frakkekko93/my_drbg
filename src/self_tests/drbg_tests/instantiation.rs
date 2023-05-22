@@ -71,7 +71,7 @@ fn test_ss_not_supported<T: DRBG_Mechanism_Functions + 'static>(strength: usize)
 
 /*  Testing that the limit on the length of the personalization string is actually enforced. */
 fn ps_is_too_long<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usize{
-    let res = DRBG::<T>::new(strength, Some(&PERS_TOO_LONG));
+    let res = DRBG::<T>::new(strength, Some(&PERS_TOO_LONG[..strength+1]));
     let mut err= 0;
     let mut drbg = None;
 

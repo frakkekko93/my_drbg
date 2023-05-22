@@ -87,7 +87,7 @@ fn add_in_too_long<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> us
         }
     }
 
-    let res = drbg.reseed(Some(&ADD_IN_TOO_LONG));
+    let res = drbg.reseed(Some(&ADD_IN_TOO_LONG[..strength+1]));
 
     return check_res(res, 2, 
         "add_in_too_long".to_string(), 

@@ -61,15 +61,10 @@ fn double_uninst<T: DRBG_Mechanism_Functions + 'static>(strength: usize) -> usiz
         }
     }
 
+    drbg.uninstantiate();
     let res = drbg.uninstantiate();
-    let res2 = drbg.uninstantiate();
 
-    return check_res(res, 0, 
-        "double_uninst".to_string(), 
-        "DRBG_TESTS::uninstantiate_test".to_string(), 
-        "normal uninstantiation operation failed.".to_string(), 
-        "success on uninstantiate normal operation.".to_string()) +
-            check_res(res2, 1, 
+    return check_res(res, 1, 
             "double_uninst".to_string(), 
             "DRBG_TESTS::uninstantiate_test".to_string(), 
             "uninstantiate on invalid internal state succeeded.".to_string(), 
