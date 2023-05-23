@@ -89,6 +89,6 @@ pub fn run_all() -> usize {
     res_ctr_df +=  mech_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes256>>(32) +
         drbg_tests::run_all::run_tests::<CtrDrbgMech_DF<Aes256>>(32);
 
-    unsafe { OVERALL_TEST_RUN = false };
+    // unsafe { OVERALL_TEST_RUN = false };
     return res_hash + res_hmac + res_ctr + res_ctr_df;         
 }
